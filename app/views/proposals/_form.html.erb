@@ -1,0 +1,83 @@
+<%= form_for(@proposal, :html => { :class => "form-horizontal"}) do |f| %>
+  <% if @proposal.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@proposal.errors.count, "error") %> prohibited this proposal from being saved:</h2>
+
+      <ul>
+      <% @proposal.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <fieldset>
+	<legend>Proposal Data</legend>
+  <div class="control-group">
+    <%= f.label :nsf_id, :class => 'control-label' %>
+	<div class="controls">
+    	<%= f.text_field :nsf_id %>
+	</div>
+  </div>
+  <div class="control-group">
+    <%= f.label :details, :class => 'control-label' %><br />
+	<div class="controls">
+    <%= f.text_field :details %>
+	</div>
+  </div>
+  <div class="control-group">
+    <%= f.label :topics, :class => 'control-label' %><br />
+	<div class="controls">
+    <%= f.text_field :topics %>
+	</div>
+  </div>
+  </fieldset>
+  <fieldset>
+	<legend>Researcher Data</legend>
+	  <div class="control-group">
+	    <%= f.label :researchers, :class => 'control-label' %><br />
+		<div class="controls">
+	    <%= f.text_field :researchers %>
+		</div>
+  	</div>
+  </fieldset>
+  <fieldset>
+	<legend>Panel Data</legend>
+  	<div class="control-group">
+    	<%= f.label :panels, :class => 'control-label' %><br />
+		<div class="controls">
+    	<%= f.text_field :panels %>
+		</div>
+  	</div>
+  </fieldset>
+  <fieldset>
+	<legend>Reviewer Data</legend>	
+	<div class="control-group">
+	  <%= f.label :reviewers, :class => 'control-label' %><br />
+	<div class="controls">
+	  <%= f.text_field :reviewers %>
+	</div>
+	</div>
+  </fieldset>
+  </fieldset>
+  <fieldset>
+	<legend>Assignments</legend>
+
+  <div class="control-group">
+		<label class="control-label" for="users">Operating Systems</label>
+		<div class="controls">
+		<% @users.each do |user| %>
+		    <label class="checkbox">
+			<%= check_box_tag(
+                          "proposal[user_ids][]", 
+                          user.id, 
+                          @proposal.users.detect{|d| d == user}) %>
+			<%= "#{user.name}"%>
+			</label>
+		<% end %>
+		</div>
+  </div>
+  </fieldset>
+  <div class="form-actions">
+    <%= f.submit :class => "btn btn-primary" %>
+  </div>
+<% end %>

@@ -1,0 +1,41 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>NSF_ID:</b>
+  <%= @proposal.nsf_id %>
+</p>
+
+<p>
+  <b>Details:</b>
+  <%= @proposal.details %>
+</p>
+
+<p>
+  <b>Researchers:</b>
+  <%= @proposal.researchers %>
+</p>
+
+<p>
+  <b>Topics:</b>
+  <%= @proposal.topics %>
+</p>
+
+<p>
+  <b>Panels:</b>
+  <%= @proposal.panels %>
+</p>
+
+<p>
+  <b>Reviewers:</b>
+  <%= @proposal.reviewers %>
+</p>
+
+<p>
+	<b>Assigned to:</b>
+	<% @proposal.users.each do |user| %>
+		<%= "#{user.name}"%><br />
+	<% end %>
+</p>
+
+<%= link_to 'Edit', edit_proposal_path(@proposal) %> |
+<%= link_to 'Back', proposals_path %>
