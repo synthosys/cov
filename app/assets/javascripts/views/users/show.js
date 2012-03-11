@@ -71,14 +71,23 @@ console.log(this.collection); */
 			//save and update collection
 			var self = this;
 			_.each(loaded_data, function(proposal_data,nsf_id) {
-console.log(nsf_id);				
+//console.log(nsf_id);				
 				var foundproposals = self.collection.filterbyid([nsf_id.toString()]);
-console.log(foundproposals);				
+//console.log(foundproposals);				
 				var proposal = foundproposals.first();
-console.log(proposal);				
+//console.log(proposal);				
 				var index = self.collection.indexOf(proposal);
 //console.log(tmp);	
-				proposal.save({ proposal: { 'details': JSON.stringify(proposal_data["details"]), 'researchers': JSON.stringify(proposal_data["researchers"]), 'topics': JSON.stringify(proposal_data["topics"]), 'panels': JSON.stringify(proposal_data["panels"]) } }, {
+				proposal.save({ 
+					proposal: { 
+						'details': JSON.stringify(proposal_data["details"]), 
+						'researchers': JSON.stringify(proposal_data["researchers"]), 
+						'topics': JSON.stringify(proposal_data["topics"]), 
+						'panels': JSON.stringify(proposal_data["panels"]),
+						'reviewers': JSON.stringify(proposal_data["reviewers"]),
+						'reviewerproposals': JSON.stringify(proposal_data["reviewerproposals"]) 
+						}
+					}, {
 					success: function(data) {
 						//self.collection.models[index] = proposal;
 						self.collection.fetch({ 
@@ -216,7 +225,18 @@ console.log(proposal);
 			_.each(loaded_data, function(proposal_data,nsf_id) {
 				var proposal = new Proposal();
 	//console.log(tmp);								
-				proposal.save({ proposal: { 'nsf_id': nsf_id, 'details': JSON.stringify(proposal_data["details"]), 'researchers': JSON.stringify(proposal_data["researchers"]), 'topics': JSON.stringify(proposal_data["topics"]), 'panels': JSON.stringify(proposal_data["panels"]), 'user_ids': [user_id] } }, {
+				proposal.save({ 
+					proposal: { 
+						'nsf_id': nsf_id, 
+						'details': JSON.stringify(proposal_data["details"]), 
+						'researchers': JSON.stringify(proposal_data["researchers"]), 
+						'topics': JSON.stringify(proposal_data["topics"]), 
+						'panels': JSON.stringify(proposal_data["panels"]), 
+						'reviewers': JSON.stringify(proposal_data["reviewers"]),
+						'reviewerproposals': JSON.stringify(proposal_data["reviewerproposals"]),
+						'user_ids': [user_id] 
+						} 
+					}, {
 					success: function(data) {
 						self.collection.add(proposal);
 						$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned!');

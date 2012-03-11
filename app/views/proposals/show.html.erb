@@ -31,6 +31,11 @@
 </p>
 
 <p>
+  <b>Reviewer Proposals:</b>
+  <%= @proposal.reviewerproposals %>
+</p>
+
+<p>
 	<b>Assigned to:</b>
 	<% @proposal.users.each do |user| %>
 		<%= "#{user.name}"%><br />

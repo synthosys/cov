@@ -1,14 +1,14 @@
 Cov::Application.routes.draw do
-  resources :proposals
+  resources :proposals do
+    get 'sample', :on => :collection
+  end
 
   get "pages/home"
 
   get "pages/contact"
 
   devise_for :users, :controllers => { :registrations => 'users' }
-  resources :users #do
-    #post 'assignproposals'
-  #end
+  resources :users
   
   # The priority is based upon order of creation:
   # first created -> highest priority.
