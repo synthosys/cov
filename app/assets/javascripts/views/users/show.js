@@ -39,7 +39,7 @@ console.log(this.collection); */
 		$("form#assign_proposals button").attr('disabled',true);	
 	},
 	addOne: function(proposal) {
-		var proposal = new App.Views.Proposal({model: proposal})
+		var proposal = new App.Views.ListItemProposal({model: proposal})
 		$("#proposals_table").append(proposal.render().el);
 	},
 	addAll: function() {

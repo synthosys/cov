@@ -17,6 +17,7 @@
 //= require ./collections/users.js
 //= require ./collections/proposals.js
 //= require ./views/proposals/list.js
+//= require ./views/proposals/listitem.js
 //= require ./views/proposals/show.js
 //= require ./views/users/show.js
 //= require_tree .

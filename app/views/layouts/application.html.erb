@@ -31,10 +31,12 @@
 <!--					<li><a href="#/portfolio/browse">Browse Portfolio</a></li>
 					<li><a href="#/portfolio/analyze">Analyze Portfolio</a></li>-->
 					<% if user_signed_in? %>
-						<% if current_user.role?('admin') %>
+						<% if current_user.role?(:admin) %>
 							<li><%= link_to 'All Users', '/users' %></li>
 							<li><%= link_to 'Add User', '/users/new' %></li>
 							<li><%= link_to 'Loaded Proposals', '/proposals' %></li>
+						<% elsif current_user.role?(:auditor) %>
+							<li><%= link_to 'Dashboard', '/proposals' %></li>						
 						<% end %>
 					<% end %>
 				</ul>

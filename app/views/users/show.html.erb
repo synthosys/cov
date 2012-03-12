@@ -79,14 +79,14 @@
 </table>
 <% end %>
 
-<script type="text/template" id="template_proposals_index">
+<script type="text/template" id="template_proposals_listitem">
 <td>{{nsf_id}}</td>
 <td>{{title}}</td>
 <td>{{date}}</td>
 <td>{{amount}}</td>
 <td>{{lastviewed}}</td>
 <td>{{panels}}</td>
-<td>{{actions}}</td>
+<td><a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a> <a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i>Remove</a></td>
 </script>
 
 <script type="text/Javascript">

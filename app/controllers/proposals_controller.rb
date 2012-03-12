@@ -5,8 +5,13 @@ class ProposalsController < ApplicationController
   # GET /proposals
   # GET /proposals.json
   def index
-    if params[:user] 
-        @proposals = Proposal.all(:include => :users, :conditions => ["users.id = ?", params[:user]])
+    if current_user.role? :auditor
+      user = current_user
+    elsif params[:user] 
+      user = params[:user]
+    end
+    if user
+        @proposals = Proposal.all(:include => :users, :conditions => ["users.id = ?", user])
     else 
       @proposals = Proposal.all
     end

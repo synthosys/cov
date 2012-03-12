@@ -7,10 +7,29 @@ class Ability
     if user.role? :admin
       can :manage, :all
     else 
-      if user.role? :auditor
-        can :read, Proposal
+      cannot :manage, User
+      if user.role? :auditor        
+        can :read, Proposal do |proposal|
+          @found = false
+          proposal.users.each do |proposal_user|
+#Rails.logger.debug(proposal.inspect)
+#Rails.logger.flush()
+            if proposal_user==user
+              @found = true
+            end
+          end
+          @found
+        end
         can :update, Proposal do |proposal|
-          proposal.try(:user) == user
+           @found = false
+            proposal.users.each do |proposal_user|
+#Rails.logger.debug(proposal.inspect)
+#Rails.logger.flush()
+              if proposal_user==user
+                @found = true
+              end
+            end
+            @found
         end
       end
     end 
