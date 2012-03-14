@@ -37,9 +37,9 @@ class ApplicationController < ActionController::Base
     stored_location_for(resource) ||
       if resource.is_a?(User) 
           if resource.role?(:auditor)
-            '/proposals'
+            proposals_path
           else
-            '/users'
+            users_path
           end
       else
         super

@@ -11,7 +11,7 @@ App.Collections.Proposals = Backbone.Collection.extend({
       this.users_id = users_id;
       this.fetch();
     } */
-	url: '/proposals',
+	url: 'proposals',
 	filterbyid: function(nsf_ids) {
 //console.log(nsf_ids);		
 		return _(this.filter(function(proposal) {

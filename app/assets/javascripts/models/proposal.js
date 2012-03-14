@@ -1,5 +1,5 @@
 var Proposal = Backbone.Model.extend({
-	urlRoot: "/proposals",
+	urlRoot: "proposals",
 	read: function() {
 		//return json version of the data
 		var proposal = this.toJSON();
