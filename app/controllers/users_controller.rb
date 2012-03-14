@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
-  before_filter :authenticate_user!
-  load_and_authorize_resource
-  
+  if User.all.length > 0
+    before_filter :authenticate_user!
+    load_and_authorize_resource
+  end
+
   # GET /users
   # GET /users.xml                                                
   # GET /users.json                                       HTML and AJAX
