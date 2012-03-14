@@ -8,6 +8,7 @@ class CreateProposals < ActiveRecord::Migration
       t.text :panels
       t.text :reviewers
       t.text :comments
+      t.text :reviewerproposals
       t.date :lastviewed
 
       t.timestamps
