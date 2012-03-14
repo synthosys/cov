@@ -44,7 +44,7 @@ height: 128px;
 margin: 0 -15px;
 }
 
-header { background: transparent url(/assets/headerbg-wide.png) no-repeat bottom; }
+header { background: transparent url(headerbg-wide.png) no-repeat bottom; }
 
 
 header h1 {
@@ -59,7 +59,7 @@ header h1 a {
 display: block;
 height: 87px;
 width: 588px;
-background: transparent url(/assets/cov-logo.png) no-repeat top left;
+background: transparent url(cov-logo.png) no-repeat top left;
 overflow: hidden;
 text-indent: -100%;
 }
@@ -76,12 +76,12 @@ text-indent: -100%;
 }
 
 header .seal-pres {
-background: transparent url(/assets/seal-pres.png) no-repeat top left;
+background: transparent url(seal-pres.png) no-repeat top left;
 left: 15px;
 }
 
 header .seal-nsf {
-background: transparent url(/assets/seal-nsf.png) no-repeat top left;
+background: transparent url(seal-nsf.png) no-repeat top left;
 right: 15px;
 }
 
@@ -94,7 +94,7 @@ height: 133px;
 width: 269px;
 overflow: hidden;
 position: relative;
-background: transparent url(/assets/venn-bg.png) no-repeat top left;
+background: transparent url(venn-bg.png) no-repeat top left;
 }
 .venn-wrap ul {
 list-style: none;

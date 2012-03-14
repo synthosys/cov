@@ -14,6 +14,10 @@
       <meta name="description" content="">
       <meta name="author" content="">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+      <!--[if IE 9 ]>
+        <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
 
     %title
       COV
@@ -22,31 +26,37 @@
     = csrf_meta_tags
 
   %body
-    .navbar
-      .navbar-inner
-        .container
-          = link_to "COV", root_path, :class => "brand"
-          .nav-collapse
-            %ul.nav
-              %li= link_to "Home", pages_home_path
-              - if user_signed_in?
-                - if current_user.role?(:admin)
-                  %li= link_to "All Users", users_path
-                  %li= link_to "Add User", new_user_path
-                  %li= link_to "Loaded Proposals", proposals_path
-                - elsif current_user.role?(:auditor)
-                  %li= link_to "Dashboard", proposals_path
-            %ul.nav.pull-right
-              - if user_signed_in?
-                %li.navbar-text
-                  Welcome
-                  = current_user.name
-                %li= link_to "Log Out", destroy_user_session_path, :method => :delete
-              - else
-                %li= link_to "Log In", new_user_session_path, :method => :post
-              %li= link_to "Contact Us", pages_contact_path
+    .container.header
+      %header
+        %span.seal-pres.pull-left
+          pres seal
+        %span.seal-nsf.pull-right
+          nsf logo
+        %h1
+          = link_to "Star Metrics C.O.V. Explorer", root_path
 
-    .container
+      .navbar
+        .navbar-inner
+          %ul.nav
+            %li= link_to "Home", pages_home_path
+            - if user_signed_in?
+              - if current_user.role?(:admin)
+                %li= link_to "All Users", users_path
+                %li= link_to "Add User", new_user_path
+                %li= link_to "Loaded Proposals", proposals_path
+              - elsif current_user.role?(:auditor)
+                %li= link_to "Dashboard", proposals_path
+          %ul.nav.pull-right
+            - if user_signed_in?
+              %li.navbar-text
+                Welcome
+                = current_user.name
+              %li= link_to "Log Out", destroy_user_session_path, :method => :delete
+            - else
+              %li= link_to "Log In", new_user_session_path, :method => :post
+            %li= link_to "Contact Us", pages_contact_path
+
+    .container.content
       %section.round
         - flash.each do |key, value|
           .flash.alert.alert-info{ :class => key }
@@ -59,6 +69,7 @@
   <script type="text/javascript">
   var proposalaccessallowed = false;
   var apiurl = 'http://rd-dashboard.nitrd.gov/gapi/api/';
+  google.load('visualization', '1', {'packages': ['geochart','corechart']});
 
   $(function() {
     _.templateSettings = {
