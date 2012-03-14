@@ -3,7 +3,7 @@ App.Views.ListItemProposal = Backbone.View.extend({
 	tagName: 'tr',
 	render: function() {
 		var proposal = this.model.read();
-console.log(proposal);		
+//console.log(proposal);		
 		var compiled = _.template($('#template_proposals_listitem').html());
 		var data = {};
 		data["id"] = proposal.id;
@@ -19,6 +19,13 @@ console.log(proposal);
 			});
 		}
 		data["panels"] = tmp.join('<br />');
+		var tmp = [];
+		if (proposal.users) {
+			_.each(proposal.users, function(user) {
+				tmp.push(user.name);
+			});
+		}
+		data["users"] = tmp.join('<br />');
 		$(this.el).html(compiled(data));
 		return this;
 	}

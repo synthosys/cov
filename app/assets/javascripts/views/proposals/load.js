@@ -9,16 +9,18 @@ App.Views.LoadProposal = Backbone.View.extend({
 			//create records to be updated to the datastore
 			//do this by collating the response of all the components
 			var loaded_data = {};
-			var loadedcomponents = this.loadedcomponents;
-			_.each(this.nsf_ids, function(nsf_id) {
-				loaded_data[nsf_id] = {};
-				loaded_data[nsf_id]["details"] = loadedcomponents["proposals"]["data"][nsf_id];
-				loaded_data[nsf_id]["researchers"] = loadedcomponents["researchers"]["data"][nsf_id];
-				loaded_data[nsf_id]["topics"] = loadedcomponents["topics"]["data"][nsf_id];
-				loaded_data[nsf_id]["panels"] = loadedcomponents["panels"]["data"][nsf_id];
-				loaded_data[nsf_id]["reviewers"] = loadedcomponents["reviewers"]["data"][nsf_id];
-				loaded_data[nsf_id]["reviewerproposals"] = loadedcomponents["reviewerproposals"]["data"][nsf_id];
-			});		
+			if (_.size(this.loadedcomponents["proposals"]["data"])>0) {
+				var loadedcomponents = this.loadedcomponents;
+				_.each(this.nsf_ids, function(nsf_id) {
+					loaded_data[nsf_id] = {};
+					(loadedcomponents["proposals"]["data"][nsf_id]) ? loaded_data[nsf_id]["details"] = loadedcomponents["proposals"]["data"][nsf_id] : {};
+					(loadedcomponents["researchers"]["data"][nsf_id]) ? loaded_data[nsf_id]["researchers"] = loadedcomponents["researchers"]["data"][nsf_id] : [];
+					(loadedcomponents["topics"]["data"][nsf_id]) ? loaded_data[nsf_id]["topics"] = loadedcomponents["topics"]["data"][nsf_id] : [];
+					(loadedcomponents["panels"]["data"][nsf_id]) ? loaded_data[nsf_id]["panels"] = loadedcomponents["panels"]["data"][nsf_id] : [];
+					(loadedcomponents["reviewers"]["data"][nsf_id]) ? loaded_data[nsf_id]["reviewers"] = loadedcomponents["reviewers"]["data"][nsf_id] : [];
+					(loadedcomponents["reviewerproposals"]["data"][nsf_id]) ? loaded_data[nsf_id]["reviewerproposals"] = loadedcomponents["reviewerproposals"]["data"][nsf_id] : [];
+				});				
+			}
 //console.log(this.getLoadStatus());				
 //console.log(loaded_data);				
 			view[respondto](this.getLoadStatus(),loaded_data);
@@ -43,9 +45,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 		$("div#loadstatus ul#components").show();
 		//start loads of all the different data components
 		this.loadProposals();
-		this.loadResearchers();
-		this.loadTopics();
-		this.loadPanels(); //this will load reviewers
 	},
 	loadProposals: function() {
 		var loaded_data = {};
@@ -57,15 +56,29 @@ App.Views.LoadProposal = Backbone.View.extend({
 			url: apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?',
 			dataType: 'JSONP',
 			success: function(data) {
-				//store data
-				_.each(self.nsf_ids, function(nsf_id) {
-					//find them all out
-					loaded_data[nsf_id] = _.find(data["data"],function(item) {
-						return item["nsf_id"]==nsf_id;
-					});
-				});													
-				//ALL DONE! run callback function
-				self.processLoadProgress(component, 'ok', loaded_data);
+				if (data.count==0) {
+					//return with error
+					self.processLoadProgress(component, 'error', loaded_data );
+					//set the others here too so we return
+					self.processLoadProgress('researchers', 'error', {} );
+					self.processLoadProgress('topics', 'error', {} );
+					self.processLoadProgress('panels', 'error', {} );
+					self.processLoadProgress('reviewers', 'error', {} );
+					self.processLoadProgress('reviewerproposals', 'error', {} );
+				} else {
+					//store data
+					_.each(self.nsf_ids, function(nsf_id) {
+						//find them all out
+						loaded_data[nsf_id] = _.find(data["data"],function(item) {
+							return item["nsf_id"]==nsf_id;
+						});
+					});								
+					self.loadResearchers();
+					self.loadTopics();
+					self.loadPanels(); //this will load reviewers
+					//ALL DONE! run callback function
+					self.processLoadProgress(component, 'ok', loaded_data);					
+				}
 			},
 			error: function() {
 //console.log('error panels');										
@@ -116,7 +129,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 						return item["proposal"]["nsf_id"]==nsf_id;
 					});
 //console.log(topics[0]["topic"]);											
-					loaded_data[nsf_id] = topics[0]["topic"]["id"];
+					if (topics.length>0) loaded_data[nsf_id] = topics[0]["topic"]["id"];
 				});
 				//ALL DONE! run callback function
 				self.processLoadProgress(component, 'ok', loaded_data );
@@ -233,17 +246,40 @@ App.Views.LoadProposal = Backbone.View.extend({
 					});
 					//now find the corresponding reviewers
 					var proposal_panel_reviewers = [];
+					var orgs = [];
 					_.each(proposal_panels, function(panel) {
 						var tmp = {};
 						tmp['panel_id'] = panel["nsf_id"];
-						tmp['reviewers'] = _.filter(data["data"],function(item) {
+						var reviewers = _.filter(data["data"],function(item) {
 							if (item["revr"]) return _.intersection(item["revr"],panel["revr"]).length>0;
 							else return $.inArray(item["nsf_id"],panel["revr"])!=-1;							
 						});
-						proposal_panel_reviewers.push(tmp);
+						//pull out the orgs
+						_.each(reviewers, function(reviewer) {
+							orgs.push(reviewer['inst']['nsf_id']);
+						});
+						//so now, get the inst classifications
+						$.ajax({
+							url: apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?',
+							dataType: 'JSONP',
+							success: function(data) {
+								//found it! save it back
+								for (var i=0;i<reviewers.length;i++) {
+									var org = _.find(data["data"], function(item) {
+										return item['nsf_id']==reviewers[i]['inst']['nsf_id'];
+									});
+									reviewers[i]['inst']['flag'] = '';
+									if (org) reviewers[i]['inst']['flag'] = org['flag'];
+								}
+								tmp['reviewers'] = reviewers;
+								proposal_panel_reviewers.push(tmp);
+							}
+						});
 					});
 					loaded_data[nsf_id] = proposal_panel_reviewers;
 				});
+				//get the orgs and store that info too
+				
 				//also, make a list of panels and reviewers as pis
 				var panel_reviewers_as_pis = [];
 				_.each(panels, function(panel) {
@@ -391,7 +427,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 										});
 										loaded_data[nsf_id] = proposal_panel_reviewers;
 									});
-console.log(loaded_data);									
+//console.log(loaded_data);									
 									//ALL DONE! run callback function
 									self.processLoadProgress(component, 'ok', loaded_data );									
 								},

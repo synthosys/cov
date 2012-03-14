@@ -18,8 +18,9 @@
 //= require ./collections/proposals.js
 //= require ./views/proposals/list.js
 //= require ./views/proposals/listitem.js
+//= require ./views/proposals/load.js
 //= require ./views/proposals/show.js
-//= require ./views/users/show.js
+//= require ./views/proposals/new.js
 //= require_tree .
 
 

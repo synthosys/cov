@@ -16,16 +16,23 @@
 	
 	<%= stylesheet_link_tag    "application" %>	
 	<%= javascript_include_tag "application" %>
+	<script type='text/javascript' src='https://www.google.com/jsapi'></script>
 	
 	<%= csrf_meta_tags %>
-	
+	<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+	<!--[if lt IE 9]>
+	<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
 </head>
 <body>
+<div class="container header">
+<header>
+	<span class="seal-pres pull-left">pres seal</span>
+	<span class="seal-nsf pull-right">nsf logo</span>
+	<h1><a href="#">Star Metrics C.O.V. Explorer</a></h1>
+</header>
 <div class="navbar">
 	<div class="navbar-inner">
-		<div class="container">
-			<a class="brand" href="#">COV</a>
-			<div class="nav-collapse">
 				<ul class="nav">
 					<li><%= link_to 'Home', '/pages/home' %></li>
 <!--					<li><a href="#/portfolio/browse">Browse Portfolio</a></li>
@@ -49,26 +56,32 @@
 					<% end %>
 					<li><%= link_to 'Contact Us', '/pages/contact' %></li>
 				</ul>
-			</div>
-		</div>
-	</div>
-</div>
-<div class="container">
+	</div><!-- mnavbar-inner -->
+</div><!-- /navbar -->
+
+</div><!-- /container -->
+
+
+
+
+
+
+<div class="container content">
 	<section class="round">
 	  <% flash.each do |key, value| %>
 	    <div class="flash <%= key %> alert alert-info"><%= value %></div>
 	  <% end %>
 	</section>
-	<div class="row" id="main">
-		<div class="span12">
+	<div class="row"><div class="span12" id="main">
 		  <%= yield %>
-		</div>
-	</div>
-</div>
+	</div></div><!-- /row -->
+</div><!-- /container -->
 
 <script type="text/javascript">
 var proposalaccessallowed = false;
 var apiurl = 'http://rd-dashboard.nitrd.gov/gapi/api.py/';
+
+google.load('visualization', '1', {'packages': ['geochart','corechart']});
 
 $(function() {
 	_.templateSettings = {
@@ -83,13 +96,18 @@ $(function() {
 	//console.log(data);
 			proposalaccessallowed = true;
 			apiurl = "http://128.150.10.70/py/api.py/";
-	        App.init();
+			google.load('visualization', '1', {'packages': ['geochart'], 'callback': App.init});			
+	        //App.init();
 		},
 		error: function(x,t,m) {
 	//alert('error');
 	//alert(t);
 			//set alert
 			$('#access_alert').show(); //if this is available it will be shown
+			/*google.load('visualization', '1', {'packages': ['geochart']});			
+			google.setOnLoadCallback(function() {
+			    App.init();
+			});*/
   			App.init();
 		}
 	});

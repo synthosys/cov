@@ -9,6 +9,7 @@ class ProposalsController < ApplicationController
       user = current_user
     elsif params[:user] 
       user = params[:user]
+      @user = User.find(params[:user])
     end
     if user
         @proposals = Proposal.all(:include => :users, :conditions => ["users.id = ?", user])

@@ -1,0 +1,37 @@
+<div id="access_alert" class="alert alert-error" style="display: none;"><strong>Oops!</strong> You're not connected to the private data! That means we cannot load Panel and Reviewer information for any proposals.</div>
+<h2>Add Proposals</h2>
+<div class="row">
+	<div class="span4">
+		<form class="well" id="assign_proposals">
+		<input type="hidden" id="user_id" name="proposal[user_ids][]" value="<%= @user.id if !@user.nil? %>">
+		<div class="control-group">
+			<label>Enter one or more proposal ids (separated by commas)</label>
+			<div class="controls">
+				<textarea name="proposal[nsf_id]" id="proposal_nsf_id" class="input-xlarge"></textarea>
+				<p class="help-block">When you're done, hit Go</p>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-primary disabled" disabled="">Please Wait...</button>
+		</form>
+	</div>
+	<div class="span4">
+		<div class="alert" id="load_help">
+			<p><strong>All Assigned Proposals</strong> for this user are displayed in the list below.</p>
+			<p><strong>Begin</strong> by entering one or more Proposal IDs in the box to your left and hit "Go".</p>
+			<p><strong>This space</strong> will update with the processing status of your request.</p>
+			<p><strong>Upon completion</strong> successfully loaded proposals will be added to the list, any errors will display here.</p>
+		</div>
+		<div id="loadstatus" style="display: none;">
+		    <div class="alert" id="text"></div>
+			<ul id="components" class="nav" style="display: none;">
+				<li id="proposals"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Proposals</li>
+				<li id="researchers"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Researchers</li>
+				<li id="topics"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Topics</li>
+				<li id="panels"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Panels</li>
+				<li id="reviewers"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Reviewers</li>
+				<li id="reviewerproposals"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span> Reviewer Proposals</li>
+			</ul>
+			<div id="status"></div>
+		</div>
+	</div>		
+</div>

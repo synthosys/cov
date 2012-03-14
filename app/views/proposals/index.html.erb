@@ -1,67 +1,47 @@
 <% if current_user.role?(:admin) %>
-<div class="page-header">
-	<h1>Listing proposals</h1>
-</div>
-<table class="table table-striped table-bordered table-condensed">
-  <tr>
-    <th>NSF ID</th>
-    <th>Assigned To</th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-
-<% @proposals.each do |proposal| %>
-  <tr>
-    <td><%= proposal.nsf_id %></td>
-	<td>
-		<% proposal.users.each do |user| %>
-			<%= "#{user.name}"%><br />
-		<% end %>
-	</td>
-    <td><%= link_to 'Show', proposal %></td>
-    <td><%= link_to 'Edit', edit_proposal_path(proposal) %></td>
-    <td><%= link_to 'Destroy', proposal, confirm: 'Are you sure?', method: :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'New Proposal', new_proposal_path %>
+	<% if !@user.nil? %>
+		<div class="page-header">
+			<h1>Manage Assigned Proposals <small>for <%= @user.name %></small></h1> 
+		</div>
+		<div class="row">
+			<div class="span8" id="proposal_new">
+				<%= render :partial => 'shared/newproposal' %>
+			</div>
+			<div class="span4">
+				<ul class="nav nav-list">
+			    	<li class="nav-header">About</li>
+			    	<li><i class="icon-envelope"></i>Email: <%= @user.email %></li>
+					<li><i class="icon-user"></i>Username: <%= @user.username %></li>
+					<li><i class="icon-lock"></i>Role: <%= @user.role %></li>
+					<li class="nav-header">Accessed</li>
+					<li><i class="icon-calendar"></i>Created on: <%= @user.created_at %></li>
+					<li><i class="icon-calendar"></i>Last Sign In: <%= @user.last_sign_in_at %></li>
+					<li><i class="icon-lock"></i>Sign In Count: <%= @user.sign_in_count %></li>
+					<li class="nav-header">Actions</li>
+					<li><%= link_to_if(can?(:update,@user), raw("<i class='icon-pencil'></i> Edit"), edit_user_path(@user)) %></li>
+					<li><%= link_to_if(can?(:delete, @user), raw("<i class='icon-remove'></i> Delete"), user_path(@user), :confirm => "Are you sure?", :method => :delete) {} %></li>
+			    </ul>
+			</div>
+		</div>
+		<h2>Assigned Proposals</h2>
+	<% else %>
+		<div class="page-header">
+			<h1>Listing proposals</h1>
+		</div>
+		<div class="span8" id="proposal_new">
+			<%= render :partial => 'shared/newproposal' %>
+		</div>
+	<% end %>
 <% else %>
 <div class="page-header">
 	<h1>Your assigned proposals</h1>
 </div>
-<% if @proposals %>
-<table class="table table-striped table-bordered table-condensed" id="proposals_table">
-	<thead>
-		<tr>
-			<th>Proposal</th>
-			<th>Title</th>
-			<th>Proposal Date</th>
-			<th>Award</th>
-			<th>Last Viewed</th>
-			<th>Panel/s (Program Officer/s)</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
 <% end %>
 
-<script type="text/template" id="template_proposals_listitem">
-<td>{{nsf_id}}</td>
-<td>{{title}}</td>
-<td>{{date}}</td>
-<td>{{amount}}</td>
-<td>{{lastviewed}}</td>
-<td>{{panels}}</td>
-<td><a href="/proposals/{{id}}">Review</a></td>
-</script>
+<%= render :partial => 'shared/listproposals' %>
 
 <script type="text/Javascript">
-var view = new App.Views.ListProposal({ el:$("#main")});
+//var view = new App.Views.ListProposal({ el:$("#main")});
+App.view = 'ListProposal';
+App.viewparams = { el:$("#main")<%= ", user_id:'#{@user.id}'" if !@user.nil? %>};
 </script>
-<% end %>

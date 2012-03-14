@@ -1,59 +1,62 @@
 <p id="notice"><%= notice %></p>
 <% if current_user.role?(:admin)%>
-<p>
-	<b>Assigned to:</b>
-	<% @proposal.users.each do |user| %>
-		<%= "#{user.name}"%><br />
-	<% end %>
-</p>
-
-<%= link_to 'Edit', edit_proposal_path(@proposal) %> |
-
+	<div class="alert well">
+	<div>
+		<b>Assigned to:</b>
+		<% @proposal.users.each do |user| %>
+			<%= "#{user.name}"%><br />
+		<% end %>
+	</div>
+	<div class="pull-right">
+		<ul class="nav nav-list">
+	    	<li class="nav-header">Actions</li>
+			<li><%= link_to raw("<i class='icon-pencil'></i> Edit"), edit_proposal_path(@proposal) %></li>
+		</ul>
+	</div><!-- /pull-right -->
+	</div><!-- /alert -->
 <% end%>
 
 <script type="text/template" id="template_proposals_show">
 <div class="page-header">
 	<h1>Proposal: ID {{nsf_id}}</h1>
-	<div class="pull-right"><%= link_to 'Back', proposals_path %></div>
-</div>
+	<div class="pull-right"><%= link_to 'Back to Dashboard', proposals_path %></div>
+</div><!-- /page-header -->
+
 <h2>{{title}}</h2>
 <div class="tabbable">
-<ul class="nav nav-tabs">
-<li class="active"><a href="#tab_proposal_details" data-toggle="tab">Proposal Details</a></li>
-<li><a href="#tab_panel_details" data-toggle="tab">Panel Details</a></li>
-<li><a href="#tab_reviewer_expertise" data-toggle="tab">Reviewer Expertise</a></li>
-</ul>
-<div class="tab-content">
-<div class="tab-pane active" id="tab_proposal_details">
-</div>
-<div class="tab-pane" id="tab_panel_details">
-</div>
-<div class="tab-pane" id="tab_reviewer_expertise">
-</div>
-</div>
-</div>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#tab_proposal_details" data-toggle="tab">Proposal Details</a></li>
+		<li><a href="#tab_panel_details" data-toggle="tab">Panel Details</a></li>
+		<li><a href="#tab_reviewer_expertise" data-toggle="tab">Reviewer Expertise</a></li>
+	</ul>
+	<div class="tab-content">
+		<div class="tab-pane active" id="tab_proposal_details"></div>
+		<div class="tab-pane" id="tab_panel_details"></div>
+		<div class="tab-pane" id="tab_reviewer_expertise"></div>
+	</div><!-- /tab-content -->
+</div><!-- /tabbable -->
 </script>
 
 <script type="text/template" id="template_proposal_details">
 <p>{{abstract}}</p>
 <div class="row">
 	<div class="span3">
-		<table class="table table-condensed">
-			<tr>{{status}}</tr>
+		<table class="table table-condensed lbl-right">
+			{{status}}
 			<tr>
-				<td><strong>PGE Code</strong></td>
+				<td class="lbl"><strong>PGE Code</strong></td>
 				<td>{{pge}}</td>
 			</tr>
 			<tr>
-				<td><strong>Division</strong></td>
+				<td class="lbl"><strong>Division</strong></td>
 				<td>{{division}}</td>
 			</tr>
 			<tr>
-				<td><strong>ext. link</strong></td>
+				<td class="lbl"><strong>ext. link</strong></td>
 				<td><a href="" target="_blank">eJacket &gt;&gt;</a/></td>
 			</tr>
 		</table>
-	</div>
+	</div><!-- /span3 -->
 	<div class="span9">
 		<table class="table table-condensed">
 			<caption>Researchers</caption>
@@ -69,14 +72,18 @@
 				{{researchers}}
 			</tbody>
 		</table>
-	</div>
-</div>
-<h3>Proposal Research Topics (in order)</h3>
-<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
-<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
-<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
-<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
-<h3>Methodology</h3>
+	</div><!-- /span9 -->
+</div><!-- /row -->
+<div class="row">
+	<div class="span12">
+		<h3>Proposal Research Topics (in order)</h3>
+		<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
+		<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
+		<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
+		<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+		<h3>Methodology</h3>
+	</div><!-- /span12 -->
+</div><!-- /row -->
 </script>
 
 <script type="text/template" id="template_researchers_listitem">
@@ -90,57 +97,75 @@
 
 <script type="text/template" id="template_panel_details">
 <div class="row">
-	<div class="span8">
+	<div class="span2">
+		<h3>Panel Summary</h3>
+		<small>({{count}} panels total)</small>
+	</div><!-- /span2 -->
+	<div class="span6">
+		<select id="panelselect_paneldetails">
+			{{panelselect}}
+		</select>
 		<div class="row">
-			<div class="span2">
-				<h3>Panel Summary</h3>
-				<small>({{count}} panels total)</small>
-			</div>
-			<div class="span6">
-				<select id="panelselect_paneldetails">
-					{{panelselect}}
-				</select>
-				<div class="row">
-					<div class="span3">
-						<p>Program Officer: {{officer}}</p>
-						<p>Division: {{division}}</p>
-						<p>Program Element Code: {{pge}}</p>
-						<p>Fiscal Year: {{fiscalyear}}</p>
-					</div>
-					<div class="span3">
-						<p>Panel Proposal: {{proposals_count}}</p>
-						<p>Total Panel Reviewers: {{reviewers_count}}</p>
-						<p>Panel Proposals Awarded: {{proposals_awarded_count}} ({{proposals_awarded_amount}})</p>
-						<p>Funding Rate: {{proposals_fundingrate}}</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="span4">
-		<h4>Reviewer Location</h4>
-	</div>
-</div>
+			<div class="span3">
+				<p>Program Officer: {{officer}}</p>
+				<p>Division: {{division}}</p>
+				<p>Program Element Code: {{pge}}</p>
+				<p>Fiscal Year: {{fiscalyear}}</p>
+			</div><!-- /span3 -->
+			<div class="span3">
+				<p>Panel Proposal: {{proposals_count}}</p>
+				<p>Total Panel Reviewers: {{reviewers_count}}</p>
+				<p>Panel Proposals Awarded: {{proposals_awarded_count}} ({{proposals_awarded_amount}})</p>
+				<p>Funding Rate: {{proposals_fundingrate}}</p>
+			</div><!-- /span3 -->
+		</div><!-- /row -->
+	</div><!-- /span6 -->
+</div><!-- /row -->
+
 <h3>Reviewer Summary</h3>
 <div class="row">
-	<div class="span8">
+	<div class="span3">
 		<h4>Gender</h4>
-	</div>
-	<div class="span8">
+		<div id="reviewers_gender_graph">
+		</div>
+	</div><!-- /span3 -->
+	<div class="span3">
 		<h4>Reviewer Institutions Classification</h4>
-	</div>
-</div>
+		<div id="reviewers_instclass_list">
+		</div>
+	</div><!-- /span3 -->
+	<div class="span6">
+		<h4>Reviewer Location</h4>
+		<div class="row">
+			<div class="span4" id="reviewers_location_map">
+			</div><!-- /span4 -->
+			<div class="span2" id="reviewers_location_list">
+			</div><!-- /span2 -->
+		</div><!-- /row -->
+	</div><!-- /span6 -->
+</div><!-- /row -->
+
 <h3>Reviewers' Research Topics</h3>
-<div class="pull-right">
-	<span><strong>Show:</strong></span>
-	<select id="topicrelevance_paneldetails">
-		{{topicrelevance}}
-	</select>
+<div class="row">
+<div class="span7">
+	<h5>Topics assigned to Proposals Submitted to NSF by Reviewers as PI/Co-PI since 199x</h5>
 </div>
-<h5>Topics assigned to Proposals Submitted to NSF by Reviewers as PI/Co-PI since 199x</h5>
+<div class="span5 form-horizontal">
+	<div class="control-group pull-right">
+		<label class="control-label" for="topicrelevance_paneldetails">Select list</label>
+		<div class="controls">
+		<select id="topicrelevance_paneldetails">
+			{{topicrelevance}}
+		</select>
+		</div><!-- /controls -->
+	</div><!-- /control-group -->
+</div><!-- /span5 -->
+</div><!-- /row -->
+
 <div id="tab_panel_details_topics">
 {{topics}}
-</div>
+</div><!-- /tab_panel_details_topics -->
+
 </script>
 
 <script type="text/template" id="template_panel_details_topics">
@@ -159,6 +184,7 @@
 
 <script type="text/template" id="template_reviewer_expertise">
 <h3>Proposal's Research Topics compared to Reviewers' Research Topics</h3>
+
 <div class="row">
 	<div class="span8">
 		<h5>Show Panel: 
@@ -166,10 +192,12 @@
 			{{panelselect}}
 		</select>
 		</h5>
-	</div>
-	<div class="span4">
-	</div>
-</div>
+	</div><!-- /span8 -->
+	<div class="span4" id="tab_reviewer_expertise_topics_venn">
+		{{venn}}
+	</div><!-- /span4 -->
+</div><!-- /row -->
+
 <h5>Reviewers' Research Topics:
 <select id="topicrelevance_reviewerexpertise">
 	{{topicrelevance}}
@@ -177,6 +205,18 @@
 </h5>
 <div id="tab_reviewer_expertise_topics">
 {{topics}}
+</div><!-- /tab_reviewer_expertise_topics -->
+</script>
+
+<script type="text/template" id="template_reviewer_expertise_topics_venn">
+<div class="venn-wrap">
+	<ul>
+		<li class="title props">Proposal<span class="num-topics">{{topics_proposalonly_count}} Topics</span></li><!-- /title -->
+		<li class="items props-list">{{topics_proposalonly_ids}}</li>
+		<li class="title reviewers">Reviewers<span class="num-topics">{{topics_reviewers_count}} Topics</span></li><!-- /title -->
+		<li class="items reviewers-list">{{topics_common_ids}}</li>
+		<li class="common">Common ({{topics_common_count}})</li>
+	</ul>
 </div>
 </script>
 
@@ -230,5 +270,7 @@
 </script>
 
 <script type="text/Javascript">
-var view = new App.Views.ShowProposal({ el:$("#main"), id: <%= @proposal.id %> });
+//var view = new App.Views.ShowProposal({ el:$("#main"), id: <%= @proposal.id %> });
+App.view = 'ShowProposal';
+App.viewparams = { el:$("#main"), id: <%= @proposal.id %> };
 </script>
