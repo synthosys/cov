@@ -11,5 +11,5 @@ App.Collections.Users = Backbone.Collection.extend({
       this.users_id = users_id;
       this.fetch();
     } */
-	url: '/users'
+	url: 'users'
 });
