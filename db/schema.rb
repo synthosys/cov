@@ -31,7 +31,6 @@ ActiveRecord::Schema.define(:version => 20120301195980) do
     t.text     "reviewers"
     t.text     "comments"
     t.text     "reviewerproposals"
-    t.date     "lastviewed"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
