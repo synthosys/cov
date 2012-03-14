@@ -43,7 +43,7 @@
                   = current_user.name
                 %li= link_to "Log Out", destroy_user_session_path, :method => :delete
               - else
-                %li= link_to "Log In", new_user_session_path
+                %li= link_to "Log In", new_user_session_path, :method => :post
               %li= link_to "Contact Us", pages_contact_path
 
     .container
@@ -58,7 +58,7 @@
 :plain
   <script type="text/javascript">
   var proposalaccessallowed = false;
-  var apiurl = 'http://rd-dashboard.nitrd.gov/gapi/api.py/';
+  var apiurl = 'http://rd-dashboard.nitrd.gov/gapi/api/';
 
   $(function() {
     _.templateSettings = {
@@ -66,13 +66,13 @@
     };
     // Check to see if we have access to nsfstarmetrics server 
     $.ajax({
-      url: "http://128.150.10.70/py/api.py/access",
+      url: "http://128.150.10.70/py/api/access",
       dataType: 'JSONP',
       timeout: 2000,
       success: function(data) {
         //console.log(data);
         proposalaccessallowed = true;
-        apiurl = "http://128.150.10.70/py/api.py/";
+        apiurl = "http://128.150.10.70/py/api/";
         App.init();
       },
       error: function(x,t,m) {
