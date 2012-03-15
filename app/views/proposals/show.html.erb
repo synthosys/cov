@@ -1,4 +1,5 @@
 <p id="notice"><%= notice %></p>
+
 <% if current_user.role?(:admin)%>
 	<div class="alert well">
 	<div>
@@ -15,6 +16,9 @@
 	</div><!-- /pull-right -->
 	</div><!-- /alert -->
 <% end%>
+
+
+
 
 <script type="text/template" id="template_proposals_show">
 <div class="page-header">
@@ -36,6 +40,9 @@
 	</div><!-- /tab-content -->
 </div><!-- /tabbable -->
 </script>
+
+
+
 
 <script type="text/template" id="template_proposal_details">
 <p>{{abstract}}</p>
@@ -85,6 +92,9 @@
 	</div><!-- /span12 -->
 </div><!-- /row -->
 </script>
+
+
+
 
 <script type="text/template" id="template_researchers_listitem">
 <tr>
@@ -274,3 +284,4 @@
 App.view = 'ShowProposal';
 App.viewparams = { el:$("#main"), id: <%= @proposal.id %> };
 </script>
+

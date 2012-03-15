@@ -29,7 +29,6 @@ ActiveRecord::Schema.define(:version => 20120301195980) do
     t.text     "researchers"
     t.text     "panels"
     t.text     "reviewers"
-    t.text     "comments"
     t.text     "reviewerproposals"
     t.datetime "created_at"
     t.datetime "updated_at"

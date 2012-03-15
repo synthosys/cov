@@ -12,6 +12,7 @@
 //= require serializeobject
 //= require json2
 //= require app
+//= require global
 //= require ./models/user.js
 //= require ./models/proposal.js
 //= require ./collections/users.js
@@ -22,5 +23,3 @@
 //= require ./views/proposals/show.js
 //= require ./views/proposals/new.js
 //= require_tree .
-
-
