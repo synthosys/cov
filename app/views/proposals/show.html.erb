@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<% if current_user.role?(:admin)%>
+<% if current_user.role?(:admin) or current_user.role?(:su) %>
 	<div class="alert well">
 	<div>
 		<b>Assigned to:</b>
@@ -178,6 +178,8 @@
 
 </script>
 
+
+
 <script type="text/template" id="template_panel_details_topics">
 <table class="table table-condensed">
 	<thead>
@@ -218,6 +220,8 @@
 </div><!-- /tab_reviewer_expertise_topics -->
 </script>
 
+
+
 <script type="text/template" id="template_reviewer_expertise_topics_venn">
 <div class="venn-wrap">
 	<ul>
@@ -229,6 +233,8 @@
 	</ul>
 </div>
 </script>
+
+
 
 <script type="text/template" id="template_reviewer_expertise_topics">
 <table class="table table-condensed">
@@ -272,6 +278,8 @@
 </table>
 </script>
 
+
+
 <script type="text/template" id="template_panel_topics_listitem">
 <tr>
 	<td>{{icon}}<strong>{{t}} : {{label}}</strong> {{words}}</td>
@@ -279,9 +287,11 @@
 </tr>
 </script>
 
+
+
 <script type="text/Javascript">
 //var view = new App.Views.ShowProposal({ el:$("#main"), id: <%= @proposal.id %> });
-App.view = 'ShowProposal';
-App.viewparams = { el:$("#main"), id: <%= @proposal.id %> };
+  App.view = 'ShowProposal'
+  App.viewparams = { el:$("#main"), id: <%= @proposal.id %> };
 </script>
 
