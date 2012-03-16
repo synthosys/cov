@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  ROLES = ['admin','auditor','internal']
+  ROLES = ['su', 'admin','auditor','internal']
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable

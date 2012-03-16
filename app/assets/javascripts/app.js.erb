@@ -55,12 +55,12 @@ var App = {
 	  'WY': 'Wyoming'
 	},	
     init: function() {
-//console.log(this.Views);	
+        //console.log(this.Views);	
         //Backbone.history.start(); #we'll put this in once we have routes
 		//load the requested view
 		var params = {};
-//console.log(this.view);		
-//console.log(this.viewparams);		
+        //console.log(this.view);		
+        //console.log(this.viewparams);		
 		if (this.viewparams) params = this.viewparams;
 		if (this.view && App.Views[this.view]) {
 			var view = App.Views[this.view];

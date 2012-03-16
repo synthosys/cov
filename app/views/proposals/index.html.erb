@@ -1,4 +1,4 @@
-<% if current_user.role?(:admin) %>
+<% if current_user.role?(:admin) or current_user.role?(:su) %>
 	<% if !@user.nil? %>
 		<div class="page-header">
 			<h1>Manage Assigned Proposals <small>for <%= @user.name %></small></h1> 

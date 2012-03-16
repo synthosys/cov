@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
-  before_filter :authenticate_user!
-  load_and_authorize_resource
-  
+  if User.all.length > 0
+    before_filter :authenticate_user!
+    load_and_authorize_resource
+  end
+
   # GET /users
   # GET /users.xml                                                
   # GET /users.json                                       HTML and AJAX
@@ -20,10 +22,12 @@ class UsersController < ApplicationController
   #-------------------------------------------------------------------
   def new
     @user = User.new
+    @title = "New User"
+    @action = "Add"
     respond_to do |format|
       format.json { render :json => @user }   
       format.xml  { render :xml => @user }
-      format.html
+      format.html { render "base" }
     end
   end
 
@@ -32,10 +36,12 @@ class UsersController < ApplicationController
   # GET /users/1.json                                     HTML AND AJAX
   #-------------------------------------------------------------------
   def show
+    @title = "Edit User"
+    @action = "Update"
     respond_to do |format|
       format.json { render :json => @user.to_json(:include => [:proposals]) }
       format.xml  { render :xml => @user }
-      format.html      
+      format.html { render "base" }
     end
  
   rescue ActiveRecord::RecordNotFound
@@ -47,10 +53,12 @@ class UsersController < ApplicationController
   # GET /users/1/edit.json                                HTML AND AJAX
   #-------------------------------------------------------------------
   def edit
+    @title = "Edit User"
+    @action = "Update"
     respond_to do |format|
       format.json { render :json => @user }   
       format.xml  { render :xml => @user }
-      format.html
+      format.html { render "base" }
     end
  
   rescue ActiveRecord::RecordNotFound
@@ -106,18 +114,19 @@ class UsersController < ApplicationController
     #else
     #  @user.errors[:base] << "The password you entered is incorrect" unless @user.valid_password?(params[:user][:password])
     end
-
+    @title = "Edit User"
+    @action = "Update"
     respond_to do |format|
       if @user.errors[:base].empty? and @user.update_attributes(params[:user])
         flash[:notice] = "Your account has been updated"
         format.json { render :json => @user.to_json, :status => 200 }
         format.xml  { head :ok }
-        format.html { render :action => :edit }
+        format.html { render "base" }
       else
         flash[:alert] = "Your account could not be updated, check your input."
         format.json { render :text => "Could not update user", :status => :unprocessable_entity } #placeholder
         format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-        format.html { render :action => :edit, :status => :unprocessable_entity }
+        format.html { render "base", :status => :unprocessable_entity }
       end
     end
   end

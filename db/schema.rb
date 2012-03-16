@@ -13,6 +13,15 @@
 
 ActiveRecord::Schema.define(:version => 20120301195980) do
 
+  create_table "associations", :id => false, :force => true do |t|
+    t.integer  "user_id"
+    t.integer  "proposal_id"
+    t.text     "comments"
+    t.date     "lastviewed"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "proposals", :force => true do |t|
     t.text     "nsf_id"
     t.text     "details"
@@ -20,8 +29,7 @@ ActiveRecord::Schema.define(:version => 20120301195980) do
     t.text     "researchers"
     t.text     "panels"
     t.text     "reviewers"
-    t.text     "comments"
-    t.date     "lastviewed"
+    t.text     "reviewerproposals"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -46,10 +54,5 @@ ActiveRecord::Schema.define(:version => 20120301195980) do
 
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true
-
-  create_table "users_proposals", :id => false, :force => true do |t|
-    t.integer "user_id"
-    t.integer "proposal_id"
-  end
 
 end
