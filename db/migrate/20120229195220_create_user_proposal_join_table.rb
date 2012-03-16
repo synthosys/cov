@@ -1,8 +1,11 @@
 class CreateUserProposalJoinTable < ActiveRecord::Migration
   def change
-    create_table :users_proposals, :id => false do |t|
+    create_table :associations, :id => false do |t|
       t.integer :user_id
       t.integer :proposal_id
+      t.text :comments
+      t.date :lastviewed
+      t.timestamps
     end
   end
 
