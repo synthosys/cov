@@ -22,7 +22,11 @@ class UsersController < ApplicationController
   #-------------------------------------------------------------------
   def new
     @user = User.new
-    @title = "New User"
+    if current_user
+      @title = "New User"
+    else
+      @title = "Create Super User"
+    end
     @action = "Add"
     respond_to do |format|
       format.json { render :json => @user }   
@@ -96,10 +100,11 @@ class UsersController < ApplicationController
         format.html { redirect_to :action => :index }
       end
     else
+      flash[:notice] = "Could not create user: #{@user.errors.full_messages.join(', ')}"
       respond_to do |format|
         format.json { render :text => "Could not create user", :status => :unprocessable_entity } # placeholder
         format.xml  { head :ok }
-        format.html { render :action => :new, :status => :unprocessable_entity }
+        format.html { render "base", :status => :unprocessable_entity }
       end
     end
   end  
@@ -123,7 +128,7 @@ class UsersController < ApplicationController
         format.xml  { head :ok }
         format.html { render "base" }
       else
-        flash[:alert] = "Your account could not be updated, check your input."
+        flash[:alert] = "Your account could not be updated: #{@user.errors.full_messages.join(', ')}"
         format.json { render :text => "Could not update user", :status => :unprocessable_entity } #placeholder
         format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
         format.html { render "base", :status => :unprocessable_entity }
