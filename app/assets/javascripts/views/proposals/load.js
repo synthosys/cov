@@ -147,7 +147,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		//http://128.150.10.70/py/api/panel?pid=1149460
 		this.updateLoadStatus('panels','start',null);
 		if (!proposalaccessallowed) {
-			var url = 'proposals/sample?for=panels';
+			var url = App.url('/proposals')+'/sample?for=panels';
 			var datatype = 'JSON';
 		} else {
 			var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
@@ -164,7 +164,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					panel_propids = panel_propids.concat(panel["prop"]);
 				});
 				if (!proposalaccessallowed) {
-					var url = 'proposals/sample?for=panel_proposals';
+					var url = App.url('/proposals')+'/sample?for=panel_proposals';
 					var datatype = 'JSON';
 				} else {
 					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
@@ -228,7 +228,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		});
 		//now go get them
 		if (!proposalaccessallowed) {
-			var url = 'proposals/sample?for=panel_reviewers';
+			var url = App.url('/proposals')+'/sample?for=panel_reviewers';
 			var datatype = 'JSON';
 		} else {
 			var url = apiurl+'user?rid='+_.uniq(reviewer_ids).join(',')+'&jsoncallback=?';
@@ -323,7 +323,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		});
 		//now get the proposal info and topics for the reviewers who are pis
 		if (!proposalaccessallowed) {
-			var url = 'proposals/sample?for=reviewer_proposals';
+			var url = App.url('/proposals')+'/sample?for=reviewer_proposals';
 			var datatype = 'JSON';
 		} else {
 			var url = apiurl+'user?id='+_.uniq(reviewer_ids).join(',')+'&page=prop'+'&jsoncallback=?';
@@ -354,7 +354,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					}
 					//get the topics for each proposal
 					if (!proposalaccessallowed) {
-						var url = 'proposals/sample?for=reviewer_proposals_topics';
+						var url = App.url('/proposals')+'/sample?for=reviewer_proposals_topics';
 						var datatype = 'JSON';
 					} else {
 						var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
@@ -367,7 +367,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 							var proposals = data["data"];											
 							//get the details for each proposal, we need to do this so we can match back to reviewers
 							if (!proposalaccessallowed) {
-								var url = 'proposals/sample?for=reviewer_proposals_researchers';
+								var url = App.url('/proposals')+'/sample?for=reviewer_proposals_researchers';
 								var datatype = 'JSON';
 							} else {
 								var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';

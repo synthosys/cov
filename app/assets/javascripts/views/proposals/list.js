@@ -20,6 +20,9 @@ App.Views.ListProposal = Backbone.View.extend({
 		var params = {};
 		if (this.options.user_id) params = {data: { user: this.options.user_id }};
 		var self = this;
+//console.log('hello');
+//console.log(params);
+//console.log(this.collection.url);
 		this.collection.fetch(params);		
 	},
 	addOne: function(proposal) {
