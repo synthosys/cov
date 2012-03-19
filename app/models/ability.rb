@@ -4,7 +4,9 @@ class Ability
   def initialize(user)
     user ||= User.new # guest user
 
-    if user.role? :admin
+    if user.role? :su
+      can :manage, User
+    elsif user.role? :admin
       can :manage, :all
     else 
       cannot :manage, User
@@ -12,8 +14,8 @@ class Ability
         can :read, Proposal do |proposal|
           @found = false
           proposal.users.each do |proposal_user|
-#Rails.logger.debug(proposal.inspect)
-#Rails.logger.flush()
+            #Rails.logger.debug(proposal.inspect)
+            #Rails.logger.flush()
             if proposal_user==user
               @found = true
             end
@@ -21,15 +23,15 @@ class Ability
           @found
         end
         can :update, Proposal do |proposal|
-           @found = false
-            proposal.users.each do |proposal_user|
-#Rails.logger.debug(proposal.inspect)
-#Rails.logger.flush()
-              if proposal_user==user
-                @found = true
-              end
+          @found = false
+          proposal.users.each do |proposal_user|
+            #Rails.logger.debug(proposal.inspect)
+            #Rails.logger.flush()
+            if proposal_user==user
+              @found = true
             end
-            @found
+          end
+          @found
         end
       end
     end 

@@ -40,7 +40,7 @@
           %ul.nav
             %li= link_to "Home", pages_home_path
             - if user_signed_in?
-              - if current_user.role?(:admin)
+              - if current_user.role?(:admin) or current_user.role?(:su)
                 %li= link_to "All Users", users_path
                 %li= link_to "Add User", new_user_path
                 %li= link_to "Loaded Proposals", proposals_path
@@ -61,8 +61,8 @@
         - flash.each do |key, value|
           .flash.alert.alert-info{ :class => key }
             = value
-      #main.row          
-        .span12
+      .row          
+        #main.span12
           = yield
 
 :plain
@@ -79,7 +79,7 @@
     $.ajax({
       url: "http://128.150.10.70/py/api/access",
       dataType: 'JSONP',
-      timeout: 2000,
+      timeout: 500,
       success: function(data) {
         //console.log(data);
         proposalaccessallowed = true;

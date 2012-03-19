@@ -22,7 +22,7 @@
 <td>{{lastviewed}}</td>
 <td>{{panels}}</td>
 <td>
-<% if current_user.role?(:admin) %>
+<% if current_user.role?(:admin) or current_user.role?(:su) %>
 	<% if @user.nil? %>
 		<strong>Assigned to: </strong> {{users}}<br /><br />
 		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
