@@ -1,8 +1,8 @@
 class UsersController < ApplicationController
   if User.all.length > 0
     before_filter :authenticate_user!
-    load_and_authorize_resource
   end
+  load_and_authorize_resource
 
   # GET /users
   # GET /users.xml                                                
@@ -10,6 +10,7 @@ class UsersController < ApplicationController
   #-----------------------------------------------------------------------
   def index
     @users = User.accessible_by(current_ability, :index)
+    #@users = User.all
     respond_to do |format|
       format.json { render :json => @users }
       format.html
@@ -31,7 +32,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       format.json { render :json => @user }   
       format.xml  { render :xml => @user }
-      format.html { render "base" }
+      format.html { render "base"  }
     end
   end
 
@@ -59,6 +60,7 @@ class UsersController < ApplicationController
   def edit
     @title = "Edit User"
     @action = "Update"
+    #@user = User.find_by_id(params[:id])
     respond_to do |format|
       format.json { render :json => @user }   
       format.xml  { render :xml => @user }
@@ -74,12 +76,15 @@ class UsersController < ApplicationController
   # DELETE /users/1.json                                  HTML AND AJAX
   #-------------------------------------------------------------------
   def destroy
-    @user.destroy!
+    @user.destroy
  
     respond_to do |format|
       format.json { respond_to_destroy(:ajax) }
       format.xml  { head :ok }
-      format.html { respond_to_destroy(:html) }      
+      format.html { 
+        flash[:notice] = "User deleted"
+        redirect_to :action => :index
+      }      
     end
  
   rescue ActiveRecord::RecordNotFound

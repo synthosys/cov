@@ -5,29 +5,32 @@ class ProposalsController < ApplicationController
   # GET /proposals
   # GET /proposals.json
   def index
-    if current_user.role? :auditor
-      user = current_user
-    elsif params[:user] 
-      user = params[:user]
-      @user = User.find(params[:user])
-    end
-    if user
-        @proposals = Proposal.all(:include => :users, :conditions => ["users.id = ?", user])
-    else 
-      @proposals = Proposal.all
+    if can? :create, User 
+      # like accessible_by -- show only proposals we have access to 
+      @proposal = Proposal.all.select { |prop| can? :manage, prop }
+    else
+      # This one is weird... improve it
+      @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", current_user]
     end
 
     respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @proposals.to_json(:include => [:users]) }
+      format.html 
+      format.json { render json: @proposal.to_json(:include => [:users]) }
     end
+  end
+
+  #create a new route for this.  No reason to get it all coupled together w/ above
+  def user
+    @user = User.find_by_id params[:user]
+    @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id ]
+    authorize! :assign, @user
+    render "index"
   end
 
   # GET /proposals/1
   # GET /proposals/1.json
   def show
     @proposal = Proposal.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @proposal.to_json(:include => [:users]) }

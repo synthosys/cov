@@ -1,6 +1,6 @@
 <p id="notice"><%= notice %></p>
 
-<% if current_user.role?(:admin) or current_user.role?(:su) %>
+<% if can? :create, User %>
 	<div class="alert well">
 	<div>
 		<b>Assigned to:</b>
