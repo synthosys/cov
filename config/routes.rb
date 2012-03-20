@@ -6,7 +6,7 @@ Cov::Application.routes.draw do
   get "pages/home"
   get "pages/contact"
 
-  match "proposals/user/:user" => 'proposals#user', :as => 'proposal_user'
+  match "proposals/user/:user" => 'proposals#index', :as => 'proposal_user'
 
   devise_for :users, :controllers => { :registrations => 'users' }
   resources :users

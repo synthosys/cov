@@ -5,7 +5,11 @@ class ProposalsController < ApplicationController
   # GET /proposals
   # GET /proposals.json
   def index
-    if can? :create, User 
+    if params[:user]
+      @user = User.find_by_id params[:user]
+      @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id]
+      authorize! :assign, @user
+    elsif can? :create, User 
       # like accessible_by -- show only proposals we have access to 
       @proposal = Proposal.all.select { |prop| can? :manage, prop }
     else
