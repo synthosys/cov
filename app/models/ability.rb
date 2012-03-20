@@ -5,11 +5,27 @@ class Ability
     user ||= User.new # guest user
 
     if user.role? :su
-      can :manage, User
+      can :manage, :all
     elsif user.role? :admin
       can :manage, :all
+      cannot :manage, :assignDivisionCan
+      cannot :manage, User
+      cannot :manage, Proposal
+      can :manage, User, :division => user.division
+      can :manage, Proposal do |proposal|
+        @found = false
+        proposal.users.each do |u|
+          @found ||= (u.division == user.division)
+        end
+        @found
+      end
     else 
       cannot :manage, User
+      cannot :manage, :assignRoleCan
+      cannot :manage, :assignDivisionCan
+      can :read
+
+      # haven't really looked into the stuff below
       if user.role? :auditor        
         can :read, Proposal do |proposal|
           @found = false
