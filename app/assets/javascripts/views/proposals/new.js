@@ -22,6 +22,8 @@ App.Views.NewProposal = Backbone.View.extend({
 			return;
 		}
 		this.disableGo();
+		//clear
+		$("ul#load_proposals").html('');
 		$("div#loadstatus div#text").html('Retrieving information');
 		$("div#load_help").hide();
 		$("div#loadstatus ul#components").hide();
@@ -73,11 +75,16 @@ App.Views.NewProposal = Backbone.View.extend({
 				//this is the difference of what we wanted vs. what is already loaded
 //console.log(tmp);				
 				var load_nsf_ids = _.without(nsf_ids, loaded_nsf_ids);
-console.log('load');				
-console.log(load_nsf_ids);	
+//console.log('load');				
+//console.log(load_nsf_ids);	
 				if (load_nsf_ids.length>0) {
-					var loadProposalView = new App.Views.LoadProposal({ el:$("div#loadstatus") });
-					loadProposalView.loadProposalData(load_nsf_ids,self,'respondToAssign');		
+					//save the list
+					self.load_nsf_ids = load_nsf_ids;
+					//record the current index
+					self.load_index = 0;
+					//begin load
+					self.loadProposalView = new App.Views.LoadProposal({ el:$("div#loadstatus") });
+					self.loadProposals();
 				} else {
 					self.enableGo();
 					$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned! We didn\'t have to load any data, it was already loaded. If assignments needed updating, we did that.');
@@ -86,10 +93,23 @@ console.log(load_nsf_ids);
 			}
 		});
 	},
+	loadProposals: function() {
+		var nsf_id = this.load_nsf_ids[this.load_index];
+		if (nsf_id) {
+			//dispatch proposals to be loaded, one at a time
+			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span class="alert">Loading...</span></li>')
+			this.loadProposalView.loadProposalData(nsf_id,this,'respondToAssign');			
+		} else {
+			$("div#loadstatus div#status").addClass("alert");
+			$("div#loadstatus ul#status").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
+			this.enableGo();
+		}
+	},
 	respondToAssign: function(status,loaded_data) {
 //console.log(status);		
 //console.log(loaded_data);
-		$("div#loadstatus div#status").addClass("alert");
+		var load_nsf_id = this.load_nsf_ids[this.load_index];
+		this.load_index++; //prepare to load the next one
 		if (status=='ok') {
 			var user_id = $("#user_id").val();
 			//save and add to collection
@@ -113,25 +133,31 @@ console.log(load_nsf_ids);
 					success: function(data) {
 						//run the callback
 						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
-						$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned!');
-						$("div#loadstatus div#status").addClass("alert-success");
+						//update status
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Done");
 					},
 					error: function(data) {
 						//update status
-						$("div#loadstatus div#status").html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
-						$("div#loadstatus div#status").addClass("alert-error");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Could not save.");
 					}
 				});
 			});		
 		} else {
 			//update status
 			if (_.size(loaded_data)==0){
-				$("div#loadstatus div#status").html('<p><strong>Uh-oh!</strong> We didn\'t find any of the propsals you requested. Check those IDs and try again.');
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html("Proposal not found.");
 			} else {
-				$("div#loadstatus div#status").html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html("Data could not be loaded.");
 			}
-			$("div#loadstatus div#status").addClass("alert-error");
 		}
-		this.enableGo();									 		
+		this.loadProposals();									 		
 	}
 });

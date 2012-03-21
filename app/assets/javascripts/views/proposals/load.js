@@ -28,7 +28,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 	},
 	loadProposalData: function(nsf_ids, view, respondto) {
 //console.log(view);		
-		this.nsf_ids = nsf_ids;
+		this.nsf_ids = (typeof nsf_ids == "string") ? [nsf_ids] : nsf_ids;
+		//this.nsf_ids = nsf_ids;
 		this.view = view;
 		this.respondto = respondto;
 //console.log(this);		
