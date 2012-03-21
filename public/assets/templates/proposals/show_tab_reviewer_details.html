@@ -1,0 +1,104 @@
+<script type="text/template" id="template_reviewer_details">
+<div class="row">
+	<div class="span12">
+		<h5>Show Panel: 
+		<select id="panelselect_reviewerdetails">
+			{{panelselect}}
+		</select>
+		</h5>
+		<div class="row">
+			<div class="span4 left">
+				<table class="table table-condensed" id="reviewers_assigned">
+				<tr>
+					<th><h4>Assigned Reviewers</h4></th>
+					<th class="icon">Known to NSF as PI</th>
+				</tr>
+				{{reviewers_assigned}}
+				</table>
+				<table class="table table-condensed" id="reviewers_other">
+				<tr>
+					<th><h4>Other Panel Reviewers</h4></th>
+					<th class="icon"><strong>Known to NSF as PI</strong></th>
+				</tr>
+				{{reviewers_other}}
+				</table>
+			</div><!-- /span4 -->
+			<div class="span8 right">
+				<div class="alert alert-info"><center>Select a Reviewer to the left to view their details.</center></div>
+				<div id="reviewer_detail">
+				</div>
+				<div id="reviewer_awards">
+				</div>
+			</div><!-- /span8 -->
+		</div><!-- /row -->
+	</div><!-- /span12 -->
+</div><!-- /row -->
+</script>
+
+<script type="text/template" id="template_reviewer_detail">
+<h3>{{name}}</h3>
+<div class="row">
+	<div class="span3">
+		{{inst}}<br />
+		{{dept}}<br />
+		Classification: {{classification}}
+	</div><!-- /span3 -->
+	<div class="span3">
+		<strong>NSF ID:</strong> {{nsf_id}}<br />
+		<strong>Email:</strong> {{email}}
+	</div><!-- /span3 -->
+	<div class="span2">
+		<strong>Degree:</strong> {{degree}}<br />
+		<strong>Year:</strong> {{year}}<br />
+		<strong>Gender:</strong> {{gender}}
+	</div><!-- /span2 -->
+</div><!-- /row -->
+</script>
+
+<script type="text/template" id="template_reviewer_awards">
+<h3>Proposal: ID {{nsf_id}} {{title}}</h3>
+<div class="row">
+	<div class="span2">
+		<table class="table table-condensed lbl-right table-noborder">
+			{{status}}
+			<tr>
+				<td class="lbl"><strong>PGE Code</strong></td>
+				<td>{{pge}}</td>
+			</tr>
+			<tr>
+				<td class="lbl"><strong>Division</strong></td>
+				<td>{{division}}</td>
+			</tr>
+			<tr>
+				<td class="lbl"><strong>ext. link</strong></td>
+				<td><a href="" target="_blank">eJacket &gt;&gt;</a/></td>
+			</tr>
+		</table>
+	</div><!-- /span2 -->
+	<div class="span6">
+		<table class="table table-condensed table-noborder">
+			<caption>Researchers</caption>
+			<thead>
+				<tr>
+					<th>NSF ID</th>
+					<th>Name</th>
+					<th>Institution</th>
+					<th>Department</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{researchers}}
+			</tbody>
+		</table>
+	</div><!-- /span6 -->
+</div><!-- /row -->
+<div class="row">
+	<div class="span8">
+		<h4>Proposal Research Topics (in order)</h4>
+		<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
+		<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
+		<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
+		<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+	</div><!-- /span8 -->
+</div><!-- /row -->
+</script>

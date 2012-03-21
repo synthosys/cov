@@ -1,0 +1,71 @@
+<script type="text/template" id="template_panel_details">
+<div class="row">
+	<div class="span2">
+		<h3>Panel Summary</h3>
+		<small>({{count}} panels total)</small>
+	</div><!-- /span2 -->
+	<div class="span6">
+		<select id="panelselect_paneldetails">
+			{{panelselect}}
+		</select>
+		<div class="row">
+			<div class="span3">
+				<p>Program Officer: {{officer}}</p>
+				<p>Division: {{division}}</p>
+				<p>Program Element Code: {{pge}}</p>
+				<p>Fiscal Year: {{fiscalyear}}</p>
+			</div><!-- /span3 -->
+			<div class="span3">
+				<p>Panel Proposal: {{proposals_count}}</p>
+				<p>Total Panel Reviewers: {{reviewers_count}}</p>
+				<p>Panel Proposals Awarded: {{proposals_awarded_count}} ({{proposals_awarded_amount}})</p>
+				<p>Funding Rate: {{proposals_fundingrate}}</p>
+			</div><!-- /span3 -->
+		</div><!-- /row -->
+	</div><!-- /span6 -->
+</div><!-- /row -->
+
+<h3>Reviewer Summary</h3>
+<div class="row">
+	<div class="span3">
+		<h4>Gender</h4>
+		<div id="reviewers_gender_graph">
+		</div>
+	</div><!-- /span3 -->
+	<div class="span3">
+		<h4>Reviewer Institutions Classification</h4>
+		<div id="reviewers_instclass_list">
+		</div>
+	</div><!-- /span3 -->
+	<div class="span6">
+		<h4>Reviewer Location</h4>
+		<div class="row">
+			<div class="span4" id="reviewers_location_map">
+			</div><!-- /span4 -->
+			<div class="span2" id="reviewers_location_list">
+			</div><!-- /span2 -->
+		</div><!-- /row -->
+	</div><!-- /span6 -->
+</div><!-- /row -->
+
+<h3>Reviewers' Research Topics</h3>
+<div class="row">
+<div class="span7">
+	<h5>Topics assigned to Proposals Submitted to NSF by Reviewers as PI/Co-PI since 199x</h5>
+</div>
+<div class="span5 form-horizontal">
+	<div class="control-group pull-right">
+		<label class="control-label" for="topicrelevance_paneldetails">Select list</label>
+		<div class="controls">
+		<select id="topicrelevance_paneldetails">
+			{{topicrelevance}}
+		</select>
+		</div><!-- /controls -->
+	</div><!-- /control-group -->
+</div><!-- /span5 -->
+</div><!-- /row -->
+
+<div id="tab_panel_details_topics">
+	{{topics}}
+</div><!-- /tab_panel_details_topics -->
+</script>

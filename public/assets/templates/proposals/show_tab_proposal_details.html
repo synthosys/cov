@@ -1,0 +1,48 @@
+<script type="text/template" id="template_proposal_details">
+<p>{{abstract}}</p>
+<div class="row">
+	<div class="span3">
+		<table class="table table-condensed lbl-right table-noborder">
+			{{status}}
+			<tr>
+				<td class="lbl"><strong>PGE Code</strong></td>
+				<td>{{pge}}</td>
+			</tr>
+			<tr>
+				<td class="lbl"><strong>Division</strong></td>
+				<td>{{division}}</td>
+			</tr>
+			<tr>
+				<td class="lbl"><strong>ext. link</strong></td>
+				<td><a href="" target="_blank">eJacket &gt;&gt;</a/></td>
+			</tr>
+		</table>
+	</div><!-- /span3 -->
+	<div class="span9">
+		<table class="table table-condensed table-noborder">
+			<caption>Researchers</caption>
+			<thead>
+				<tr>
+					<th>NSF ID</th>
+					<th>Name</th>
+					<th>Institution</th>
+					<th>Department</th>
+				</tr>
+			</thead>
+			<tbody>
+				{{researchers}}
+			</tbody>
+		</table>
+	</div><!-- /span9 -->
+</div><!-- /row -->
+<div class="row">
+	<div class="span12">
+		<h3>Proposal Research Topics (in order)</h3>
+		<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
+		<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
+		<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
+		<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+		<h3>Methodology</h3>
+	</div><!-- /span12 -->
+</div><!-- /row -->
+</div>
