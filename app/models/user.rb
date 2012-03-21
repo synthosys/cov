@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  ROLES = ['su', 'admin','auditor','internal']
+  ROLES = %w(su admin internal auditor)
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable, :validatable
 
   # Setup accessible (or protected) attributes for your model
-  attr_accessible :name, :email, :username, :password, :password_confirmation, :remember_me, :role
+  attr_accessible :name, :email, :username, :password, :password_confirmation, :remember_me, :role, :division
   
   #validations
   validates :username, :uniqueness => true

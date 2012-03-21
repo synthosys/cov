@@ -4,8 +4,9 @@ Cov::Application.routes.draw do
   end
 
   get "pages/home"
-
   get "pages/contact"
+
+  match "proposals/user/:user" => 'proposals#index', :as => 'proposal_user'
 
   devise_for :users, :controllers => { :registrations => 'users' }
   resources :users
