@@ -26,8 +26,9 @@
 	<% if @user.nil? %>
 		<strong>Assigned to: </strong> {{users}}<br /><br />
 		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
-		<%= link_to 'Show', 'proposals/{{id}}' %><br />
-		<%= link_to 'Edit', 'proposals/{{id}}/edit' %><br />
+		<a href="{{baseURI}}/proposals/{{id}}">Show</a><br />
+		<a href="{{baseURI}}/proposals/{{id}}/edit">Edit</a><br />
+		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
 		<a href="#" id="proposals_remove_{{id}}"></i>Remove</a>
 	<% else %>
 		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />

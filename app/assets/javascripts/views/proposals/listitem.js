@@ -26,6 +26,7 @@ App.Views.ListItemProposal = Backbone.View.extend({
 			});
 		}
 		data["users"] = tmp.join('<br />');
+		data["baseURI"] = baseURI;
 		$(this.el).html(compiled(data));
 		return this;
 	}

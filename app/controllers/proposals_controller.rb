@@ -27,6 +27,9 @@ class ProposalsController < ApplicationController
   # GET /proposals/1.json
   def show
     @proposal = Proposal.find(params[:id])
+    #set title
+    tmp = ActiveSupport::JSON.decode(@proposal.details)
+    @proposal_title = tmp['title']
 
     respond_to do |format|
       format.html # show.html.erb
@@ -353,6 +356,66 @@ class ProposalsController < ApplicationController
           "count": 1, 
           "data": [
               {
+                  "nsf_id": "KY0900048", 
+                  "first_name": "Jamie", 
+                  "last_name": "Padgett", 
+                  "name": "Jamie Padgett", 
+                  "gender": "F", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "William Marsh Rice University", 
+                      "nsf_id": "0036046000"
+                  }
+              }, 
+              {
+                  "nsf_id": "NA0907472", 
+                  "first_name": "Laura", 
+                  "last_name": "McLay", 
+                  "name": "Laura McLay", 
+                  "gender": "F", 
+                  "inst": {
+                      "dept": "Dept of Statistical Science and Oper Res", 
+                      "name": "Virginia Commonwealth University", 
+                      "nsf_id": "0001347000"
+                  }
+              }, 
+              {
+                  "nsf_id": "NR0911038", 
+                  "first_name": "Carol", 
+                  "last_name": "Menassa", 
+                  "name": "Carol Menassa", 
+                  "gender": "F", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Wisconsin-Madison", 
+                      "nsf_id": "0038950000"
+                  }
+              }, 
+              {
+                  "nsf_id": "PK0847167", 
+                  "first_name": "Vineet", 
+                  "last_name": "Kamat", 
+                  "name": "Vineet Kamat", 
+                  "gender": "M", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Michigan Ann Arbor", 
+                      "nsf_id": "0023259000"
+                  }
+              }, 
+              {
+                  "nsf_id": "YE0858161", 
+                  "first_name": "Samuel", 
+                  "last_name": "Brody", 
+                  "name": "Samuel Brody", 
+                  "gender": "M", 
+                  "inst": {
+                      "dept": "Marine Sciences Urban Planning", 
+                      "name": "Texas A&M University Main Campus", 
+                      "nsf_id": "0036327000"
+                  }
+              }, 
+              {
                   "nsf_id": "000219660", 
                   "first_name": "Dulcy", 
                   "last_name": "Abraham", 
@@ -384,6 +447,138 @@ class ProposalsController < ApplicationController
                       "000219660"
                   ], 
                   "email": "dulcy@ecn.purdue.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269717446", 
+                  "first_name": "John", 
+                  "last_name": "Messner", 
+                  "middle_name": "I", 
+                  "name": "John I Messner", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "1994"
+                  }, 
+                  "revr": [
+                      "NY0833779"
+                  ], 
+                  "gender": "M", 
+                  "phone": "8148654578", 
+                  "inst": {
+                      "dept": "Architectural Engineering", 
+                      "name": "Pennsylvania State Univ University Park", 
+                      "nsf_id": "0033290000"
+                  }, 
+                  "address": {
+                      "country": "US", 
+                      "state": "PA", 
+                      "street": "208 Engineering Unit A", 
+                      "zip": "16802", 
+                      "city": "University Park"
+                  }, 
+                  "pi": [
+                      "269717446"
+                  ], 
+                  "email": "jmessner@engr.psu.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269773929", 
+                  "first_name": "Ioannis", 
+                  "last_name": "Brilakis", 
+                  "name": "Ioannis Brilakis", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2005"
+                  }, 
+                  "revr": [
+                      "YX0909915"
+                  ], 
+                  "gender": "M", 
+                  "phone": "4048949881", 
+                  "inst": {
+                      "dept": "Civil & Environmental Engineering", 
+                      "name": "Georgia Tech Research Corporation", 
+                      "nsf_id": "0015693000"
+                  }, 
+                  "address": {
+                      "city": "Atlanta", 
+                      "zip": "303320355", 
+                      "country": "US", 
+                      "state": "GA", 
+                      "street": "SEB 328", 
+                      "street_additional": "790 Atlantic Drive"
+                  }, 
+                  "pi": [
+                      "269773929"
+                  ], 
+                  "email": "brilakis@gatech.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269781340", 
+                  "first_name": "Sajjad", 
+                  "last_name": "Ahmad", 
+                  "name": "Sajjad Ahmad", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2002"
+                  }, 
+                  "revr": [
+                      "ZH0883995"
+                  ], 
+                  "gender": "M", 
+                  "phone": "7028955456", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Nevada Las Vegas", 
+                      "nsf_id": "0025692000"
+                  }, 
+                  "address": {
+                      "city": "Las Vegas", 
+                      "zip": "89154", 
+                      "country": "US", 
+                      "state": "NV", 
+                      "street": "4505 Maryland Parkway", 
+                      "street_additional": "Box 454015"
+                  }, 
+                  "pi": [
+                      "269781340"
+                  ], 
+                  "email": "sajjad.ahmad@unlv.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269790130", 
+                  "first_name": "John", 
+                  "last_name": "Taylor", 
+                  "middle_name": "E", 
+                  "name": "John E Taylor", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2006"
+                  }, 
+                  "revr": [
+                      "GY0936244"
+                  ], 
+                  "gender": "M", 
+                  "phone": "5402310972", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "Virginia Polytechnic Institute and State University", 
+                      "nsf_id": "0037549000"
+                  }, 
+                  "address": {
+                      "country": "US", 
+                      "state": "VA", 
+                      "street": "200 Patton Hall", 
+                      "zip": "24061", 
+                      "city": "Blacksburg"
+                  }, 
+                  "pi": [
+                      "269790130"
+                  ], 
+                  "email": "jet@vt.edu", 
                   "ethnicity": "NH"
               }
           ]

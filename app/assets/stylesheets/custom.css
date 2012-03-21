@@ -228,13 +228,14 @@ margin-right: 5px;
 --------------------------------------------------------------------------------------- TABLES
 */
 
-.table th, .table td {
+.table-noborder td,
+.table-noborder th {
 border: none;
 }
 
 .table caption {
 text-align: left;
-font-size: 16px;
+font-size: 14px;
 font-weight: bold;
 padding: 0 5px;	
 }
@@ -251,4 +252,42 @@ text-align: right;
 #tab_panel_details_topics table tr td:last-child {
     text-align: center;
     width: 120px;
+}
+
+/*
+--------------------------------------------------------------------------------------- REVIEWER DETAILS PAGE
+*/
+
+.icon {
+width: 50px;
+}
+
+th.icon {
+font-size: 11px;
+line-height: 11px;
+}
+
+td.icon,
+th.icon {
+text-align: center;
+}
+
+#tab_reviewer_details h3 {
+line-height: 22px;
+}
+
+#tab_reviewer_details table td {
+padding: 3px;
+line-height: 13px;
+}
+
+#tab_reviewer_details .left table p {
+font-size: 11px;
+line-height: 12px;
+}
+
+#reviewer_awards h3 {
+border-top: 1px solid #ccc;
+margin-top: 30px;
+padding-top: 30px;
 }

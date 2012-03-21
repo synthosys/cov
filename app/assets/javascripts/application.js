@@ -11,6 +11,7 @@
 //= require bootstrap
 //= require serializeobject
 //= require json2
+//= require require/require
 //= require app
 //= require global
 //= require ./models/user.js
@@ -22,4 +23,8 @@
 //= require ./views/proposals/load.js
 //= require ./views/proposals/show.js
 //= require ./views/proposals/new.js
+//= require ./views/proposals/show_tab_panel_details.js
+//= require ./views/proposals/show_tab_proposal_details.js
+//= require ./views/proposals/show_tab_reviewer_expertise.js
+//= require ./views/proposals/show_tab_reviewer_details.js
 //= require_tree .

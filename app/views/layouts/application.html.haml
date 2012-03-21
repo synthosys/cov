@@ -71,6 +71,10 @@
   var apiurl = 'http://rd-dashboard.nitrd.gov/gapi/api/';
   google.load('visualization', '1', {'packages': ['geochart','corechart']});
 
+  require.config({
+    baseUrl: baseURI+'/assets'
+  });
+
   $(function() {
     _.templateSettings = {
       interpolate : /\{\{(.+?)\}\}/g
