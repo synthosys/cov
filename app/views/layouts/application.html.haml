@@ -41,17 +41,30 @@
             %li= link_to "Home", pages_home_path
             - if user_signed_in?
               - if can? :create, User
-                %li= link_to "All Users", users_path
-                %li= link_to "Add User", new_user_path
-                %li= link_to "Loaded Proposals", proposals_path
+                %li.navbar-text.dropdown
+                  %a.dropdown-toggle{ "data-toggle" => "dropdown", :href => "#" }
+                    Dashboard
+                    %b.caret
+                  %ul.dropdown-menu
+                    %li= link_to "Loaded Proposals", proposals_path
+                    %li.divider
+                    %li= link_to "All Users", users_path
+                    %li= link_to "Add User", new_user_path
               - else 
                 %li= link_to "Dashboard", proposals_path
           %ul.nav.pull-right
             - if user_signed_in?
-              %li.navbar-text
-                Welcome
-                = current_user.name
-              %li= link_to "Log Out", destroy_user_session_path, :method => :delete
+              %li.navbar-text.dropdown
+                %a.dropdown-toggle{ "data-toggle" => "dropdown", :href => "#" }
+                  Welcome
+                  = current_user.name
+                  %b.caret
+                %ul.dropdown-menu
+                  %li= link_to "Log Out", destroy_user_session_path, :method => :delete
+                  %li.divider
+                  %li= link_to "My Proposals", proposal_user_path(current_user)
+                  %li= link_to "Edit Profile", edit_user_path(current_user)
+
             - else
               %li= link_to "Log In", new_user_session_path, :method => :post
             %li= link_to "Contact Us", pages_contact_path
