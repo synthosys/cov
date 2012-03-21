@@ -2,11 +2,11 @@
 	<thead>
 		<tr>
 			<th>Proposal</th>
-			<th>Title</th>
+			<th width="200px">Title</th>
 			<th>Proposal Date</th>
 			<th>Award</th>
 			<th>Last Viewed</th>
-			<th>Panel/s (Program Officer/s)</th>
+			<th width="200px">Panel/s (Program Officer/s)</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -15,7 +15,12 @@
 </table>
 
 <script type="text/template" id="template_proposals_listitem">
-<td>{{nsf_id}}</td>
+<td>
+	<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a>
+	<% if can? :manage, :assignDivisionCan %> - 
+		<a href="{{baseURI}}/proposals/{{id}}/edit">Edit</a><br />
+	<% end %>
+</td>
 <td>{{title}}</td>
 <td>{{date}}</td>
 <td>{{amount}}</td>
@@ -23,17 +28,9 @@
 <td>{{panels}}</td>
 <td>
 <% if can? :create, User %>
-	<% if @user.nil? %>
-		<strong>Assigned to: </strong> {{users}}<br /><br />
-		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
-		<a href="{{baseURI}}/proposals/{{id}}">Show</a><br />
-		<a href="{{baseURI}}/proposals/{{id}}/edit">Edit</a><br />
-		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
-		<a href="#" id="proposals_remove_{{id}}"></i>Remove</a>
-	<% else %>
-		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
-		<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a></td>
-	<% end %>
+	<strong>Assigned to: </strong> {{users}}<br /><br />
+	<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
+	<a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i>Remove</a>
 <% else %>
 	<a href="proposals/{{id}}">Review</a></td>
 <% end %>
