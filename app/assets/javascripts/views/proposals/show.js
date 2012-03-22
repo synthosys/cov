@@ -37,7 +37,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//set it
 		this.selectedpanel = $(e.currentTarget).val();
 		$("#select[id^=panelselect_]").val(this.selectedpanel);
-console.log(this.selectedpanel);
+//console.log(this.selectedpanel);
 		
 		//clear the tabs
 		$("#tab_panel_details", this.el).html('');
@@ -309,7 +309,7 @@ console.log(this.selectedpanel);
 		var panels_select = '';
 		var self = this;
 		_.each(this.panels, function(panel) {
-console.log(self.selectedpanel);		
+//console.log(self.selectedpanel);		
 //console.log(panel);			
 			var selected = '';
 			if (panel.panel.nsf_id==self.selectedpanel.toString()) selected = ' selected ';
