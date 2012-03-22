@@ -368,7 +368,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 							var proposals = data["data"];											
 							//get the details for each proposal, we need to do this so we can match back to reviewers
 							if (!proposalaccessallowed) {
-								var url = '/proposals'+'/sample?for=reviewer_proposals_researchers';
+								var url = baseURI+'/proposals'+'/sample?for=reviewer_proposals_researchers';
 								var datatype = 'JSON';
 							} else {
 								var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';

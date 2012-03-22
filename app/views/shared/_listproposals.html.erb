@@ -25,7 +25,6 @@
 <% if can? :create, User %>
 	<% if @user.nil? %>
 		<strong>Assigned to: </strong> {{users}}<br /><br />
-		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
 		<a href="{{baseURI}}/proposals/{{id}}">Show</a><br />
 		<a href="{{baseURI}}/proposals/{{id}}/edit">Edit</a><br />
 		<a href="#" id="proposals_refresh_{{id}}">Refresh</a><br />
