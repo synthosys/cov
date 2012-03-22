@@ -69,10 +69,10 @@ console.log(this.selectedpanel);
 		var selectedpanel = this.loadSelectedPanel(this.selectedpanel);
 		var topics = selectedpanel.topics;
 		var paneltopics = this.getPanelTopics(this.topicrelevance,topics);				
-		if ($('#tab_panel_details', this.el).html().trim()) {
+		if ($.trim($('#tab_panel_details', this.el).html())) {
 			$("#tab_panel_details_topics").html(this.showPanelDetailsView.renderPanelTopics(paneltopics)); //already loaded, overwrite			
 		}
-		if ($('#tab_reviewer_expertise', this.el).html().trim()) {
+		if ($.trim($('#tab_reviewer_expertise', this.el).html())) {
 			//get all the topics
 			var reviewertopics = this.showReviewerExpertiseView.getReviewerExpertiseTopics(this.topicrelevance,paneltopics);
 //console.log(reviewertopics);			
@@ -200,10 +200,10 @@ console.log(this.selectedpanel);
 		} else this.renderDetails();
 	},
 	renderDetails: function() {
-		if ($('#tab_proposal_details', this.el).html().trim()) return; //already loaded
+		if ($.trim($('#tab_proposal_details', this.el).html())) return; //already loaded
 		var html = this.showProposalDetailsView.render();
-//console.log(html);			
-		$('#tab_proposal_details', this.el).html(html);		
+//console.log(html);		
+		$('#tab_proposal_details', this.el).html(html);
 	},
 	showPanel: function() {
 //console.log(this.selectedpanel);		
@@ -225,7 +225,7 @@ console.log(this.selectedpanel);
 		else $('#tab_panel_details', this.el).html('<div class="alert">No panels</div>');
 	},
 	renderPanel: function(panel,paneltopics) {
-		if ($('#tab_panel_details', this.el).html().trim()) return; //already loaded
+		if ($.trim($('#tab_panel_details', this.el).html())) return; //already loaded
 		this.showPanelDetailsView.panels_select = this.getPanelsSelect();
 		this.showPanelDetailsView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showPanelDetailsView.render(panel,paneltopics);
@@ -259,7 +259,7 @@ console.log(this.selectedpanel);
 		else $('#tab_reviewer_expertise', this.el).html('<div class="alert">No panels</div>');
 	},
 	renderReviewerExpertise: function(panel,paneltopics,topicrelevance) {
-		if ($('#tab_reviewer_expertise', this.el).html().trim()) return; //already loaded
+		if ($.trim($('#tab_reviewer_expertise', this.el).html())) return; //already loaded
 		this.showReviewerExpertiseView.panels_select = this.getPanelsSelect();
 		this.showReviewerExpertiseView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showReviewerExpertiseView.render(panel,paneltopics,topicrelevance);
@@ -284,7 +284,7 @@ console.log(this.selectedpanel);
 		else $('#tab_reviewer_details', this.el).html('<div class="alert">No panels</div>');
 	},
 	renderReviewerDetails: function(reviewers) {
-		if ($('#tab_reviewer_details', this.el).html().trim()) return; //already loaded
+		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
 		this.showReviewerDetailsView.panels_select = this.getPanelsSelect();
 		var html = this.showReviewerDetailsView.render(reviewers);
 		$('#tab_reviewer_details', self.el).html(html);		

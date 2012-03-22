@@ -165,13 +165,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 				_.each(panels, function(panel) {
 					panel_propids = panel_propids.concat(panel["prop"]);
 				});
-				if (!proposalaccessallowed) {
-					var url = baseURI+'/proposals'+'/sample?for=panel_proposals';
-					var datatype = 'JSON';
-				} else {
-					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
-					var datatype = 'JSONP';			
-				}
+				var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
+				var datatype = 'JSONP';			
 				$.ajax({
 					url: url,
 					dataType: datatype,
@@ -180,16 +175,18 @@ App.Views.LoadProposal = Backbone.View.extend({
 							//now we have a list, so go get the counts
 							var panel_totalawards = 0;
 							var panel_totalfunding = 0;
-							_.each(panel["prop"], function(prop_ids) {
+//							_.each(panel["prop"], function(prop_ids) {
 								//get and store the counts
 								_.each(data["data"], function(prop) {
+//console.log('propids');									
+//console.log(prop_ids);									
 									//find them all out
-									if ($.inArray(prop,prop_ids) && prop["status"]["name"]=="award") {
+									if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
 										panel_totalawards++;
 										panel_totalfunding += prop["awarded"]["dollar"];
 									}
 								});
-							})
+//							});
 							panel["totalawards"] = panel_totalawards;
 							panel["totalfunding"] = panel_totalfunding;
 							return panel;
@@ -198,6 +195,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 						_.each(self.nsf_ids, function(nsf_id) {
 							//find them all out
 							loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
+//console.log('panel prop');									
+//console.log(panel["prop"]);									
 								return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
 							});
 						});
@@ -320,17 +319,14 @@ App.Views.LoadProposal = Backbone.View.extend({
 		this.updateLoadStatus(component,'start',null);
 		//gather a list of the reviewers we have to get information for
 		var reviewer_ids = [];
+//console.log(panels);		
 		_.each(panels, function(panel) {
 			reviewer_ids = reviewer_ids.concat(panel["revr"]);
 		});
+//console.log(reviewer_ids);		
 		//now get the proposal info and topics for the reviewers who are pis
-		if (!proposalaccessallowed) {
-			var url = baseURI+'/proposals'+'/sample?for=reviewer_proposals';
-			var datatype = 'JSON';
-		} else {
-			var url = apiurl+'user?id='+_.uniq(reviewer_ids).join(',')+'&page=prop'+'&jsoncallback=?';
-			var datatype = 'JSONP';			
-		}
+		var url = apiurl+'user?id='+_.uniq(reviewer_ids).join(',')+'&page=prop'+'&jsoncallback=?';
+		var datatype = 'JSONP';			
 		$.ajax({
 			url: url,
 			dataType: datatype,
@@ -355,26 +351,16 @@ App.Views.LoadProposal = Backbone.View.extend({
 						});
 					}
 					//get the topics for each proposal
-					if (!proposalaccessallowed) {
-						var url = baseURI+'/proposals'+'/sample?for=reviewer_proposals_topics';
-						var datatype = 'JSON';
-					} else {
-						var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
-						var datatype = 'JSONP';			
-					}
+					var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
 					$.ajax({
 						url: url,
 						dataType: datatype,
 						success: function(data) {
 							var proposals = data["data"];											
 							//get the details for each proposal, we need to do this so we can match back to reviewers
-							if (!proposalaccessallowed) {
-								var url = baseURI+'/proposals'+'/sample?for=reviewer_proposals_researchers';
-								var datatype = 'JSON';
-							} else {
-								var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';
-								var datatype = 'JSONP';			
-							}
+							var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';
+							var datatype = 'JSONP';			
 							$.ajax({
 								url: url,
 								dataType: datatype,
