@@ -1,0 +1,36 @@
+.page-header
+  %h1
+    All Users
+
+%table.table.table-striped.table-bordered.table-condensed
+  %thead
+    %tr
+      %th Name
+      %th Email
+      - if can? :manage, :assignDivisionCan
+        %th Division
+      %th Role
+      %th Created
+      %th Last Logged In
+      %th Login Count
+      - if can? :manage, Proposal
+        %th Assigned Proposals
+      %th Actions
+  %tbody
+    - @users.each do |user|
+      %tr
+        %td= user.name
+        %td= user.email
+        - if can? :manage, :assignDivisionCan
+          %td= user.division
+        %td= user.role
+        %td= time_ago_in_words user.created_at      unless user.created_at.nil?
+        %td= time_ago_in_words user.last_sign_in_at unless user.last_sign_in_at.nil?
+        %td= user.sign_in_count
+        - if can? :manage, Proposal
+          %td
+            = user.proposals.size
+            = link_to 'Change', proposal_user_path(user)
+        %td
+          = link_to 'Edit', edit_user_path(user)
+          = link_to 'Delete', user, :method => :delete, :confirm => 'Sure?', :title => "Delete #{user.name}" unless current_user == user

@@ -1,0 +1,48 @@
+%h2
+  = @title
+
+= form_for(@user) do |f| 
+  %fieldset
+    .control-group
+      = f.label :name, :class => 'control-label'
+      .controls
+        = f.text_field :name
+    .control-group
+      = f.label :email, :class => 'control-label'
+      .controls
+        = f.email_field :email
+    .control-group
+      = f.label :username, :class => 'control-label'
+      .controls
+        = f.text_field :username
+    .control-group
+      = f.label :password, :class => 'control-label'
+      .controls
+        = f.password_field :password
+    .control-group
+      = f.label :password_confirmation, :class => 'control-label'
+      .controls
+        = f.password_field :password_confirmation
+
+    - if can? :manage, :assignDivisionCan
+      .control-group
+        = f.label :division, :class => 'control-label'
+        .controls
+          = f.text_field :division
+    - elsif user_signed_in?
+      = f.hidden_field :division, :value => current_user.division
+        
+
+    -# DEFAULT USER IS SU OR WHATEVER IS THE HIGHEST PRIORITY
+    - if user_signed_in?
+      -# Limit users by their login roles
+      - if can? :manage, :assignRoleCan
+        .control-group
+          = f.label :role, :class => 'control-label'
+          .controls
+            = select :user, :role, User::ROLES[User::ROLES.index(current_user.role)..-1].reverse
+    - else
+      = f.hidden_field :role, :value => User::ROLES[0]
+
+  .form-actions
+    = f.submit @action, :class => "btn btn-primary"
