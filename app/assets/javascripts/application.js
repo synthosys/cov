@@ -27,4 +27,5 @@
 //= require ./views/proposals/show_tab_proposal_details.js
 //= require ./views/proposals/show_tab_reviewer_expertise.js
 //= require ./views/proposals/show_tab_reviewer_details.js
+//= require ./views/programs/index.js
 //= require_tree .

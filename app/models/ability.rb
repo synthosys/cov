@@ -49,6 +49,8 @@ class Ability
           end
           @found
         end
+      elsif user.role? :internal
+        cannot :manage, Proposal        
       end
     end 
   end
