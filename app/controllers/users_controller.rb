@@ -131,7 +131,8 @@ class UsersController < ApplicationController
         flash[:notice] = "Your account has been updated"
         format.json { render :json => @user.to_json, :status => 200 }
         format.xml  { head :ok }
-        format.html { render "base" }
+        #format.html { render "base" }
+        format.html { redirect_to :action => :index }        
       else
         flash[:alert] = "Your account could not be updated: #{@user.errors.full_messages.join(', ')}"
         format.json { render :text => "Could not update user", :status => :unprocessable_entity } #placeholder

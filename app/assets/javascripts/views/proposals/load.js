@@ -35,7 +35,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 //console.log(this);		
 		//prep reciever
 		this.loadedcomponents = {};
-		$("div#loadstatus div#text").html('Loading information');
+		$("div#loadstatus").show();
+		$("div#loadstatus div#text").html('Retrieving information');
 		//reset load status
 		this.updateLoadStatus('proposals','reset',null);
 		this.updateLoadStatus('researchers','reset',null);

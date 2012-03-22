@@ -43,6 +43,7 @@
               - if can? :create, User
                 %li.navbar-text.dropdown
                   %a.dropdown-toggle{ "data-toggle" => "dropdown", :href => "#" }
+                    = "#{current_user.division} " if current_user.division
                     Dashboard
                     %b.caret
                   %ul.dropdown-menu

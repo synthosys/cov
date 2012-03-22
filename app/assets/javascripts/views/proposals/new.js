@@ -24,10 +24,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		this.disableGo();
 		//clear
 		$("ul#load_proposals").html('');
-		$("div#loadstatus div#text").html('Retrieving information');
 		$("div#load_help").hide();
-		$("div#loadstatus ul#components").hide();
-		$("div#loadstatus").show();
 		//prepare to load data
 		var user_id = $("#user_id").val();
 		var nsf_ids = $("#proposal_nsf_id").val().split(',');
@@ -87,8 +84,8 @@ App.Views.NewProposal = Backbone.View.extend({
 					self.loadProposals();
 				} else {
 					self.enableGo();
-					$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned! We didn\'t have to load any data, it was already loaded. If assignments needed updating, we did that.');
-					$("div#loadstatus div#status").addClass("alert-success");					
+					$("div#load_complete").html('<p><strong>Success!</strong> Everything loaded and assigned! We didn\'t have to load any data, it was already loaded. If assignments needed updating, we did that.');
+					$("div#load_complete").addClass("alert-success");					
 				}			
 			}
 		});
@@ -97,11 +94,12 @@ App.Views.NewProposal = Backbone.View.extend({
 		var nsf_id = this.load_nsf_ids[this.load_index];
 		if (nsf_id) {
 			//dispatch proposals to be loaded, one at a time
-			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span class="alert">Loading...</span></li>')
+			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
 			this.loadProposalView.loadProposalData(nsf_id,this,'respondToAssign');			
 		} else {
-			$("div#loadstatus div#status").addClass("alert");
-			$("div#loadstatus ul#status").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
+			$("div#loadstatus").hide();
+			$("div#load_complete").addClass("alert");
+			$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
 			this.enableGo();
 		}
 	},
