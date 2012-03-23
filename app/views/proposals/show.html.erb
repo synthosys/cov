@@ -8,12 +8,14 @@
 			<%= "#{user.name}"%><br />
 		<% end %>
 	</div>
-	<div class="pull-right">
-		<ul class="nav nav-list">
-	    	<li class="nav-header">Actions</li>
-			<li><%= link_to raw("<i class='icon-pencil'></i> Edit"), edit_proposal_path(@proposal) %></li>
-		</ul>
-	</div><!-- /pull-right -->
+	<% if can? :editProposal, @proposal %>
+		<div class="pull-right" style="margin-top: 5px">
+			<ul class="nav nav-list">
+    				<li class="nav-header">Actions</li>
+				<li><%= link_to raw("<i class='icon-pencil'></i> Edit"), edit_proposal_path(@proposal) %></li>
+			</ul>
+ 		</div><!-- /pull-right -->
+	<% end %>
 	</div><!-- /alert -->
 <% end%>
 

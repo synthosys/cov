@@ -12,7 +12,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 		_.bindAll(this, 'render');
 
 		var self = this;
-		this.model = new Proposal({id: this.id});
+		this.model = new Proposal({id: this.id + ".json"});
 		this.model.fetch({
 			success: function() {
 				self.legend_flags = {};

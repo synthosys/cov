@@ -11,7 +11,7 @@ class ProposalsController < ApplicationController
       authorize! :assign, @user
     elsif can? :create, User 
       # like accessible_by -- show only proposals we have access to 
-      @proposal = Proposal.all.select { |prop| can? :manage, prop }
+      @proposal = Proposal.all.select { |prop| can? :read, prop }
     else
       # This one is weird... improve it
       @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", current_user]
@@ -61,6 +61,7 @@ class ProposalsController < ApplicationController
   # GET /proposals/1/edit
   def edit
     @proposal = Proposal.find(params[:id])
+    authorize! :editProposal, @proposal
     get_all_users
   end
 

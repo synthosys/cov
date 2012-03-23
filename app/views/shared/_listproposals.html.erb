@@ -17,7 +17,7 @@
 <script type="text/template" id="template_proposals_listitem">
 <td>
 	<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a>
-	<% if can? :manage, :assignDivisionCan %> - 
+	<% if can? :editProposal, Proposal %> - 
 		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
 	<% end %>
 </td>
