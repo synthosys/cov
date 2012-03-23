@@ -6,7 +6,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 		'click a[href="#tab_reviewer_details"]': "showReviewerDetails",
 		'change select[id^="panelselect_"]': "changePanel",
 		'change select[id^="topicrelevance_"]': "changeTopicRelevance",
-		'click a[href="#reviewer_listitem"]': "showReviewerDetail"
+		'click a[href="#reviewer_listitem"]': "showReviewerDetail",
+		'click a[href="#comment"]': "showComment",
 	},
 	initialize: function(params) {
 		_.bindAll(this, 'render');
@@ -30,15 +31,15 @@ App.Views.ShowProposal = Backbone.View.extend({
 			}
 		});
 	},
+	showComment: function(e) {
+		alert("Hello")
+	},
 	changePanel: function(e) {
-//console.log('changing panel');		
 		var id = $(e.currentTarget).attr('id').split('_').pop();
 		
 		//set it
 		this.selectedpanel = $(e.currentTarget).val();
 		$("#select[id^=panelselect_]").val(this.selectedpanel);
-//console.log(this.selectedpanel);
-		
 		//clear the tabs
 		$("#tab_panel_details", this.el).html('');
 		$("#tab_reviewer_expertise", this.el).html('');
