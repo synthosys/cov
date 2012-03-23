@@ -31,7 +31,7 @@
 	<strong>Assigned to: </strong> {{users}}<br /><br />
 	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 	<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
-	<a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i>Remove</a>
+	<a href="#" id="proposals_<% if can? :destroy, Proposal %>remove<% else %>unassign<% end %>_{{id}}"><i class="icon-remove"></i>Remove</a>
 <% else %>
 	<a href="proposals/{{id}}">Review</a></td>
 <% end %>

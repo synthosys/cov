@@ -49,6 +49,7 @@ class Ability
           end
           @found
         end
+        cannot :destroy, Proposal
       elsif user.role? :internal
         cannot :manage, Proposal        
       end

@@ -41,12 +41,10 @@ class UsersController < ApplicationController
   # GET /users/1.json                                     HTML AND AJAX
   #-------------------------------------------------------------------
   def show
-    @title = "Edit User"
-    @action = "Update"
     respond_to do |format|
       format.json { render :json => @user.to_json(:include => [:proposals]) }
       format.xml  { render :xml => @user }
-      format.html { render "base" }
+      format.html
     end
  
   rescue ActiveRecord::RecordNotFound

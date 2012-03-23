@@ -3,17 +3,61 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 //console.log(this.options);
 		$(this.el).html(this.options.html);
 	},
-	render: function(reviewers) {
+	render: function(prop_id,reviewers) {
 		//compile template
 		var compiled = _.template($("#template_reviewer_details", this.el).html());
 //console.log(compiled);
 //console.log(reviewers);
 
 		var data = {};
-		
+
 		data.panelselect = this.panels_select;
-		data.reviewers_assigned = this.renderReviewerList([]);
-		data.reviewers_other = this.renderReviewerList(reviewers);
+
+		//extract assignments for this proposal
+		var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
+			return (item.prop_id==prop_id);
+		});
+console.log(prop_reviewers);		
+		//assigned
+		var tmp = _.filter(prop_reviewers, function(item) {
+			return (item.status!='R');
+		});
+		//we have a list!
+		var assigned_reviewer_ids = _.pluck(tmp,"revr");
+console.log(assigned_reviewer_ids);		
+		
+		//make list of assigned users by checking against the assigned
+		var assigned_reviewers = [];
+		if (assigned_reviewer_ids.length>0) {
+			assigned_reviewers = _.filter(reviewers, function(reviewer) {
+				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)!=-1
+			});
+		}
+console.log(assigned_reviewers);		
+		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
+		
+		//other - all but assigned
+		var tmp = reviewers;
+		if (assigned_reviewer_ids.length>0) {
+			tmp = _.filter(reviewers, function(reviewer) {
+				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)==-1
+			});
+		}		
+console.log(tmp);		
+		//attach status
+		var other_reviewers = _.map(tmp, function(reviewer) {
+			var tmp = reviewer;
+			tmp.coi = false;
+			//find this reviewer in the status table
+			var status_record = _.find(prop_reviewers, function(item) {
+				return (item.revr==reviewer.nsf_id && item.status=='C');
+			})
+			if (status_record) tmp.coi = true;
+			return tmp;
+		})
+console.log(other_reviewers);		
+		data.reviewers_other = this.renderReviewerList(other_reviewers);
+console.log(data);
 		
 		return compiled(data);
 	},
@@ -27,6 +71,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var tmp = {};
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
+				if (tmp.status) tmp.name += '<i class="icon-remove"></i> (COI)';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';

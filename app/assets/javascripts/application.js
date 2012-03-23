@@ -18,14 +18,4 @@
 //= require ./models/proposal.js
 //= require ./collections/users.js
 //= require ./collections/proposals.js
-//= require ./views/proposals/list.js
-//= require ./views/proposals/listitem.js
-//= require ./views/proposals/load.js
-//= require ./views/proposals/show.js
-//= require ./views/proposals/new.js
-//= require ./views/proposals/show_tab_panel_details.js
-//= require ./views/proposals/show_tab_proposal_details.js
-//= require ./views/proposals/show_tab_reviewer_expertise.js
-//= require ./views/proposals/show_tab_reviewer_details.js
-//= require ./views/programs/index.js
 //= require_tree .

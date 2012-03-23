@@ -58,13 +58,14 @@ var App = {
         //console.log(this.Views);	
         //Backbone.history.start(); #we'll put this in once we have routes
 		//load the requested view
-		var params = {};
-        //console.log(this.view);		
-        //console.log(this.viewparams);		
 		if (this.viewparams) params = this.viewparams;
-		if (this.view && App.Views[this.view]) {
-			var view = App.Views[this.view];
-			return new view(params);
+		if (this.views && _.size(this.views)>0) {
+			_.each(this.views, function(params,view) {
+				if (App.Views[view]) {
+					var view = App.Views[view];
+					new view(params);
+				}
+			});
 		};
     }
 };

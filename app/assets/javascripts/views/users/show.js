@@ -1,7 +1,6 @@
-App.Views.ListProposal = Backbone.View.extend({
+App.Views.ShowUser = Backbone.View.extend({
 	events: {
 		"click a[id^=proposals_refresh]": "refreshProposal",
-		"click a[id^=proposals_remove]": "removeProposal",
 		"click a[id^=proposals_unassign]": "unassignProposal"
 	},
 	initialize: function() {
@@ -12,6 +11,13 @@ App.Views.ListProposal = Backbone.View.extend({
 		//this.collection.bind('refresh', this.addAll);
 		this.collection.bind('reset', this.addAll);
 		this.collection.bind('all', this.render);		
+
+//console.log(this);
+		//load new view
+		this.newproposalview = new App.Views.NewProposal({el:$("#proposal_new"),user_id:this.options.user_id,division:this.options.division,view:this,respondto_create:'addProposal',respondto_update:'updateProposal'});
+		
+		var self = this;
+		this.collection.fetch({url: this.collection.url+'/user/'+this.options.user_id});		
 	},
 	addOne: function(proposal) {
 		var proposal = new App.Views.ListItemProposal({model: proposal})
@@ -28,42 +34,7 @@ App.Views.ListProposal = Backbone.View.extend({
 		//dirty way to do it, we should just update the collection instead of realoading it
 		var params = {};
 //console.log(this.options.user_id);		
-		if (this.options.user_id) params = {data: { user: this.options.user_id }};
-		var self = this;
-		this.collection.fetch(params);		
-	},
-	removeProposal: function(e) {
-		e.preventDefault();
-		
-		//what is the id? //last elem in id attr
-		var id = $(e.currentTarget).attr('id').split('_').pop();
-		//load proposal
-		var proposal = this.collection.get(id); //new Proposal({ id: id });
-//console.log(proposal);		
-		//this.collection.remove(proposal);
-		var self = this;
-		proposal.destroy({
-			success: function(model, response) {
-				self.addAll();
-			}
-		});
-/*		var self = this;
-		proposal.fetch({
-			success: function(model,response) {
-//console.log(model);	
-				//post update to server
-				model.remove({
-					success: function() {
-						//remove it from the collection
-						//dirty way to update
-						var params = {};
-						if (self.user_id) params = {data: { user: self.user_id }};
-						self.collection.fetch(params);
-						//self.collection.remove(model);						
-					}
-				});
-			}
-		});*/
+		this.collection.fetch({url: this.collection.url+'/user/'+this.options.user_id});		
 	},
 	refreshProposal: function(e) {
 		e.preventDefault();

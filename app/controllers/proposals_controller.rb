@@ -28,7 +28,10 @@ class ProposalsController < ApplicationController
     @user = User.find_by_id params[:user]
     @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id ]
     authorize! :assign, @user
-    render "index"
+
+    respond_to do |format|
+      format.json { render json: @proposal.to_json(:include => [:users]) }
+    end
   end
 
   # GET /proposals/1

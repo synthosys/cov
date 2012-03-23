@@ -39,8 +39,8 @@
 </div><!-- /tabbable -->
 
 <script type="text/Javascript">
-//var view = new App.Views.ShowProposal({ el:$("#main"), id: <%= @proposal.id %> });
-  App.view = 'ShowProposal'
-  App.viewparams = { el:$("#main"), id: <%= @proposal.id %> };
+App.views = {
+	'ShowProposal': { el:$("#main"), id: <%= @proposal.id %> },
+};
 </script>
 

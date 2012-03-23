@@ -286,8 +286,22 @@ App.Views.ShowProposal = Backbone.View.extend({
 	renderReviewerDetails: function(reviewers) {
 		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
 		this.showReviewerDetailsView.panels_select = this.getPanelsSelect();
-		var html = this.showReviewerDetailsView.render(reviewers);
-		$('#tab_reviewer_details', self.el).html(html);		
+		//check if the list of assignments is already loaded, if not, load it
+		if (typeof(App.PanelReviewerStatus)==='undefined') {
+			var self = this;
+			require(['text!panelreviewerstatus.js'], function(js) {
+//console.log(js);				
+				App.PanelReviewerStatus = $.parseJSON(js);
+//console.log(App.PanelReviewerStatus);				
+				var html = self.showReviewerDetailsView.render(self.details.nsf_id, reviewers);
+console.log(html);		
+				$('#tab_reviewer_details', self.el).html(html);
+			});			
+		} else {
+			var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
+console.log(html);		
+			$('#tab_reviewer_details', this.el).html(html);		
+		}
 	},
 	showReviewerDetail: function(e) {
 		e.preventDefault();

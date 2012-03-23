@@ -30,7 +30,7 @@
         - if can? :manage, Proposal
           %td
             = user.proposals.size
-            = link_to 'Change', proposal_user_path(user)
+            = link_to 'Change', user_path(user)
         %td
           = link_to 'Edit', edit_user_path(user)
           = link_to 'Delete', user, :method => :delete, :confirm => 'Sure?', :title => "Delete #{user.name}" unless current_user == user
