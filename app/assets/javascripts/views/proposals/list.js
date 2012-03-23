@@ -15,7 +15,7 @@ App.Views.ListProposal = Backbone.View.extend({
 
 //console.log(this);
 		//load new view
-		this.newproposalview = new App.Views.NewProposal({el:$("#proposal_new"),view:this,respondto_create:'addProposal',respondto_update:'updateProposal'});
+		this.newproposalview = new App.Views.NewProposal({el:$("#proposal_new"),user_id:this.options.user_id,division:this.options.division,view:this,respondto_create:'addProposal',respondto_update:'updateProposal'});
 		
 		var params = {};
 		if (this.options.user_id) params = {data: { user: this.options.user_id }};
@@ -90,7 +90,7 @@ App.Views.ListProposal = Backbone.View.extend({
 		var proposal = this.collection.get(id);
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:$("div#loadstatus") });
-		loadProposalView.loadProposalData([proposal.get("nsf_id")],this,'respondToRefresh');		
+		loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');		
 	},
 	respondToRefresh: function(status,loaded_data) {
 		if (status=='ok') {

@@ -3,6 +3,37 @@ App.Views.NewProposal = Backbone.View.extend({
 		"submit form#assign_proposals": "assignProposal",
 	},
 	initialize: function() {
+		var self = this;
+		
+	    // Check to see if we have access to nsfstarmetrics server 
+	    $.ajax({
+	      url: "http://128.150.10.70/py/api/access",
+	      dataType: 'JSONP',
+	      timeout: 500,
+	      success: function(data) {
+	        //console.log(data);
+	        proposalaccessallowed = true;
+	        apiurl = "http://128.150.10.70/py/api/";
+			require(['text!templates/proposals/new.html'], function(html) {
+	        	self.render(html);
+			});
+	      },
+	      error: function(x,t,m) {
+	        //alert('error');
+//console.log(t);
+	        //set alert
+			self.render('<div id="access_alert" class="alert alert-error"><strong>Oops!</strong> You\'re not connected to the private data! That means we cannot load Panel and Reviewer information for any proposals.</div>'); //if this is available it will be shown
+	      }
+	    });
+	},
+	render: function(html) {
+		var compiled = _.template(html);
+		
+		var data = {};
+		data['user_id'] = this.options.user_id;
+		data['division'] = this.options.division;
+		
+		$(this.el).html(compiled(data));
 		this.enableGo();
 	},
 	enableGo: function() {
@@ -95,7 +126,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		if (nsf_id) {
 			//dispatch proposals to be loaded, one at a time
 			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
-			this.loadProposalView.loadProposalData(nsf_id,this,'respondToAssign');			
+			this.loadProposalView.loadProposalData(nsf_id,this.options.division,this,'respondToAssign');			
 		} else {
 			$("div#loadstatus").hide();
 			$("div#load_complete").addClass("alert");
@@ -103,7 +134,7 @@ App.Views.NewProposal = Backbone.View.extend({
 			this.enableGo();
 		}
 	},
-	respondToAssign: function(status,loaded_data) {
+	respondToAssign: function(status,loaded_data,message) {
 //console.log(status);		
 //console.log(loaded_data);
 		var load_nsf_id = this.load_nsf_ids[this.load_index];
@@ -134,7 +165,7 @@ App.Views.NewProposal = Backbone.View.extend({
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
-						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Done");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html(message);
 					},
 					error: function(data) {
 						//update status
@@ -146,15 +177,15 @@ App.Views.NewProposal = Backbone.View.extend({
 			});		
 		} else {
 			//update status
-			if (_.size(loaded_data)==0){
+/*			if (_.size(loaded_data)==0){
 				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
 				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html("Proposal not found.");
-			} else {
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html(message);
+			} else { */
 				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
 				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html("Data could not be loaded.");
-			}
+				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html(message);
+//			}
 		}
 		this.loadProposals();									 		
 	}

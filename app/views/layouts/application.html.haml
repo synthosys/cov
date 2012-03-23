@@ -93,24 +93,6 @@
     _.templateSettings = {
       interpolate : /\{\{(.+?)\}\}/g
     };
-    // Check to see if we have access to nsfstarmetrics server 
-    $.ajax({
-      url: "http://128.150.10.70/py/api/access",
-      dataType: 'JSONP',
-      timeout: 500,
-      success: function(data) {
-        //console.log(data);
-        proposalaccessallowed = true;
-        apiurl = "http://128.150.10.70/py/api/";
-        App.init();
-      },
-      error: function(x,t,m) {
-        //alert('error');
-        //alert(t);
-        //set alert
-        $('#access_alert').show(); //if this is available it will be shown
-        App.init(); 
-      }
-    });
+    App.init();
   });
   </script>

@@ -5,7 +5,7 @@
 		</div>
 		<div class="row">
 			<div class="span8" id="proposal_new">
-				<%= render :partial => 'shared/newproposal' %>
+				<div class="alert">Checking data connection...</div>
 			</div>
 			<div class="span4">
 				<ul class="nav nav-list">
@@ -40,5 +40,5 @@
 <script type="text/Javascript">
 //var view = new App.Views.ListProposal({ el:$("#main")});
 App.view = 'ListProposal';
-App.viewparams = { el:$("#main")<%= ", user_id:'#{@user.id}'" if !@user.nil? %>};
+App.viewparams = { el:$("#main")<%= ", user_id:'#{@user.id}', division:'#{@user.division}'" if !@user.nil? %>};
 </script>

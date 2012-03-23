@@ -1,7 +1,7 @@
 App.Views.LoadProposal = Backbone.View.extend({
-	processLoadProgress: function(component,status,data) {
+	processLoadProgress: function(component,status,data,message) {
 //console.log(this);		
-		this.updateLoadStatus(component,status,data);
+		this.updateLoadStatus(component,status,data,message);
 		//now check if all loaded
 		if (this.isDataLoaded()) {
 			var view = this.view;
@@ -23,10 +23,10 @@ App.Views.LoadProposal = Backbone.View.extend({
 			}
 //console.log(this.getLoadStatus());				
 //console.log(loaded_data);				
-			view[respondto](this.getLoadStatus(),loaded_data);
+			view[respondto](this.getLoadStatus(),loaded_data,this.getLoadStatusMessage());
 		}
 	},
-	loadProposalData: function(nsf_ids, view, respondto) {
+	loadProposalData: function(nsf_ids, division, view, respondto) {
 //console.log(view);		
 		this.nsf_ids = (typeof nsf_ids == "string") ? [nsf_ids] : nsf_ids;
 		//this.nsf_ids = nsf_ids;
@@ -38,53 +38,67 @@ App.Views.LoadProposal = Backbone.View.extend({
 		$("div#loadstatus").show();
 		$("div#loadstatus div#text").html('Retrieving information');
 		//reset load status
-		this.updateLoadStatus('proposals','reset',null);
-		this.updateLoadStatus('researchers','reset',null);
-		this.updateLoadStatus('topics','reset',null);
-		this.updateLoadStatus('panels','reset',null);
-		this.updateLoadStatus('reviewers','reset',null);
-		this.updateLoadStatus('reviewerproposals','reset',null);
+		this.updateLoadStatus('proposals','reset',null,'');
+		this.updateLoadStatus('researchers','reset',null,'');
+		this.updateLoadStatus('topics','reset',null,'');
+		this.updateLoadStatus('panels','reset',null,'');
+		this.updateLoadStatus('reviewers','reset',null,'');
+		this.updateLoadStatus('reviewerproposals','reset',null,'');
 		$("div#loadstatus ul#components").show();
 		//start loads of all the different data components
-		this.loadProposals();
+		this.loadProposals(division);
 	},
-	loadProposals: function() {
+	loadProposals: function(division) {
 		var loaded_data = {};
 		var component = 'proposals';
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
-		this.updateLoadStatus('proposals','start',null);
+		this.updateLoadStatus('proposals','start',null,'');
 		$.ajax({
 			url: apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?',
 			dataType: 'JSONP',
 			success: function(data) {
 				if (data.count==0) {
 					//return with error
-					self.processLoadProgress(component, 'error', loaded_data );
+					self.processLoadProgress(component, 'error', loaded_data, 'No proposal found' );
 					//set the others here too so we return
-					self.processLoadProgress('researchers', 'error', {} );
-					self.processLoadProgress('topics', 'error', {} );
-					self.processLoadProgress('panels', 'error', {} );
-					self.processLoadProgress('reviewers', 'error', {} );
-					self.processLoadProgress('reviewerproposals', 'error', {} );
+					self.processLoadProgress('researchers', 'error', {}, '');
+					self.processLoadProgress('topics', 'error', {}, '');
+					self.processLoadProgress('panels', 'error', {}, '');
+					self.processLoadProgress('reviewers', 'error', {}, '');
+					self.processLoadProgress('reviewerproposals', 'error', {}, '');
 				} else {
-					//store data
-					_.each(self.nsf_ids, function(nsf_id) {
-						//find them all out
-						loaded_data[nsf_id] = _.find(data["data"],function(item) {
-							return item["nsf_id"]==nsf_id;
-						});
-					});								
-					self.loadResearchers();
-					self.loadTopics();
-					self.loadPanels(); //this will load reviewers
-					//ALL DONE! run callback function
-					self.processLoadProgress(component, 'ok', loaded_data);					
+//console.log(division);					
+//console.log(data["data"][0]["org"]["name"]);
+					//we are always passing in proposals to be loaded one at a time now so we can check against division
+					if (division && data["data"][0]["org"]["name"]!=division) {
+						//return with error
+						self.processLoadProgress(component, 'error', loaded_data, 'Not in division '+ division);
+						//set the others here too so we return
+						self.processLoadProgress('researchers', 'error', {}, '');
+						self.processLoadProgress('topics', 'error', {}, '');
+						self.processLoadProgress('panels', 'error', {}, '');
+						self.processLoadProgress('reviewers', 'error', {}, '');
+						self.processLoadProgress('reviewerproposals', 'error', {}, '');
+					} else {
+						//store data
+						_.each(self.nsf_ids, function(nsf_id) {
+							//find them all out
+							loaded_data[nsf_id] = _.find(data["data"],function(item) {
+								return item["nsf_id"]==nsf_id;
+							});
+						});								
+						self.loadResearchers();
+						self.loadTopics();
+						self.loadPanels(); //this will load reviewers
+						//ALL DONE! run callback function
+						self.processLoadProgress(component, 'ok', loaded_data, 'Done');											
+					}
 				}
 			},
 			error: function() {
 //console.log('error panels');										
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
 	},
@@ -93,7 +107,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var component = 'researchers';
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
-		this.updateLoadStatus('researchers','start',null);
+		this.updateLoadStatus('researchers','start',null,'');
 		$.ajax({
 			url: apiurl+'prop?id='+self.nsf_ids.join(',')+'&page=pi'+'&jsoncallback=?',
 			dataType: 'JSONP',
@@ -106,11 +120,11 @@ App.Views.LoadProposal = Backbone.View.extend({
 					});
 				});
 				//ALL DONE! run callback function
-				self.processLoadProgress(component, 'ok', loaded_data );
+				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );
 			},
 			error: function() {
 //console.log('error panels');										
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
 	},
@@ -119,7 +133,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var component = 'topics';
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
-		this.updateLoadStatus('topics','start',null);
+		this.updateLoadStatus('topics','start',null,'');
 		$.ajax({
 			url: apiurl+'topic?id='+self.nsf_ids.join(',')+'&jsoncallback=?',
 			dataType: 'JSONP',
@@ -134,11 +148,11 @@ App.Views.LoadProposal = Backbone.View.extend({
 					if (topics.length>0) loaded_data[nsf_id] = topics[0]["topic"]["id"];
 				});
 				//ALL DONE! run callback function
-				self.processLoadProgress(component, 'ok', loaded_data );
+				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );
 			},
 			error: function() {
 //console.log('error panels');										
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
 	},
@@ -147,7 +161,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var component = 'panels';
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
-		this.updateLoadStatus('panels','start',null);
+		this.updateLoadStatus('panels','start',null,'');
 		if (!proposalaccessallowed) {
 			var url = baseURI+'/proposals'+'/sample?for=panels';
 			var datatype = 'JSON';
@@ -201,10 +215,10 @@ App.Views.LoadProposal = Backbone.View.extend({
 							});
 						});
 						//ALL DONE! run callback function
-						self.processLoadProgress(component, 'ok', loaded_data );									
+						self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
 					},
 					error: function() {
-						self.processLoadProgress(component, 'error', loaded_data );						
+						self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
 					}
 				});				
 				//get reviewer data
@@ -212,7 +226,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 			},
 			error: function() {
 //console.log('error panels');										
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
 	},
@@ -221,7 +235,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var component = 'reviewers';
 		var self = this;
 		//http://128.150.10.70/py/api/user?rid=?
-		this.updateLoadStatus('reviewers','start',null);
+		this.updateLoadStatus('reviewers','start',null,'');
 		//gather a list of the reviewers we have to get information for
 		var reviewer_ids = [];
 		_.each(panels, function(panel) {
@@ -304,10 +318,10 @@ App.Views.LoadProposal = Backbone.View.extend({
 				//load Reviewer Proposals
 				self.loadReviewerProposals(panel_reviewers_as_pis);
 				//ALL DONE! run callback function
-				self.processLoadProgress(component, 'ok', loaded_data );									
+				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
 			},
 			error: function() {
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});		
 	},
@@ -316,7 +330,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var component = 'reviewerproposals';
 		var self = this;
 		//http://128.150.10.70/py/api/user?rid=?
-		this.updateLoadStatus(component,'start',null);
+		this.updateLoadStatus(component,'start',null,'');
 		//gather a list of the reviewers we have to get information for
 		var reviewer_ids = [];
 //console.log(panels);		
@@ -417,28 +431,29 @@ App.Views.LoadProposal = Backbone.View.extend({
 									});
 //console.log(loaded_data);									
 									//ALL DONE! run callback function
-									self.processLoadProgress(component, 'ok', loaded_data );									
+									self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
 								},
 								error: function() {
-									self.processLoadProgress(component, 'error', loaded_data );
+									self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 								}
 							});
 						},
 						error: function() {
-							self.processLoadProgress(component, 'error', loaded_data );
+							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 						}
 					});
 				}
 			},
 			error: function() {
-				self.processLoadProgress(component, 'error', loaded_data );
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});
 	},
-	updateLoadStatus: function(component,status,data) {
+	updateLoadStatus: function(component,status,data,message) {
 		if (!this.loadedcomponents[component]) this.loadedcomponents[component] = {};
 		this.loadedcomponents[component]['status'] = status;
 		this.loadedcomponents[component]['data'] = data;
+		this.loadedcomponents[component]['message'] = message;
 		var elem = $("div#loadstatus li#"+component);
 		if (status=='reset') {
 			$("i", elem).removeClass('icon-ok');
@@ -490,5 +505,14 @@ App.Views.LoadProposal = Backbone.View.extend({
 		else
 			return 'ok';
 		
+	},
+	getLoadStatusMessage: function() {
+		if (this.loadedcomponents["proposals"]["status"]=='error') return this.loadedcomponents["proposals"]["message"];
+		else if (this.loadedcomponents["topics"]["status"]=='error') return this.loadedcomponents["topics"]["message"];
+		else if (this.loadedcomponents["researchers"]["status"]=='error') return this.loadedcomponents["researchers"]["message"];
+		else if (this.loadedcomponents["panels"]["status"]=='error') return this.loadedcomponents["panels"]["message"];
+		else if (this.loadedcomponents["reviewers"]["status"]=='error') return this.loadedcomponents["reviewers"]["message"];
+		else if (this.loadedcomponents["reviewerproposals"]["status"]=='error') return this.loadedcomponents["reviewerproposals"]["message"];
+		else return 'Done';
 	}
 });
