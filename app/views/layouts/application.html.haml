@@ -63,7 +63,8 @@
                 %ul.dropdown-menu
                   %li= link_to "Log Out", destroy_user_session_path, :method => :delete
                   %li.divider
-                  %li= link_to "My Proposals", proposal_user_path(current_user)
+                  - if can? :read, User
+                    %li= link_to "My Proposals", user_path(current_user)
                   %li= link_to "Edit Profile", edit_user_path(current_user)
 
             - else

@@ -25,7 +25,8 @@ class Ability
       cannot :manage, :assignRoleCan
       cannot :manage, :assignDivisionCan
       can :read
-
+      can :update, User, :id => user.id
+    
       # haven't really looked into the stuff below
       if user.role? :auditor        
         can :read, Proposal do |proposal|

@@ -17,14 +17,14 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
 			return (item.prop_id==prop_id);
 		});
-console.log(prop_reviewers);		
+		//console.log(prop_reviewers);		
 		//assigned
 		var tmp = _.filter(prop_reviewers, function(item) {
 			return (item.status!='R');
 		});
 		//we have a list!
 		var assigned_reviewer_ids = _.pluck(tmp,"revr");
-console.log(assigned_reviewer_ids);		
+		//console.log(assigned_reviewer_ids);		
 		
 		//make list of assigned users by checking against the assigned
 		var assigned_reviewers = [];
@@ -33,7 +33,7 @@ console.log(assigned_reviewer_ids);
 				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)!=-1
 			});
 		}
-console.log(assigned_reviewers);		
+		//console.log(assigned_reviewers);		
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
@@ -43,7 +43,7 @@ console.log(assigned_reviewers);
 				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)==-1
 			});
 		}		
-console.log(tmp);		
+//console.log(tmp);		
 		//attach status
 		var other_reviewers = _.map(tmp, function(reviewer) {
 			var tmp = reviewer;
@@ -55,9 +55,9 @@ console.log(tmp);
 			if (status_record) tmp.coi = true;
 			return tmp;
 		})
-console.log(other_reviewers);		
+//console.log(other_reviewers);		
 		data.reviewers_other = this.renderReviewerList(other_reviewers);
-console.log(data);
+//console.log(data);
 		
 		return compiled(data);
 	},
