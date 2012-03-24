@@ -117,14 +117,19 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		if (_.size(topics) > 0) {
 			var template = _.template('<tr><td>{{icon}}<strong>{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
 			var self = this;			
-			_.each(topics,function(topic,t) {
+
+			// sort this data by reverse count
+			topics = _.map(topics, function(topic, t) { return [t, topic.count]; });
+			topics = _.sortBy(topics, function(t) { return -t[1] });
+
+			_.each(topics, function(t) {
 				var tmp = {};
-				tmp.t = t;
+				tmp.t = t[0];
 				tmp.icon = '';
 				if (icon) tmp.icon = '<i class="icon-'+icon+'"></i>';
-				tmp.words = self.legend_topics[t]["words"];
-				tmp.label = self.legend_topics[t]["label"];
-				tmp.count = topic.count;
+				tmp.words = self.legend_topics[t[0]]["words"];
+				tmp.label = self.legend_topics[t[0]]["label"];
+				tmp.count = t[1];
 				topics_compiled.push(template(tmp));				
 			});
 		}

@@ -8,17 +8,26 @@
 			<%= "#{user.name}"%><br />
 		<% end %>
 	</div>
-	<div class="pull-right">
-		<ul class="nav nav-list">
-	    	<li class="nav-header">Actions</li>
-			<li><%= link_to raw("<i class='icon-pencil'></i> Edit"), edit_proposal_path(@proposal) %></li>
-		</ul>
-	</div><!-- /pull-right -->
+	<% if can? :editProposal, @proposal %>
+		<div class="pull-right" style="margin-top: 5px">
+			<ul class="nav nav-list">
+    				<li class="nav-header">Actions</li>
+				<li><%= link_to raw("<i class='icon-pencil'></i> Edit"), edit_proposal_path(@proposal) %></li>
+			</ul>
+ 		</div><!-- /pull-right -->
+	<% end %>
 	</div><!-- /alert -->
 <% end%>
 
 <div class="page-header">
-	<h1>Proposal: ID <%= @proposal_nsf_id %></h1>
+	<div>
+		<h1>Proposal: ID <%= @proposal_nsf_id %>
+		<% if can? :comment, Proposal %>
+			<a class="btn btn-warning" href="#comment"><i class="icon-comment icon-white"></i> Comment</a>
+		<% end %>
+		</h1>
+	</div>
+
 	<div class="pull-right"><%= link_to 'Back to Dashboard', proposals_path %></div>
 </div><!-- /page-header -->
 

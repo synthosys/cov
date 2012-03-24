@@ -1,6 +1,6 @@
 class CreateUserProposalJoinTable < ActiveRecord::Migration
   def change
-    create_table :associations, :id => false do |t|
+    create_table :associations do |t|
       t.integer :user_id
       t.integer :proposal_id
       t.text :comments

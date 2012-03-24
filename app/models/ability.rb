@@ -11,8 +11,9 @@ class Ability
       cannot :manage, :assignDivisionCan
       cannot :manage, User
       cannot :manage, Proposal
+      cannot :editProposal, Proposal
       can :manage, User, :division => user.division
-      can :manage, Proposal do |proposal|
+      can [:read, :update, :create], Proposal do |proposal|
         @found = false
         proposal.users.each do |u|
           @found ||= (u.division == user.division)

@@ -44,18 +44,24 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 	},
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
+
 		if (_.size(topics) > 0) {
 			var template = _.template('<tr><td>{{icon}}<strong>{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
-			var self = this;			
-			_.each(topics,function(topic,t) {
+			var self = this;
+
+			// sort this data by reverse count
+			topics = _.map(topics, function(topic, t) { return [t, topic.count]; });
+			topics = _.sortBy(topics, function(t) { return -t[1] });
+
+			_.each(topics,function(t) {
 				var tmp = {};
-				tmp.t = t;
+				tmp.t = t[0];
 				tmp.icon = '';
 				if (icon) tmp.icon = '<i class="icon-'+icon+'"></i>';
-				tmp.words = self.legend_topics[t]["words"];
-				tmp.label = self.legend_topics[t]["label"];
-				tmp.count = topic.count;
-				topics_compiled.push(template(tmp));				
+				tmp.words = self.legend_topics[t[0]]["words"];
+				tmp.label = self.legend_topics[t[0]]["label"];
+				tmp.count = t[1];
+				topics_compiled.push(template(tmp));
 			});
 		}
 		return topics_compiled;		
@@ -74,7 +80,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 //console.log($(renderto, this.el).get(0));
         var chart = new google.visualization.ColumnChart(document.getElementById(renderto));
 		var option = {
-		  width: 250,
+		  width: 240,
 		  legend: { position: 'bottom' }
 		}
         chart.draw(data,option);		
@@ -116,7 +122,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 	renderReviewerLocation: function(data,map_renderto,list_renderto) {
 //console.log(data);
 		//group by state
-		var grouped = _.groupBy(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"]; });
+		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["state"]) return row["inst"]["state"]; });
 	//console.log(grouped);			
 		//now put it together
 		var collated = [];
@@ -146,9 +152,9 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		  region: 'US', 
 		  resolution: 'provinces',
 		  displayMode: 'regions',
-		  datalessRegionColor: 'f9f9f9',
+		  datalessRegionColor: 'fcfcfc',
 		  colorAxis: {
-		    colors: ['#E4F1D8', '#1F8F54']
+		    colors: ['#C7EDA1', '#1F8F54']
 		  }
 		}
 		$('#data_summary_researchers_loader').hide();
