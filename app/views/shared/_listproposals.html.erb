@@ -1,8 +1,7 @@
 <table class="table table-striped table-bordered table-condensed" id="proposals_table">
 	<thead>
 		<tr>
-			<th>Proposal</th>
-			<th width="200px">Title</th>
+			<th width="300px">Title</th>
 			<th>Proposal Date</th>
 			<th>Award</th>
 			<th>Last Viewed</th>
@@ -16,12 +15,9 @@
 
 <script type="text/template" id="template_proposals_listitem">
 <td>
-	<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a>
-	<% if can? :editProposal, Proposal %> - 
-		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
-	<% end %>
+	<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a> - 
+	{{title}}
 </td>
-<td>{{title}}</td>
 <td>{{date}}</td>
 <td>{{amount}}</td>
 <td>{{lastviewed}}</td>
@@ -32,6 +28,9 @@
 	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 	<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
 	<a href="#" id="proposals_<% if can? :destroy, Proposal %>remove<% else %>unassign<% end %>_{{id}}"><i class="icon-remove"></i>Remove</a>
+	<% if can? :editProposal, Proposal %>
+		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
+	<% end %>
 <% else %>
 	<a href="proposals/{{id}}">Review</a></td>
 <% end %>

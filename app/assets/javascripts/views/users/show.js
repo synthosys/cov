@@ -17,7 +17,7 @@ App.Views.ShowUser = Backbone.View.extend({
 		this.newproposalview = new App.Views.NewProposal({el:$("#proposal_new"),user_id:this.options.user_id,division:this.options.division,view:this,respondto_create:'addProposal',respondto_update:'updateProposal'});
 		
 		var self = this;
-		this.collection.fetch({url: this.collection.url+'/user/'+this.options.user_id});		
+		this.collection.fetch({url: this.collection.url+'/user/'+this.options.user_id });		
 	},
 	addOne: function(proposal) {
 		var proposal = new App.Views.ListItemProposal({model: proposal})

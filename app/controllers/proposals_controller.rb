@@ -9,9 +9,9 @@ class ProposalsController < ApplicationController
       @user = User.find_by_id params[:user]
       @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id]
       authorize! :assign, @user
-    elsif can? :create, User 
+    elsif can? :create, User
       # like accessible_by -- show only proposals we have access to 
-      @proposal = Proposal.all.select { |prop| can? :read, prop }
+      @proposal = Proposal.all.select { |prop| can? :update, prop }
     else
       # This one is weird... improve it
       @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", current_user]
