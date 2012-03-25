@@ -3,7 +3,7 @@
 		<h1>Listing proposals</h1>
 	</div>
 	<div class="alert">
-		<p><strong>All the loaded proposals</strong> <% "in division #{current_user.division}" if current_user.division %> are shown here.</p>
+		<p><strong>All the loaded proposals</strong> <%= "in division #{current_user.division}" if current_user.division %> are shown here.</p>
 		<p><strong>This list</strong> will help you find out which proposals have been viewed by theiar assigned auditors. You can also check out their feedback from here!</p>
 		<p><strong>Use the filters</strong> to find proposals by ID, assigned user(s) or last viewed.</p>
 	</div>
