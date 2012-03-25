@@ -295,12 +295,12 @@ App.Views.ShowProposal = Backbone.View.extend({
 				App.PanelReviewerStatus = $.parseJSON(js);
 //console.log(App.PanelReviewerStatus);				
 				var html = self.showReviewerDetailsView.render(self.details.nsf_id, reviewers);
-console.log(html);		
+//console.log(html);		
 				$('#tab_reviewer_details', self.el).html(html);
 			});			
 		} else {
 			var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
-console.log(html);		
+//console.log(html);		
 			$('#tab_reviewer_details', this.el).html(html);		
 		}
 	},
