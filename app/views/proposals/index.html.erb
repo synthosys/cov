@@ -7,45 +7,45 @@
 			<table class="table table-striped table-bordered table-condensed" id="proposals_table">
 				<thead>
 					<tr>
-						<th>Proposal</th>
-						<th>Title</th>
+						<th width="300px">Title</th>
 						<th>Last Viewed</th>
 						<th>Assigned To</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
-		<% if @proposals %>			
-					<% @proposals.each do |proposal| %>
+		<% @proposal.each do |proposal| %>
 		<%
 		details = ActiveSupport::JSON.decode(proposal.details)
 		%>			
 						<tr>
-							<td><%= link_to details['nsf_id'], proposal_path(proposal) %>
-							<% if can? :manage, :assignDivisionCan %> - 
-								<%= link_to raw('<i class="icon-pencil"></i>Edit</a>'), edit_proposal_path(proposal) %><br />
-							<% end %>
-							<td><%= details['title'] %></td>
+							<td>
+								<%= link_to details['nsf_id'], proposal_path(proposal) %> - 
+								<%= details['title'] %>
+							</td>
 							<td></td>
 							<td>
 								<% proposal.users.each do |user| %>
-								<%= user.name %><br />
+									<%= link_to user.name, user_path(user) %><br />
 								<% end %>
 							<td>
-								<%= link_to raw('<i class="icon-zoom-in"></i>Show</a>'), proposal_path(proposal), %><br />
-								<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
+								<%= link_to raw('<i class="icon-zoom-in"></i>Show</a>'), proposal_path(proposal) %><br />
+								<% if can? :manage, :assignDivisionCan %>
+									<%= link_to raw('<i class="icon-pencil"></i>Edit</a>'), edit_proposal_path(proposal) %><br />
+								<% end %>
+								<% if 1==0 %>
+									<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
+								<% end %>
 								<a href="#" id="proposals_<% if can? :destroy, Proposal %>remove<% else %>unassign<% end %>_{{id}}"><i class="icon-remove"></i>Remove</a>
 							</td>
 					<% end %>
-		<% end %>			
 				</tbody>
 			</table>
 		</div> <!-- span9 -->
 		<div class="span3">
-			<h2>Filter List</h2>
 		    <form class="well">
 		    	<label>Proposal ID</label>
-		    	<input type="text" class="span3" placeholder="Type something…">
+		    		<input type="text" class="span2" placeholder="Type something…">
 				<label>Assigned to:</label>
 		    	<label class="checkbox">
 		    		<input type="checkbox"> Auditor 1<br />
@@ -62,6 +62,7 @@
 	};
 	</script>
 <% else %>
+
 <div class="page-header">
 	<h1>Your assigned proposals</h1>
 </div>
@@ -78,8 +79,8 @@
 		</tr>
 	</thead>
 	<tbody>
-<% if @proposals %>			
-		<% @proposals.each do |proposal| %>
+
+<% @proposal.each do |proposal| %>
 <%
 details = ActiveSupport::JSON.decode(proposal.details)
 panels = ActiveSupport::JSON.decode(proposal.panels)
@@ -100,4 +101,3 @@ panels = ActiveSupport::JSON.decode(proposal.panels)
 	</tbody>
 </table>
 <% end %>			
-<% end %>

@@ -1,6 +1,6 @@
 App.Collections.Proposals = Backbone.Collection.extend({
 	model: Proposal,
-	url: baseURI+'/proposals.json',
+	url: baseURI+'/proposals',
 	filterbyid: function(nsf_ids) {
            	//console.log(nsf_ids);		
 		return _(this.filter(function(proposal) {

@@ -41,9 +41,11 @@ class UsersController < ApplicationController
   # GET /users/1.json                                     HTML AND AJAX
   #-------------------------------------------------------------------
   def show
+    @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id]
+    #@proposal = Proposal.all.select { |prop| can? :update, prop }
     respond_to do |format|
-      format.json { render :json => @user.to_json(:include => [:proposals]) }
-      format.xml  { render :xml => @user }
+      #format.json { render :json => @user.to_json(:include => [:proposals]) }
+      format.json { render :json => @proposal.to_json }
       format.html
     end
  

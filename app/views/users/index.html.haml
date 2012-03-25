@@ -13,7 +13,7 @@
       %th Created
       %th Last Logged In
       %th Login Count
-      - if can? :manage, Proposal
+      - if can? :read, Proposal
         %th Assigned Proposals
       %th Actions
   %tbody
@@ -27,7 +27,7 @@
         %td= time_ago_in_words user.created_at      unless user.created_at.nil?
         %td= time_ago_in_words user.last_sign_in_at unless user.last_sign_in_at.nil?
         %td= user.sign_in_count
-        - if can? :manage, Proposal
+        - if can? :read, Proposal
           %td
             = user.proposals.size
             = link_to 'Change', user_path(user)
