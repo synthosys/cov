@@ -12,11 +12,15 @@ margin-right: 5px;
 }
 
 
-.navbar { margin-bottom: 0; }
-.navbar-inner { padding-left: 0; padding-right: 0; }
+.navbar { margin-bottom: 0; height: 40px; }
+.navbar-inner { padding: 0px; }
 .navbar b.caret {
   margin-top: 20px;
   margin-left: 5px;
+  z-index: 1000;
+}
+iframe {
+  z-index: 10;
 }
 
 .content {
@@ -145,6 +149,9 @@ font-size: 11px;
 --------------------------------------------------------------------------------------- NAV
 */
 
+.navbar .nav > li {
+    padding: 0px 8px;
+}
 .navbar .nav > li > a,
 .navbar .navbar-text {
     color: #fff;
@@ -158,7 +165,7 @@ font-size: 11px;
 }
 
 
-.navbar .nav > li > a:hover {
+.navbar .nav > li:hover {
 	background: #138652;
 	background: -moz-linear-gradient(top,  #138652 0%, #145135 100%);
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#138652), color-stop(100%,#145135));

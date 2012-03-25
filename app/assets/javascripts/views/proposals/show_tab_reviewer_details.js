@@ -17,14 +17,22 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
 			return (item.prop_id==prop_id);
 		});
+<<<<<<< HEAD
 //console.log(prop_reviewers);		
+=======
+		//console.log(prop_reviewers);		
+>>>>>>> ron
 		//assigned
 		var tmp = _.filter(prop_reviewers, function(item) {
 			return (item.status!='R');
 		});
 		//we have a list!
 		var assigned_reviewer_ids = _.pluck(tmp,"revr");
+<<<<<<< HEAD
 //console.log(assigned_reviewer_ids);		
+=======
+		//console.log(assigned_reviewer_ids);		
+>>>>>>> ron
 		
 		//make list of assigned users by checking against the assigned
 		var assigned_reviewers = [];
@@ -33,7 +41,11 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)!=-1
 			});
 		}
+<<<<<<< HEAD
 //console.log(assigned_reviewers);		
+=======
+		//console.log(assigned_reviewers);		
+>>>>>>> ron
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
