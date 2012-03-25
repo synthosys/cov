@@ -18,10 +18,14 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			return (item.prop_id==prop_id);
 		});
 <<<<<<< HEAD
+<<<<<<< HEAD
 //console.log(prop_reviewers);		
 =======
 		//console.log(prop_reviewers);		
 >>>>>>> ron
+=======
+console.log(prop_reviewers);		
+>>>>>>> e4f30b7... Removing console.log messages
 		//assigned
 		var tmp = _.filter(prop_reviewers, function(item) {
 			return (item.status!='R');
@@ -29,10 +33,14 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		//we have a list!
 		var assigned_reviewer_ids = _.pluck(tmp,"revr");
 <<<<<<< HEAD
+<<<<<<< HEAD
 //console.log(assigned_reviewer_ids);		
 =======
 		//console.log(assigned_reviewer_ids);		
 >>>>>>> ron
+=======
+console.log(assigned_reviewer_ids);		
+>>>>>>> e4f30b7... Removing console.log messages
 		
 		//make list of assigned users by checking against the assigned
 		var assigned_reviewers = [];
@@ -42,10 +50,14 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			});
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
 //console.log(assigned_reviewers);		
 =======
 		//console.log(assigned_reviewers);		
 >>>>>>> ron
+=======
+console.log(assigned_reviewers);		
+>>>>>>> e4f30b7... Removing console.log messages
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
@@ -55,7 +67,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)==-1
 			});
 		}		
-//console.log(tmp);		
+console.log(tmp);		
 		//attach status
 		var other_reviewers = _.map(tmp, function(reviewer) {
 			var tmp = reviewer;
@@ -67,9 +79,9 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			if (status_record) tmp.coi = true;
 			return tmp;
 		})
-//console.log(other_reviewers);		
+console.log(other_reviewers);		
 		data.reviewers_other = this.renderReviewerList(other_reviewers);
-//console.log(data);
+console.log(data);
 		
 		return compiled(data);
 	},

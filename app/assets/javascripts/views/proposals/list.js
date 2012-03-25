@@ -150,12 +150,12 @@ App.Views.ListProposal = Backbone.View.extend({
 				var assigned_user_ids = _.map(assigned_users, function(user) {
 					return user.id.toString();
 				});
-//console.log(self.options.user_id);				
-//console.log(assigned_user_ids);				
+console.log(self.options.user_id);				
+console.log(assigned_user_ids);				
 				var new_user_ids = [];
 				//remove current user id from this list
 				if (self.options.user_id) var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
-//console.log(new_user_ids);				
+console.log(new_user_ids);				
 				//post update to server
 				model.save({ proposal: { user_ids: new_user_ids} },{
 					success: function() {
