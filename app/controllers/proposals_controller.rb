@@ -1,15 +1,11 @@
 class ProposalsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource :except => [:user]
 
   # GET /proposals
   # GET /proposals.json
   def index
-    if params[:user]
-      @user = User.find_by_id params[:user]
-      @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id]
-      authorize! :assign, @user
-    elsif can? :create, User
+    if can? :create, User
       # like accessible_by -- show only proposals we have access to 
       @proposal = Proposal.all.select { |prop| can? :update, prop }
     else
@@ -27,7 +23,7 @@ class ProposalsController < ApplicationController
   def user
     @user = User.find_by_id params[:user]
     @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", @user.id ]
-    authorize! :assign, @user
+    authorize! :read, @proposal
 
     respond_to do |format|
       format.json { render json: @proposal.to_json(:include => [:users]) }

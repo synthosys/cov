@@ -11,30 +11,35 @@ App.Views.ListProposal = Backbone.View.extend({
 		this.collection.bind('add', this.addOne);
 		//this.collection.bind('refresh', this.addAll);
 		this.collection.bind('reset', this.addAll);
-		this.collection.bind('all', this.render);		
+		this.collection.bind('all', this.render);	
+		
+		this.getProposals();
 	},
 	addOne: function(proposal) {
 		var proposal = new App.Views.ListItemProposal({model: proposal})
-		this.$("#proposals_table").append(proposal.render().el);
+		$(this.el).append(proposal.render().el);
 	},
 	addAll: function() {
-		$('#proposals_table > tbody').empty();
+		$('tbody', $(this.el)).empty();
 		this.collection.each(this.addOne);
 	},
 	addProposal: function(proposal) {
 		this.collection.add(proposal);
 	},
+	getProposals: function() {
+		//make sure you get using json
+		if (this.options.user_id) var url = this.collection.url+'/user/'+this.options.user_id;	
+		else var url = this.collection.url+'.json';	
+		this.collection.fetch({url: url});		
+	},
 	updateProposal: function(proposal) {
 		//dirty way to do it, we should just update the collection instead of realoading it
-		var params = {};
-//console.log(this.options.user_id);		
-		if (this.options.user_id) params = {data: { user: this.options.user_id }};
-		var self = this;
-		this.collection.fetch(params);		
+		this.getProposals();
 	},
 	removeProposal: function(e) {
 		e.preventDefault();
-		
+		if (!confirm('Are you sure?')) return false;
+				
 		//what is the id? //last elem in id attr
 		var id = $(e.currentTarget).attr('id').split('_').pop();
 		//load proposal
@@ -145,8 +150,12 @@ App.Views.ListProposal = Backbone.View.extend({
 				var assigned_user_ids = _.map(assigned_users, function(user) {
 					return user.id.toString();
 				});
+console.log(self.options.user_id);				
+console.log(assigned_user_ids);				
+				var new_user_ids = [];
 				//remove current user id from this list
-				var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
+				if (self.options.user_id) var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
+console.log(new_user_ids);				
 				//post update to server
 				model.save({ proposal: { user_ids: new_user_ids} },{
 					success: function() {

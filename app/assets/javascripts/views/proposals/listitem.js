@@ -22,7 +22,7 @@ App.Views.ListItemProposal = Backbone.View.extend({
 		var tmp = [];
 		if (proposal.users) {
 			_.each(proposal.users, function(user) {
-				tmp.push(user.name);
+				tmp.push('<a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
 			});
 		}
 		data["users"] = tmp.join('<br />');
