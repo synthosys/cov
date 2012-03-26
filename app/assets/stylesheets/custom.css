@@ -8,9 +8,8 @@ body {
 
 
 #tab_reviewer_expertise_topics [class^="icon-"] {
-margin-right: 5px;
+  margin-right: 5px;
 }
-
 
 .navbar { margin-bottom: 0; height: 40px; }
 .navbar-inner { padding: 0px; z-index: 1000; }

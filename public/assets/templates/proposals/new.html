@@ -1,25 +1,22 @@
 <h2>Add Proposals</h2>
 <div class="row">
-	<div class="span4">
+	<div class="span5">
 		<form class="well" id="assign_proposals">
 		<input type="hidden" id="user_id" name="proposal[user_ids][]" value="{{user_id}}">
 		<input type="hidden" id="division" value="{{division}}">
 		<div class="control-group">
-			<label>Enter one or more proposal ids (separated by commas)</label>
 			<div class="controls">
-				<textarea name="proposal[nsf_id]" id="proposal_nsf_id" class="input-xlarge"></textarea>
-				<p class="help-block">When you're done, hit Go</p>
+				<textarea rows="4" name="proposal[nsf_id]" id="proposal_nsf_id" class="input-xlarge" placeholder="Enter one or more proposal ids (separate multiples by commas)"></textarea>
 			</div>
 		</div>
 		<button type="submit" class="btn btn-primary disabled" disabled="">Please Wait...</button>
 		</form>
 	</div>
-	<div class="span4">
-		<div class="alert" id="load_help">
-			<p><strong>All Assigned Proposals</strong> for this user are displayed in the list below.</p>
+	<div class="span3">
+		<div id="load_help">
+			<p><strong>Assigned Proposals</strong> for this user are displayed in the list below.</p>
 			<p><strong>Begin</strong> by entering one or more Proposal IDs in the box to your left and hit "Go".</p>
 			<p><strong>This space</strong> will update with the processing status of your request.</p>
-			<p><strong>Upon completion</strong> successfully loaded proposals will be added to the list, any errors will display here.</p>
 		</div>
 		<ul class="unstyled" id="load_proposals">
 		</ul>
