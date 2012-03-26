@@ -130,7 +130,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 				tmp.words = self.legend_topics[t[0]]["words"];
 				tmp.label = self.legend_topics[t[0]]["label"];
 				tmp.count = t[1];
-				topics_compiled.push(template(tmp));				
+				topics_compiled.push(template(tmp));
 			});
 		}
 		return topics_compiled;		

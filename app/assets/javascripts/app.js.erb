@@ -55,27 +55,25 @@ var App = {
 	  'WY': 'Wyoming'
 	},	
     init: function() {
-        //console.log(this.Views);	
-        //Backbone.history.start(); #we'll put this in once we have routes
-		//load the requested view
-		if (this.viewparams) params = this.viewparams;
-		if (this.views && _.size(this.views)>0) {
-			_.each(this.views, function(params,view) {
-				if (App.Views[view]) {
-					var view = App.Views[view];
-					new view(params);
-				}
-			});
-		};
-		
-		//have the navbar auto-re-adjust
-		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
-		$(window).scroll(function() {
-			if ($(window).scrollTop() > navb_dims["t"]) {
-				$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
-			} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
-				$(".navbar-inner").css("position", "relative");
+	//load the requested view
+	if (this.viewparams) params = this.viewparams;
+	if (this.views && _.size(this.views)>0) {
+		_.each(this.views, function(params,view) {
+			if (App.Views[view]) {
+				var view = App.Views[view];
+				new view(params);
 			}
 		});
+	};
+		
+	//have the navbar auto-re-adjust
+	navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
+	$(window).scroll(function() {
+		if ($(window).scrollTop() > navb_dims["t"]) {
+			$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
+		} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
+			$(".navbar-inner").css("position", "relative");
+		}
+	});
     }
 };

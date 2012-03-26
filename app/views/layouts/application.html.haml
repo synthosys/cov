@@ -92,7 +92,8 @@
 
   $(function() {
     _.templateSettings = {
-      interpolate : /\{\{(.+?)\}\}/g
+      interpolate : /\{\{([^=].*?)\}\}/gim,
+      evaluate    : /\{\{\=(.+?)\}\}/gim,
     };
     App.init();
   });

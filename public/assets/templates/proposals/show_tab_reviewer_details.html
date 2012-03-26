@@ -1,13 +1,13 @@
 <script type="text/template" id="template_reviewer_details">
 <div class="row">
 	<div class="span12">
-		<h5>Show Panel: 
-		<select id="panelselect_reviewerdetails">
-			{{panelselect}}
-		</select>
-		</h5>
 		<div class="row">
 			<div class="span4 left">
+				<h5>Panel: 
+				<select id="panelselect_reviewerdetails">
+					{{panelselect}}
+				</select>
+				</h5>
 				<table class="table table-condensed" id="reviewers_assigned">
 				<tr>
 					<th><h4>Assigned Reviewers</h4></th>
@@ -39,18 +39,32 @@
 <h3>{{name}}</h3>
 <div class="row">
 	<div class="span3">
-		{{inst}}<br />
-		{{dept}}<br />
-		Classification: {{classification}}
+		{{= if (inst != "") { }}
+			{{inst}}<br/>
+		{{= } }}
+		{{= if (dept != "") { }}
+			{{dept}}<br/>
+		{{= } }}
+		{{= if (classification != "") { }}
+			Classification: {{classification}}
+		{{= } }}
 	</div><!-- /span3 -->
 	<div class="span3">
 		<strong>NSF ID:</strong> {{nsf_id}}<br />
-		<strong>Email:</strong> {{email}}
+		{{= if (email != "") { }}
+			{{email}}
+		{{= } }}
 	</div><!-- /span3 -->
 	<div class="span2">
-		<strong>Degree:</strong> {{degree}}<br />
-		<strong>Year:</strong> {{year}}<br />
-		<strong>Gender:</strong> {{gender}}
+		{{= if (degree != "") { }}
+			<strong>Degree:</strong> {{degree}}<br/>
+		{{= } }}
+		{{= if (year != "") { }}
+			<strong>Year:</strong>   {{year}}<br/>
+		{{= } }}
+		{{= if (gender != "") { }}
+			<strong>Gender:</strong> {{gender}}
+		{{= } }}
 	</div><!-- /span2 -->
 </div><!-- /row -->
 </script>
@@ -95,10 +109,18 @@
 <div class="row">
 	<div class="span8">
 		<h4>Proposal Research Topics (in order)</h4>
-		<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
-		<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
-		<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
-        <p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+		{{= if (t1 != null) { }}
+   			<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
+		{{= } }}
+		{{= if (t2 != null) { }}
+   			<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
+		{{= } }}
+		{{= if (t3 != null) { }}
+   			<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
+		{{= } }}
+		{{= if (t4 != null) { }}
+   			<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+		{{= } }}
 	</div><!-- /span8 -->
 </div><!-- /row -->
 </script>

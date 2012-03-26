@@ -6,9 +6,8 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 	render: function(prop_id,reviewers) {
 		//compile template
 		var compiled = _.template($("#template_reviewer_details", this.el).html());
-//console.log(compiled);
-//console.log(reviewers);
-
+		//console.log(compiled);
+		//console.log(reviewers);
 		var data = {};
 
 		data.panelselect = this.panels_select;
@@ -102,6 +101,8 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 	},
 	renderReviewerAwards: function(reviewer,renderto) {
 //console.log(reviewer);		
+		renderto.html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading proposals");
+		$(".alert-info").slideUp();
 		//if this reviewer is a pi
 		if (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1) {
 			var url = apiurl+'user?id='+reviewer.nsf_id+'&page=prop'+'&jsoncallback=?';
@@ -196,8 +197,11 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			var self = this;
 			var proposals_template = _.template($("#template_reviewer_awards", this.el).html());
 			var proposals_compiled = [];
-			_.each(proposals,function(proposal) {
-//console.log(proposal);				
+
+			// show the data by reverse date
+			proposals = _.sortBy(proposals, function(p) { return -parseInt(p.details.awarded.date.replace("/", "")); });
+
+			_.each(proposals, function(proposal) {
 				var data = {};
 				var details = proposal.details;
 				data.nsf_id = details.nsf_id;
