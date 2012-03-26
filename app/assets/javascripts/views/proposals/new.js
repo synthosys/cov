@@ -19,10 +19,7 @@ App.Views.NewProposal = Backbone.View.extend({
 			});
 	      },
 	      error: function(x,t,m) {
-	        //alert('error');
-//console.log(t);
-	        //set alert
-			self.render('<div id="access_alert" class="alert alert-error"><strong>Oops!</strong> You\'re not connected to the private data! That means we cannot load Panel and Reviewer information for any proposals.</div>'); //if this is available it will be shown
+		self.render('<div id="access_alert" class="alert alert-error">You must be connected to the NSF network to assign individual proposals.</div>');
 	      }
 	    });
 	},
@@ -59,7 +56,6 @@ App.Views.NewProposal = Backbone.View.extend({
 		//prepare to load data
 		var user_id = $("#user_id").val();
 		var nsf_ids = $("#proposal_nsf_id").val().split(',');
-//console.log(nsf_ids);	
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
 		var allloadedproposals = new App.Collections.Proposals();
@@ -85,6 +81,7 @@ App.Views.NewProposal = Backbone.View.extend({
 						var found = _.find(users,function(user) {
 							return user["id"] == user_id;
 						});
+
 						if (!found) {
 							//all we will do is assign these
 			//console.log(proposal);					
@@ -93,6 +90,7 @@ App.Views.NewProposal = Backbone.View.extend({
 								return user.id.toString();
 							});
 							current.push(user_id);
+
 							proposal.save({ proposal: { user_ids: current} },{
 								success: function(data) {
 									//update status
@@ -136,6 +134,8 @@ App.Views.NewProposal = Backbone.View.extend({
 				}			
 			}
 		});
+		
+
 	},
 	loadProposals: function() {
 		var nsf_id = this.load_nsf_ids[this.load_index];
