@@ -88,9 +88,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 								return item["nsf_id"]==nsf_id;
 							});
 						});								
-						self.loadResearchers();
-						self.loadTopics();
-						self.loadPanels(); //this will load reviewers
+						self.loadPanels(); //this will load reviewers and other stuff
 						//ALL DONE! run callback function
 						self.processLoadProgress(component, 'ok', loaded_data, 'Done');											
 					}
@@ -173,56 +171,69 @@ App.Views.LoadProposal = Backbone.View.extend({
 			url: url,
 			dataType: datatype,
 			success: function(data) {
-				var panels = data["data"];
-				//load counts for panel proposals, make a list
-				var panel_propids = [];
-				_.each(panels, function(panel) {
-					panel_propids = panel_propids.concat(panel["prop"]);
-				});
-				var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
-				var datatype = 'JSONP';			
-				$.ajax({
-					url: url,
-					dataType: datatype,
-					success: function(data) {						
-						var loaded_panels = _.map(panels, function(panel) {
-							//now we have a list, so go get the counts
-							var panel_totalawards = 0;
-							var panel_totalfunding = 0;
-//							_.each(panel["prop"], function(prop_ids) {
-								//get and store the counts
-								_.each(data["data"], function(prop) {
-//console.log('propids');									
-//console.log(prop_ids);									
-									//find them all out
-									if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
-										panel_totalawards++;
-										panel_totalfunding += prop["awarded"]["dollar"];
-									}
-								});
-//							});
-							panel["totalawards"] = panel_totalawards;
-							panel["totalfunding"] = panel_totalfunding;
-							return panel;
-						});
-						//store data
-						_.each(self.nsf_ids, function(nsf_id) {
-							//find them all out
-							loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
-//console.log('panel prop');									
-//console.log(panel["prop"]);									
-								return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
+				if (data.count==0) {
+					//return with error
+					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
+					//set the others here too so we return
+					self.processLoadProgress('researchers', 'error', {}, '');
+					self.processLoadProgress('topics', 'error', {}, '');
+					self.processLoadProgress('reviewers', 'error', {}, '');
+					self.processLoadProgress('reviewerproposals', 'error', {}, '');
+				} else {
+					var panels = data["data"];
+					//load counts for panel proposals, make a list
+					var panel_propids = [];
+					_.each(panels, function(panel) {
+						panel_propids = panel_propids.concat(panel["prop"]);
+					});
+					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {						
+							var loaded_panels = _.map(panels, function(panel) {
+								//now we have a list, so go get the counts
+								var panel_totalawards = 0;
+								var panel_totalfunding = 0;
+	//							_.each(panel["prop"], function(prop_ids) {
+									//get and store the counts
+									_.each(data["data"], function(prop) {
+	//console.log('propids');									
+	//console.log(prop_ids);									
+										//find them all out
+										if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
+											panel_totalawards++;
+											panel_totalfunding += prop["awarded"]["dollar"];
+										}
+									});
+	//							});
+								panel["totalawards"] = panel_totalawards;
+								panel["totalfunding"] = panel_totalfunding;
+								return panel;
 							});
-						});
-						//ALL DONE! run callback function
-						self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
-					},
-					error: function() {
-						self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
-					}
-				});				
-				//get reviewer data
-				self.loadReviewers(panels);
+							//store data
+							_.each(self.nsf_ids, function(nsf_id) {
+								//find them all out
+								loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
+	//console.log('panel prop');									
+	//console.log(panel["prop"]);									
+									return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
+								});
+							});
+							//ALL DONE! run callback function
+							self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
+						},
+						error: function() {
+							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
+						}
+					});
+					//get proposal researcher and topic data				
+					self.loadResearchers();
+					self.loadTopics();
+					//get reviewer data
+					self.loadReviewers(panels);
+				}
 			},
 			error: function() {
 //console.log('error panels');										

@@ -38,7 +38,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 	getReviewerExpertiseTopics: function(topicrelevance,topics) {
 //console.log(topics);		
 		var data = {};
-		data.proposal_topics_count = this.topics.length;
+		data.proposal_topics_count = _.size(topics);
 		if (_.size(topics)==0) {
 			data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			data.topics_common_count = 0;
@@ -50,11 +50,13 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			data.topics_reviewers_count = 0;
 			data.topics_reviewers_ids = '';
 		} else {
-			var proposaltopics = [];
+			/*var proposaltopics = [];
 			for (var i=0;i<topicrelevance;i++) {
 				if (this.topics[i]) proposaltopics.push(this.topics[i]);
-			}
-//console.log(proposaltopics);			
+			}*/
+			//changed above as per Jan - compare all proposal topics against relevant reviewer topics
+			var proposaltopics = this.topics;
+console.log(proposaltopics);			
 			//now figure out common ones etc.
 			//extract the reviewer proposal topic ids
 			var paneltopicids = [];

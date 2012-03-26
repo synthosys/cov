@@ -95,6 +95,9 @@ App.Views.NewProposal = Backbone.View.extend({
 							current.push(user_id);
 							proposal.save({ proposal: { user_ids: current} },{
 								success: function(data) {
+									//run the callback
+									if (self.options.view && self.options.respondto_update) self.options.view[self.options.respondto_update](proposal);
+									
 									//update status
 									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
@@ -176,6 +179,9 @@ App.Views.NewProposal = Backbone.View.extend({
 						} 
 					}, {
 					success: function(data) {
+			           //run the callback
+						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
+
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");

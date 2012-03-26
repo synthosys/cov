@@ -99,10 +99,11 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
  
     if @user.save
+      flash[:notice] = "Auditor created, assign proposals below." if @user.role?:auditor
       respond_to do |format|
         format.json { render :json => @user.to_json, :status => 200 }
         format.xml  { head :ok }
-        format.html { redirect_to :action => :index }
+        format.html { if @user.role?:auditor then redirect_to user_path(@user.id) else redirect_to :action => :index end }
       end
     else
       flash[:notice] = "Could not create user: #{@user.errors.full_messages.join(', ')}"

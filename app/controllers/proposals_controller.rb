@@ -10,7 +10,7 @@ class ProposalsController < ApplicationController
       @proposal = Proposal.all.select { |prop| can? :update, prop }
     else
       # This one is weird... improve it
-      @proposal = Proposal.all :include => :users, :conditions => ["users.id = ?", current_user]
+      @proposal = Proposal.all :include => [:users, :associations], :conditions => ["users.id = ?", current_user]
     end
 
     respond_to do |format|
@@ -38,6 +38,17 @@ class ProposalsController < ApplicationController
     tmp = ActiveSupport::JSON.decode(@proposal.details)
     @proposal_nsf_id = tmp['nsf_id']
     @proposal_title = tmp['title']
+    
+    #record last viewed date if being viewed by auditor
+    if current_user.role?:auditor then
+      #find the association, update it
+      associations = Association.where(:user_id => current_user.id, :proposal_id => @proposal.id)
+#Rails.logger.debug(association.inspect)
+#Rails.logger.flush()
+      associations.each do |association|
+        association.update_attribute(:lastviewed, Time.new) #update the last viewed attribute, this call skips validations so make sure whatever you're saving is legit
+      end #in theory there should only be one found!
+    end
 
     respond_to do |format|
       format.html # show.html.erb

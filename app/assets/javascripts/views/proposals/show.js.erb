@@ -166,7 +166,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 	//console.log(tmp);				
 				self.panels.push(tmp);
 				//set defaults for topic relevance
-				self.topicrelevance = '1'; //t0
+				self.topicrelevance = '4'; //As per Jan, default to all topics, not primary
 			});
 			//set defaults for selected panels
 			this.selectedpanel = this.panels[0].panel.nsf_id; //index of first panel
@@ -352,6 +352,7 @@ console.log(html);
 	},
 	getTopicRelevance: function() {
 		var topicrelevance = '';
+		
 		topicrelevance += '<option value="1"'+(this.topicrelevance=='1'?' selected ':'')+'>Primary Topic</option>';
 		topicrelevance += '<option value="2"'+(this.topicrelevance=='2'?' selected ':'')+'>Top-2 Topics</option>';
 		topicrelevance += '<option value="3"'+(this.topicrelevance=='3'?' selected ':'')+'>Top-3 Topics</option>';

@@ -1,7 +1,5 @@
 <h2>Sign in</h2>
 
-<div class="row">
-	<div class="span4">
 <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
   <%= f.label :username %>
   <%= f.text_field :username %>
@@ -17,13 +15,3 @@
 <% end %>
 
 <%= render "links" %>
-	</div><!-- span4 -->
-	<div class="span5">
-		<div class="alert">
-			<p><strong>Welcome!</strong> Please sign in with your username and password to proceed.</p>
-			<p><strong>Forgot your password?</strong> Use this <%= link_to 'forgot password', pages_contact_path %> link and we'll help you reset it.</p>
-			<p><strong>Forgot your username?</strong> You'll have to <%= link_to 'contact us', new_user_password_path %> for that.</p>
-			<p><strong>Don't have an account?</strong> <%= link_to 'Contact us!', pages_contact_path %>.</p>
-		</div>
-	</div><!-- span5 -->
-</div><!-- row -->
