@@ -120,7 +120,8 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 
 			// sort this data by reverse count
 			topics = _.map(topics, function(topic, t) { return [t, topic.count]; });
-			topics = _.sortBy(topics, function(t) { return -t[1] });
+			topics = _.sortBy(topics, function(t) { return -t[1]; });
+			topics = _.reject(topics, function(t) { return (t[0]=="0"); });
 
 			_.each(topics, function(t) {
 				var tmp = {};

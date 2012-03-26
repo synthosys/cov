@@ -32,6 +32,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 	},
 	renderPanelTopics: function(topics) {
 		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th>Research Topics ({{topics_count}})</th><th>Reviewers\' Proposal Count</th></tr></thead><tbody>{{topics}}</tbody></table>');
+		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th></th><th>Reviewers\' Proposal Count</th></tr></thead><tbody>{{topics}}</tbody></table>');
 		var data = {};
 		if (_.size(topics)==0) {
 			data.topics = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
@@ -40,7 +41,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 			data.topics = this.renderPanelTopicListItems(topics,null).join("\n");
 			data.topics_count = _.size(topics);
 		}
-		return template(data);		
+		return template(data);
 	},
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
@@ -51,7 +52,8 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 
 			// sort this data by reverse count
 			topics = _.map(topics, function(topic, t) { return [t, topic.count]; });
-			topics = _.sortBy(topics, function(t) { return -t[1] });
+			topics = _.sortBy(topics, function(t) { return -t[1]; });
+			topics = _.reject(topics, function(t) { return (t[0]=="0"); });
 
 			_.each(topics,function(t) {
 				var tmp = {};
