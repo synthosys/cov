@@ -74,6 +74,9 @@ App.Views.NewProposal = Backbone.View.extend({
 				loadedproposals.each(function(proposal) {
 					//save off the id here too
 					loaded_nsf_ids.push(proposal.get("nsf_id"));
+
+					var nsf_id = proposal.get("nsf_id");
+					$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
 					
 					if ($("#user_id").val()) {
 						var users = proposal.get("users");
@@ -91,13 +94,26 @@ App.Views.NewProposal = Backbone.View.extend({
 							});
 							current.push(user_id);
 							proposal.save({ proposal: { user_ids: current} },{
-								success: function() {
-									//run the callback
-									if (self.options.view && self.options.respondto_update) self.options.view[self.options.respondto_update](proposal);
+								success: function(data) {
+									//update status
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already loaded, assigned.');
+								},
+								error: function(data) {
+									//update status
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+									$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Could not save.");
 								}
 							});
+						} else {
+							//update status
+							$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
+							$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+							$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already assigned.');							
 						}
-					}					
+					} 					
 				});
 				//now we have a list of what we need to go get
 				//this is the difference of what we wanted vs. what is already loaded
@@ -115,7 +131,7 @@ App.Views.NewProposal = Backbone.View.extend({
 					self.loadProposals();
 				} else {
 					self.enableGo();
-					$("div#load_complete").html('<p><strong>Success!</strong> Everything loaded and assigned! We didn\'t have to load any data, it was already loaded. If assignments needed updating, we did that.');
+					$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
 					$("div#load_complete").addClass("alert-success");					
 				}			
 			}
@@ -125,7 +141,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		var nsf_id = this.load_nsf_ids[this.load_index];
 		if (nsf_id) {
 			//dispatch proposals to be loaded, one at a time
-			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
+			$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>');
 			this.loadProposalView.loadProposalData(nsf_id,this.options.division,this,'respondToAssign');			
 		} else {
 			$("div#loadstatus").hide();
@@ -160,8 +176,6 @@ App.Views.NewProposal = Backbone.View.extend({
 						} 
 					}, {
 					success: function(data) {
-						//run the callback
-						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
