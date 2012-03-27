@@ -24,7 +24,7 @@ App.Views.NewProposal = Backbone.View.extend({
 			});
 	      },
 	      error: function(x,t,m) {
-		self.render('<div id="access_alert" class="alert alert-error">You must be connected to the NSF network to assign individual proposals.</div>');
+			self.render('<div id="access_alert" class="alert alert-error">You must be connected to the NSF network to assign individual proposals.</div>');
 	      }
 	    });
 	},

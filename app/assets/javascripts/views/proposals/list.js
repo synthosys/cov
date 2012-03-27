@@ -95,10 +95,32 @@ App.Views.ListProposal = Backbone.View.extend({
 		var load_elem = $('tr#loadstatus_'+id);
 //console.log(load_elem);		
 		$("div[id^=text]", load_elem).html('Retrieving information');
-
+		
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
-		loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');		
+
+	    // Check to see if we have access to nsfstarmetrics server 
+		if (!this.datacheck) {
+			this.datacheck = true;
+			var self = this;
+		    $.ajax({
+		      url: "http://128.150.10.70/py/api/access",
+		      dataType: 'JSONP',
+		      timeout: 500,
+		      success: function(data) {
+		        //console.log(data);
+		        proposalaccessallowed = true;
+		        apiurl = "http://128.150.10.70/py/api/";
+				loadProposalView.loadProposalData([proposal.get("nsf_id")],self.options.division,self,'respondToRefresh');
+		      },
+		      error: function(x,t,m) {
+				alert('You must be connected to the NSF network to assign individual proposals');
+		      }
+			});
+		} else {
+				if (!proposalaccessallowed) alert('You must be connected to the NSF network to assign individual proposals');
+				else loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+		}		
 	},
 	respondToRefresh: function(status,loaded_data) {
 		if (status=='ok') {
