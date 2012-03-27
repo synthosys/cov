@@ -22,7 +22,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 				});				
 			}
 //console.log(this.getLoadStatus());				
-//console.log(loaded_data);				
+//console.log(loaded_data);		
+//console.log(this.getLoadStatusMessage());		
 			view[respondto](this.getLoadStatus(),loaded_data,this.getLoadStatusMessage());
 		}
 	},
@@ -521,10 +522,11 @@ App.Views.LoadProposal = Backbone.View.extend({
 		
 	},
 	getLoadStatusMessage: function() {
+//console.log(this.loadedcomponents);		
 		if (this.loadedcomponents["proposals"]["status"]=='error') return this.loadedcomponents["proposals"]["message"];
+		else if (this.loadedcomponents["panels"]["status"]=='error') return this.loadedcomponents["panels"]["message"];
 		else if (this.loadedcomponents["topics"]["status"]=='error') return this.loadedcomponents["topics"]["message"];
 		else if (this.loadedcomponents["researchers"]["status"]=='error') return this.loadedcomponents["researchers"]["message"];
-		else if (this.loadedcomponents["panels"]["status"]=='error') return this.loadedcomponents["panels"]["message"];
 		else if (this.loadedcomponents["reviewers"]["status"]=='error') return this.loadedcomponents["reviewers"]["message"];
 		else if (this.loadedcomponents["reviewerproposals"]["status"]=='error') return this.loadedcomponents["reviewerproposals"]["message"];
 		else return 'Done';
