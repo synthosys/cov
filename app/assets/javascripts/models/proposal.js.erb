@@ -23,7 +23,11 @@ var Proposal = Backbone.Model.extend({
 		return this.details_parsed.status.date;
 	},
 	amount: function() {
-		if (this.details_parsed.status.name=="award") return this.details_parsed.awarded.dollar; else return "(declined)";
+		if (this.details_parsed.status.name=="award") {
+			var funding = this.details_parsed.awarded.dollar;
+			if (funding && parseInt(funding)>0) return '$'+App.addCommas((funding/1000).toFixed(0))+'K';
+			else return '';
+		} else return "(declined)";
 	},
 	lastviewed: function() {
 		//return this.associations[0].lastviewed ? this.associations[0] : null;
