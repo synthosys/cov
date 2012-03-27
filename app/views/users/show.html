@@ -50,6 +50,7 @@
 	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 	<% if can? :manage, :assignDivisionCan %>
 		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
+		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
 	<% end %>
 	<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a>
 

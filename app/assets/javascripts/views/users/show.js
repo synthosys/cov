@@ -10,8 +10,8 @@ App.Views.ShowUser = Backbone.View.extend({
 		this.listproposalview.addOne(proposal);
 	},
 	updateProposal: function(proposal) {
-		//update assignment, we don't need to refresh anything on the screen here for this
-		
-		//leaving this callback here in case we want to use it in the future
+		//update assignment
+//console.log('updating');		
+		this.listproposalview.getProposals();
 	}
 });

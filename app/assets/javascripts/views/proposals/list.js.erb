@@ -41,7 +41,7 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(html);							
 				if (self.options.allowEdit) {
 					col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a><br />';
-					//col3 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a><br />';
+					col3 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a><br />';
 					col3 += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
 				} else {
 					col3 += '<a href="#" id="proposals_unassign_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
@@ -50,6 +50,11 @@ App.Views.ListProposal = Backbone.View.extend({
 			});
 			$(this.el).dataTable({
 				"aaData": aaData,
+				"aoColumns": [
+					{ "sTitle": "Title" },
+					{ "sTitle": "Assigned To" },
+					{ "sTitle": "Actions" },
+				]
 			});			
 		} else {
 			this.collection.each(this.addOne);			
@@ -112,7 +117,7 @@ App.Views.ListProposal = Backbone.View.extend({
 		var proposal = this.collection.get(id);
 
 		//add a row below the current row to show the status
-		var row = $(e.currentTarget).closest("tr");
+		/*var row = $(e.currentTarget).closest("tr");
 		var template = '<tr id="loadstatus_'+id+'">';
 		template += '<td><div class="alert" id="text_'+id+'"></div></td>';
 		template += '<td id="component_proposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
@@ -122,11 +127,12 @@ App.Views.ListProposal = Backbone.View.extend({
 		template += '<td id="component_reviewers_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
 		template += '<td id="component_reviewerproposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
 		template += '<td colspan="2"><div id="load_complete_'+id+'"></div></td>';
-		row.after(template);
+		row.after(template);*/
 
-		var load_elem = $('tr#loadstatus_'+id);
+		$(e.currentTarget).after('<div id="loadstatus_'+id+'"><div class="alert" id="text_'+id+'"></div></div>');
+		var load_elem = $('div#loadstatus_'+id);
 //console.log(load_elem);		
-		$("div[id^=text]", load_elem).html('Retrieving information');
+		$("div#text_"+id, load_elem).html('Refreshing...');
 		
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
@@ -147,10 +153,14 @@ App.Views.ListProposal = Backbone.View.extend({
 		      },
 		      error: function(x,t,m) {
 				alert('You must be connected to the NSF network to assign individual proposals');
+				$(load_elem).remove();				
 		      }
 			});
 		} else {
-				if (!proposalaccessallowed) alert('You must be connected to the NSF network to assign individual proposals');
+				if (!proposalaccessallowed) {
+					alert('You must be connected to the NSF network to assign individual proposals');
+					$(load_elem).remove();
+				}
 				else loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
 		}		
 	},
@@ -166,7 +176,7 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(proposal);				
 				var index = self.collection.indexOf(proposal);
 //console.log(tmp);	
-				var load_elem = 'td#loadstatus_'+proposal.id;				
+				var load_elem = 'div#loadstatus_'+proposal.id;				
 				proposal.save({ 
 					proposal: { 
 						'details': JSON.stringify(proposal_data["details"]), 
@@ -191,8 +201,8 @@ App.Views.ListProposal = Backbone.View.extend({
 					},
 					error: function(data) {
 						//update status
-						$("div[id^=load_complete]", load_elem).html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
-						$("div[id^=load_complete]", load_elem).addClass("alert-error");
+						alert('Things went wrong during the load. You can try your request again.');
+						$(load_elem).remove();						
 					}
 				});
 			});		
@@ -200,6 +210,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			//update status
 			//clean this up, just alert for now
 			alert('Things went wrong during the load. You can try your request again.');
+			$(load_elem).remove();			
 		}										 		
 	},
 	unassignProposal: function(e) {
