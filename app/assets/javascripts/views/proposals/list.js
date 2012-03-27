@@ -73,16 +73,31 @@ App.Views.ListProposal = Backbone.View.extend({
 	refreshProposal: function(e) {
 		e.preventDefault();
 
-		$("div#loadstatus div#text").html('Retrieving information');
-		$("div#load_help").hide();
-		$("div#loadstatus").show();
-
 		//what is the id? //last elem in id attr
 		var id = $(e.currentTarget).attr('id').split('_').pop();
+
 		//find proposal in collection
 		var proposal = this.collection.get(id);
+
+		//add a row below the current row to show the status
+		var row = $(e.currentTarget).closest("tr");
+		var template = '<tr id="loadstatus_'+id+'">';
+		template += '<td><div class="alert" id="text_'+id+'"></div></td>';
+		template += '<td id="component_proposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td id="component_researchers_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td id="component_topics_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td id="component_panels_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td id="component_reviewers_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td id="component_reviewerproposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
+		template += '<td colspan="2"><div id="load_complete_'+id+'"></div></td>';
+		row.after(template);
+
+		var load_elem = $('tr#loadstatus_'+id);
+//console.log(load_elem);		
+		$("div[id^=text]", load_elem).html('Retrieving information');
+
 		//refresh proposal data
-		var loadProposalView = new App.Views.LoadProposal({ el:$("div#loadstatus") });
+		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
 		loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');		
 	},
 	respondToRefresh: function(status,loaded_data) {
@@ -97,6 +112,7 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(proposal);				
 				var index = self.collection.indexOf(proposal);
 //console.log(tmp);	
+				var load_elem = 'td#loadstatus_'+proposal.id;				
 				proposal.save({ 
 					proposal: { 
 						'details': JSON.stringify(proposal_data["details"]), 
@@ -116,20 +132,20 @@ App.Views.ListProposal = Backbone.View.extend({
 								self.addAll();
 							}
 						});*/ //dirty way to do this, try to figure out how to update the collection, fighting me at the moment, will come back to this
-						$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned!');
-						$("div#loadstatus div#status").addClass("alert-success");
+//						$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned!');
+//						$("div#loadstatus div#status").addClass("alert-success");
 					},
 					error: function(data) {
 						//update status
-						$("div#loadstatus div#status").html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
-						$("div#loadstatus div#status").addClass("alert-error");
+						$("div[id^=load_complete]", load_elem).html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
+						$("div[id^=load_complete]", load_elem).addClass("alert-error");
 					}
 				});
 			});		
 		} else {
 			//update status
-			$("div#loadstatus div#status").html('<p><strong>Uh-oh!</strong> Things went wrong during the load, as you can see above. You can try your request again.');
-			$("div#loadstatus div#status").addClass("alert-error");
+			//clean this up, just alert for now
+			alert('Things went wrong during the load. You can try your request again.');
 		}										 		
 	},
 	unassignProposal: function(e) {

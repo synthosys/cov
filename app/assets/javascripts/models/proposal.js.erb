@@ -1,14 +1,54 @@
 var Proposal = Backbone.Model.extend({
 	urlRoot: baseURI+"/proposals",
-	read: function() {
+	extractData: function() {
 		//return json version of the data
 		var proposal = this.toJSON();
-		proposal.details = $.parseJSON(proposal.details);
-		proposal.researchers = $.parseJSON(proposal.researchers);
-		proposal.topics = $.parseJSON(proposal.topics);
-		proposal.panels = $.parseJSON(proposal.panels);
-		proposal.reviewers = $.parseJSON(proposal.reviewers);
-		proposal.reviewerproposals = $.parseJSON(proposal.reviewerproposals);	
-		return proposal;
+//console.log(proposal);		
+		this.details_parsed = $.parseJSON(proposal.details);
+		this.researchers_parsed = $.parseJSON(proposal.researchers);
+		this.topics_parsed = $.parseJSON(proposal.topics);
+		this.panels_parsed = $.parseJSON(proposal.panels);
+		this.reviewers_parsed = $.parseJSON(proposal.reviewers);
+		this.reviewerproposals_parsed = $.parseJSON(proposal.reviewerproposals);	
+//console.log(this.attributes);		
 	},
+	//getters for the more embedded attributes
+	title: function() {
+		return this.details_parsed.title;
+	},
+	status: function() {
+		return this.details_parsed.status.name;
+	},
+	status_date: function() {
+		return this.details_parsed.status.date;
+	},
+	amount: function() {
+		if (this.details_parsed.status.name=="award") return this.details_parsed.awarded.dollar; else return "(declined)";
+	},
+	lastviewed: function() {
+		//return this.associations[0].lastviewed ? this.associations[0] : null;
+		return ''; //put this back in when you get it working
+	},
+	panels_raw: function() {
+		return this.panels_count()>0 ? this.panels_parsed : [];
+	},
+	assigned_users: function() {
+//console.log(this.users);		
+		return this.get('users') ? this.get('users') : [];		
+	},
+	researchers_count: function() {
+		return this.researchers_parsed ? this.researchers_parsed.length : 0;
+	},
+	topics_count: function() {
+		return this.topics_parsed ? this.topics_parsed.length : 0;
+	},
+	panels_count: function() {
+		return this.panels_parsed ? this.panels_parsed.length : 0;
+	},
+	reviewers_count: function() {
+		return this.reviewers_parsed ? this.reviewers_parsed.length : 0;
+	},
+	reviewer_proposals_count: function() {
+		return this.reviewerproposals_parsed ? this.reviewerproposals_parsed.length : 0;
+	}
 });

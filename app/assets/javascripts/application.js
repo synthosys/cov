@@ -11,6 +11,7 @@
 //= require bootstrap
 //= require serializeobject
 //= require json2
+//= require datatables/datatables.min.js
 //= require require/require
 //= require app
 //= require global

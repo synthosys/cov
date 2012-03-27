@@ -7,7 +7,7 @@ class ProposalsController < ApplicationController
   def index
     if can? :create, User
       # like accessible_by -- show only proposals we have access to 
-      @proposal = Proposal.all.select { |prop| can? :update, prop }
+      @proposal = Proposal.all(:include => [:associations]).select { |prop| can? :update, prop }
     else
       # This one is weird... improve it
       @proposal = Proposal.all :include => [:users, :associations], :conditions => ["users.id = ?", current_user]

@@ -4,6 +4,11 @@ App.Views.NewProposal = Backbone.View.extend({
 	},
 	initialize: function() {
 		var self = this;
+
+		/*require(['text!templates/proposals/new.html'], function(html) {
+        	self.render(html);
+		});
+		return;*/ //uncomment this when trying to test locally
 		
 	    // Check to see if we have access to nsfstarmetrics server 
 	    $.ajax({

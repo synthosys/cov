@@ -35,8 +35,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 //console.log(this);		
 		//prep reciever
 		this.loadedcomponents = {};
-		$("div#loadstatus").show();
-		$("div#loadstatus div#text").html('Retrieving information');
+		$(this.el).show();
+		$("div#text", this.el).html('Retrieving information');
 		//reset load status
 		this.updateLoadStatus('proposals','reset',null,'');
 		this.updateLoadStatus('researchers','reset',null,'');
@@ -44,7 +44,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		this.updateLoadStatus('panels','reset',null,'');
 		this.updateLoadStatus('reviewers','reset',null,'');
 		this.updateLoadStatus('reviewerproposals','reset',null,'');
-		$("div#loadstatus ul#components").show();
+		$("ul#components", this.el).show();
 		//start loads of all the different data components
 		this.loadProposals(division);
 	},
@@ -171,7 +171,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 			url: url,
 			dataType: datatype,
 			success: function(data) {
-				if (data.count==0) {
+				if (data["data"].length==0) {
 					//return with error
 					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
 					//set the others here too so we return
@@ -465,7 +465,10 @@ App.Views.LoadProposal = Backbone.View.extend({
 		this.loadedcomponents[component]['status'] = status;
 		this.loadedcomponents[component]['data'] = data;
 		this.loadedcomponents[component]['message'] = message;
-		var elem = $("div#loadstatus li#"+component);
+		var elem_id = "component_"+component+(this.options.prop_id?'_'+this.options.prop_id:'');
+//console.log(elem_id);		
+		var elem = $("#"+elem_id, this.el);
+//console.log(this.el);		
 		if (status=='reset') {
 			$("i", elem).removeClass('icon-ok');
 			$("i", elem).removeClass('icon-exclamation-sign');
@@ -473,7 +476,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 			$("span[class^=label]", elem).removeClass('label-success');
 			$("span[class^=label]", elem).removeClass('label-important');
 			$("span[class=status]", elem).html('Pending');
-			$("div#loadstatus div#progressbar").width('0%');
+			$("div#progressbar", this.el).width('0%');
 		} else if (status=='start') {
 			$("span[class^=label]", elem).addClass('label-info');
 			$("span[class=status]", elem).html('Loading');			

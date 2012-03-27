@@ -6,6 +6,7 @@ body {
   line-height: 16px;
 }
 
+.table td.text-right { text-align: right;}
 
 #tab_reviewer_expertise_topics [class^="icon-"] {
   margin-right: 5px;
