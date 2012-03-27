@@ -49,6 +49,7 @@ App.Views.ListProposal = Backbone.View.extend({
 				aaData.push([col1, col2, col3]);
 			});
 			$(this.el).dataTable({
+				"bDestroy":true,
 				"aaData": aaData,
 				"aoColumns": [
 					{ "sTitle": "Title" },
