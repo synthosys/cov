@@ -6,12 +6,6 @@
 		<thead>
 			<tr>
 				<th width="300px">Title</th>
-				<th>Status</th>
-				<th>Researchers</th>
-				<th>Topics</th>						
-				<th>Panels</th>
-				<th>Reviewers</th>
-				<th>Reviewer Topics</th>
 				<th>Assigned To</th>
 				<th>Actions</th>
 			</tr>
@@ -24,19 +18,15 @@
 		<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a> - 
 		{{title}}
 	</td>
-	<td>{{status}}</td>
-	<td class="text-right">{{researchers_count}}</td>
-	<td class="text-right">{{topics_count}}</td>
-	<td class="text-right">{{panels_count}}</td>
-	<td class="text-right">{{reviewers_count}}</td>
-	<td class="text-right">{{reviewer_proposals_count}}</td>
-	<td class="text-right">{{users}}</td>
+	<td>{{users}}</td>
 	<td>
 		<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 		<% if can? :manage, :assignDivisionCan %>
 			<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
-				<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
-			<a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i>Remove</a>			
+				<% if 1==0 %>
+					<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i>Refresh</a><br />
+				<% end %>
+				<a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i>Remove</a>			
 		<% else %>
 			<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a>
 		<% end %>
@@ -44,7 +34,7 @@
 	</script>
 	<script type="text/Javascript">
 	App.views = {
-		'ListProposal': { el:$("#proposals_table"), division:'<%= current_user.division %>'}
+		'ListProposal': { el:$("#proposals_table"), division:'<%= current_user.division %>', useDataTables: true, allowEdit: <%= true if can? :manage, :assignDivisionCan %> }
 	};
 	</script>
 <% else %>

@@ -83,20 +83,20 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	prepareData: function() {
 		//first, jsonify the stuff we got back so we can play with it
-		var proposal = this.model.read();
+		this.model.extractData();
 		var self = this;
 		//save the data in this view
 		//details
-		this.details = proposal.details;
+		this.details = this.model.details_parsed;
 		//researchers
-		this.researchers = proposal.researchers;
+		this.researchers = this.model.researchers_parsed;
 		//topics
-		this.topics = proposal.topics;
+		this.topics = this.model.topics_parsed;
 		//panels and stuff
-		var panels = proposal.panels;
-		var reviewers = proposal.reviewers;
+		var panels = this.model.panels_parsed;
+		var reviewers = this.model.reviewers_parsed;
 //console.log(reviewers);		
-		var reviewerproposals = proposal.reviewerproposals;
+		var reviewerproposals = this.model.reviewerproposals_parsed;
 		this.panels = [];
 		//now, let's build a list of complete panels
 		if (panels.length>0) {

@@ -21,7 +21,39 @@ App.Views.ListProposal = Backbone.View.extend({
 	},
 	addAll: function() {
 		$('tbody', $(this.el)).empty();
-		this.collection.each(this.addOne);
+		//if we're using data tables
+		if (this.options.useDataTables) {
+			var aaData = [];
+//console.log(this.collection.models);			
+			var self = this;
+			_.each(this.collection.models,function(proposal) {
+				proposal.extractData();
+				var col1 = '<a href="'+baseURI+'/proposals/'+proposal.id+'">'+proposal.get('nsf_id')+'</a> - '+proposal.title();
+				var col2 = [];
+				var users = proposal.assigned_users();
+//console.log(this.model.attributes);		
+//console.log(users);		
+				_.each(users, function(user) {
+					col2.push('<a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
+				});
+				var col3 = '';
+				col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
+//console.log(html);							
+				if (self.options.allowEdit) {
+					col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a><br />';
+					//col3 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a><br />';
+					col3 += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+				} else {
+					col3 += '<a href="#" id="proposals_unassign_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+				}						
+				aaData.push([col1, col2, col3]);
+			});
+			$(this.el).dataTable({
+				"aaData": aaData,
+			});			
+		} else {
+			this.collection.each(this.addOne);			
+		}
 	},
 	addProposal: function(proposal) {
 		this.collection.add(proposal);
