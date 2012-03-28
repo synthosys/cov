@@ -2,7 +2,28 @@
 <p>Find me in app/views/programs/index.html.erb</p>
 
 <script type="text/Javascript">
+
 App.views = {
 	'IndexProgram': { el:$("#main") },
 };
+
 </script>
+
+<script id="pgeTableTemplate" type="text/html">
+	<table class="table table-striped">
+		<tr><th>CMMI Programs</th></tr>
+		{{= _.each(pgeList, function(p){ }}
+<!-- use full_label when exists, otherwise use label -->
+		<tr><td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ p.nsf_pge }}&year=2007-2010>p{{ p.nsf_pge }}-{{ p.full_label }}</a></td></tr>
+		{{= }); }}
+	</table>
+</script>
+
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#1" data-toggle="tab">Program Dashboard</a></li>
+	</ul>
+	<div class="tab-pane active" id="1">
+		<div id="pge-list"></div>
+	</div>
+</div>
