@@ -285,10 +285,18 @@ App.Views.LoadProposal = Backbone.View.extend({
 						_.each(reviewers, function(reviewer) {
 							orgs.push(reviewer['inst']['nsf_id']);
 						});
+//console.log(reviewers);								
 						//so now, get the inst classifications
+						if (!proposalaccessallowed) {
+							var url = baseURI+'/proposals'+'/sample?for=inst_class';
+							var datatype = 'JSON';
+						} else {
+							var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+							var datatype = 'JSONP';			
+						}
 						$.ajax({
-							url: apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?',
-							dataType: 'JSONP',
+							url: url,
+							dataType: datatype,
 							success: function(data) {
 								//found it! save it back
 								for (var i=0;i<reviewers.length;i++) {
@@ -298,6 +306,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 									reviewers[i]['inst']['flag'] = '';
 									if (org) reviewers[i]['inst']['flag'] = org['flag'];
 								}
+//console.log(reviewers);								
 								tmp['reviewers'] = reviewers;
 								proposal_panel_reviewers.push(tmp);
 							}
@@ -305,8 +314,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 					});
 					loaded_data[nsf_id] = proposal_panel_reviewers;
 				});
-				//get the orgs and store that info too
-				
 				//also, make a list of panels and reviewers as pis
 				var panel_reviewers_as_pis = [];
 				_.each(panels, function(panel) {
@@ -454,6 +461,16 @@ App.Views.LoadProposal = Backbone.View.extend({
 							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 						}
 					});
+				} else {
+//console.log(loaded_data);					
+					//nothing found, send back empty stuff
+					//store data
+					_.each(self.nsf_ids, function(nsf_id) {
+						//find them all out
+						loaded_data[nsf_id] = [];
+					});
+					//ALL DONE! run callback function
+					self.processLoadProgress(component, 'ok', loaded_data, 'Done' );														
 				}
 			},
 			error: function() {

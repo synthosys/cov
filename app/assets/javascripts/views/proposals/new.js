@@ -79,47 +79,56 @@ App.Views.NewProposal = Backbone.View.extend({
 					var nsf_id = proposal.get("nsf_id");
 					$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
 					
-					if ($("#user_id").val()) {
-						var users = proposal.get("users");
-			//console.log(users);					
-						//is this user on the list?
-						var found = _.find(users,function(user) {
-							return user["id"] == user_id;
-						});
-
-						if (!found) {
-							//all we will do is assign these
-			//console.log(proposal);					
-							//get current assignments
-							var current = _.map(users, function(user) {
-								return user.id.toString();
+					//if division does not match!
+					var details = $.parseJSON(proposal.get("details"));
+					if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
+						if ($("#user_id").val()) {
+							var users = proposal.get("users");
+				//console.log(users);					
+							//is this user on the list?
+							var found = _.find(users,function(user) {
+								return user["id"] == user_id;
 							});
-							current.push(user_id);
 
-							proposal.save({ proposal: { user_ids: current} },{
-								success: function(data) {
-									//run the callback
-									if (self.options.view && self.options.respondto_update) self.options.view[self.options.respondto_update](proposal);
-									
-									//update status
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already loaded, assigned.');
-								},
-								error: function(data) {
-									//update status
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
-									$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Could not save.");
-								}
-							});
-						} else {
-							//update status
-							$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
-							$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
-							$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already assigned.');							
-						}
-					} 					
+							if (!found) {
+								//all we will do is assign these
+				//console.log(proposal);					
+								//get current assignments
+								var current = _.map(users, function(user) {
+									return user.id.toString();
+								});
+								current.push(user_id);
+
+								proposal.save({ proposal: { user_ids: current} },{
+									success: function(data) {
+										//run the callback
+										if (self.options.view && self.options.respondto_update) self.options.view[self.options.respondto_update](proposal);
+
+										//update status
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already loaded, assigned.');
+									},
+									error: function(data) {
+										//update status
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+										$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html("Could not save.");
+									}
+								});
+							} else {
+								//update status
+								$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
+								$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+								$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already assigned.');							
+							}
+						} 											
+					} else {
+						//update status
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
+						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Not a '+self.options.division+' proposal.');													
+					}
 				});
 				//now we have a list of what we need to go get
 				//this is the difference of what we wanted vs. what is already loaded
@@ -137,7 +146,7 @@ App.Views.NewProposal = Backbone.View.extend({
 					self.loadProposals();
 				} else {
 					self.enableGo();
-					$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
+					$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status above and re-submit anything that couldn\'t be loaded.');
 					$("div#load_complete").addClass("alert-success");					
 				}			
 			}
@@ -154,7 +163,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		} else {
 			$("div#loadstatus").hide();
 			$("div#load_complete").addClass("alert");
-			$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status and resubmit anything that couldn\'t be loaded.');
+			$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status above and re-submit anything that couldn\'t be loaded.');
 			this.enableGo();
 		}
 	},

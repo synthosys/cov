@@ -187,7 +187,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				}
 			});		
 		} else {
-			renderto.html('<div class="alert">This reviewer is not known as a PI to NSF.</div>');
+			renderto.html('<div class="alert">This reviewer is not known to have submitted Proposals to NSF as a PI/Co-PI.</div>');
 		}
 	},
 	renderAwards: function(proposals,renderto) {
@@ -208,10 +208,15 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				data.title = details.title;
 
 				if (details.status.name=='award') {
-					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+details.awarded.dollar+'</td></tr>';
+					var funding = details.awarded.dollar;
+					if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
+					else var award_amount = '';			
+					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
+					data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>';			
 				} else {
-					data.status = '<tr><td colspan="2">('+details.status.name+')</td></tr>';
+					data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
+					data.links = 'N/A';
 				}
 				data.pge = details.pge.code;
 				data.division = details.org.name;
@@ -239,16 +244,16 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var topics = proposal.topics;
 				//yuck, not very dry at the moment but will refactor later, just trying to get this all in right now
 				data.t1 = topics[0];
-				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'';
+				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'(not assigned)';
 				data.t1_words = topics[0]?self.legend_topics[topics[0]]["words"]:'';
 				data.t2 = topics[1];
-				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'';
+				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'(not assigned)';
 				data.t2_words = topics[1]?self.legend_topics[topics[1]]["words"]:'';
 				data.t3 = topics[2];
-				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'';
+				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'(not assigned)';
 				data.t3_words = topics[2]?self.legend_topics[topics[2]]["words"]:'';
 				data.t4 = topics[3];
-				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'';
+				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'(not assigned)';
 				data.t4_words = topics[3]?self.legend_topics[topics[3]]["words"]:'';		
 
 				proposals_compiled.push(proposals_template(data));

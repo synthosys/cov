@@ -50,6 +50,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			});
 			$(this.el).dataTable({
 				"bDestroy":true,
+				"iDisplayLength": 100,
 				"aaData": aaData,
 				"aoColumns": [
 					{ "sTitle": "Title" },
@@ -138,6 +139,9 @@ App.Views.ListProposal = Backbone.View.extend({
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
 
+		/*loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+		return; *///uncomment this to run in test mode
+				
 	    // Check to see if we have access to nsfstarmetrics server 
 		if (!this.datacheck) {
 			this.datacheck = true;
@@ -153,13 +157,13 @@ App.Views.ListProposal = Backbone.View.extend({
 				loadProposalView.loadProposalData([proposal.get("nsf_id")],self.options.division,self,'respondToRefresh');
 		      },
 		      error: function(x,t,m) {
-				alert('You must be connected to the NSF network to assign individual proposals');
+				alert('You must be connected to the NSF network to refresh proposal data');
 				$(load_elem).remove();				
 		      }
 			});
 		} else {
 				if (!proposalaccessallowed) {
-					alert('You must be connected to the NSF network to assign individual proposals');
+					alert('You must be connected to the NSF network to refresh proposal data');
 					$(load_elem).remove();
 				}
 				else loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
@@ -170,6 +174,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			//save and update collection
 			var self = this;
 			_.each(loaded_data, function(proposal_data,nsf_id) {
+//console.log(proposal_data);								
 //console.log(nsf_id);				
 				var foundproposals = self.collection.filterbyid([nsf_id.toString()]);
 //console.log(foundproposals);				
@@ -189,6 +194,7 @@ App.Views.ListProposal = Backbone.View.extend({
 						}
 					}, {
 					success: function(data) {
+						$(load_elem).remove();
 						//self.collection.models[index] = proposal;
 						self.updateProposal();
 						/*self.collection.fetch({ 

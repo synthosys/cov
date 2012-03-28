@@ -78,7 +78,84 @@ class ProposalsController < ApplicationController
   # GET /proposals/sample
   def sample
     if params[:for] == 'panels'
-      @sampledata = '{"count":1,"data":[{"nsf_id":"P091668","pge":{"code":"1788"},"name":"1788 NM Spring Unsol 6/12/09","prop":["0925471","0926203","0926939","0926947","0927510","0927655","0927777","0927786","0928004","0928006","0928024","0928192","0928343","0928353","0928378","0928390","0928449","0928469","0928562","0928748","0928803","0928817","0928842","0928984","0929204","0929233","0929239"],"officer":"MWOOD","address":{"city":"Arlington","state":"VA","name":"NSF"},"org":{"code":"07030000","name":"CMMI","full":"Division of Civil, Mechanical, and Manufacturing Innovation"},"revr":["KH0907087","MS0807349","NB0735265","PM0879656","PR0837050","RS0601285","SH0874746","TD0517559"],"start_date":"2009/06/12","totalawards":81,"totalfunding":24370875}]}'
+      @sampledata = '{
+          "count": 2, 
+          "data": [
+              {
+                  "nsf_id": "P120178", 
+                  "pge": {
+                      "code": "1631"
+                  }, 
+                  "name": "Contruction Engineering/Infrastructure Management Career", 
+                  "prop": [
+                      "1149460", 
+                      "1149733", 
+                      "1149896", 
+                      "1150448", 
+                      "1150450", 
+                      "1150686", 
+                      "1150828", 
+                      "1150845", 
+                      "1150920", 
+                      "1151149"
+                  ], 
+                  "officer": "COWENS", 
+                  "address": {
+                      "city": "Arlington", 
+                      "state": "VA", 
+                      "name": "NSF"
+                  }, 
+                  "org": {
+                      "code": "07030000", 
+                      "name": "CMMI", 
+                      "full": "Division of Civil, Mechanical, and Manufacturing Innovation"
+                  }, 
+                  "revr": [
+                      "GY0936244", 
+                      "NR0911038", 
+                      "NY0833779", 
+                      "PK0847167", 
+                      "YX0909915", 
+                      "ZS0773056"
+                  ], 
+                  "start_date": "2011/10/18"
+              }, 
+              {
+                  "nsf_id": "P120383", 
+                  "pge": {
+                      "code": "1638"
+                  }, 
+                  "name": "1638 Career", 
+                  "prop": [
+                      "1148079", 
+                      "1148574", 
+                      "1149460", 
+                      "1150608", 
+                      "1151031", 
+                      "1151037", 
+                      "1151065"
+                  ], 
+                  "officer": "COWENS", 
+                  "address": {
+                      "city": "Arlington", 
+                      "state": "VA", 
+                      "name": "NSF"
+                  }, 
+                  "org": {
+                      "code": "07030000", 
+                      "name": "CMMI", 
+                      "full": "Division of Civil, Mechanical, and Manufacturing Innovation"
+                  }, 
+                  "revr": [
+                      "KY0900048", 
+                      "NA0907472", 
+                      "YE0858161", 
+                      "ZH0883995"
+                  ], 
+                  "start_date": "2011/10/21"
+              }
+          ]
+      }'
     elsif params[:for] == 'panel_proposals'
       @sampledata = '{
           "count": 7, 
@@ -296,209 +373,232 @@ class ProposalsController < ApplicationController
       }'
     elsif params[:for] == 'panel_reviewers'
       @sampledata = '{
-          "count": 8, 
+          "count": 10, 
           "data": [
               {
-                  "nsf_id": "PM0879656", 
-                  "first_name": "Xiuling", 
-                  "last_name": "Li", 
-                  "name": "Xiuling Li", 
+                  "nsf_id": "KY0900048", 
+                  "first_name": "Jamie", 
+                  "last_name": "Padgett", 
+                  "name": "Jamie Padgett", 
                   "gender": "F", 
                   "inst": {
-                      "dept": "Electrical and Computer Engineering", 
-                      "name": "UNIVERSITY OF ILLINOIS", 
-                      "nsf_id": "5300018385"
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "William Marsh Rice University", 
+                      "nsf_id": "0036046000"
                   }
               }, 
               {
-                  "nsf_id": "PR0837050", 
+                  "nsf_id": "NA0907472", 
+                  "first_name": "Laura", 
+                  "last_name": "McLay", 
+                  "name": "Laura McLay", 
+                  "gender": "F", 
+                  "inst": {
+                      "dept": "Dept of Statistical Science and Oper Res", 
+                      "name": "Virginia Commonwealth University", 
+                      "nsf_id": "0001347000"
+                  }
+              }, 
+              {
+                  "nsf_id": "NR0911038", 
                   "first_name": "Carol", 
-                  "last_name": "Livermore-Clifford", 
-                  "name": "Carol Livermore-Clifford", 
+                  "last_name": "Menassa", 
+                  "name": "Carol Menassa", 
                   "gender": "F", 
                   "inst": {
-                      "dept": "Mechanical Engineering", 
-                      "name": "Massachusetts Institute of Technology", 
-                      "nsf_id": "0021782000"
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Wisconsin-Madison", 
+                      "nsf_id": "0038950000"
                   }
               }, 
               {
-                  "nsf_id": "SH0874746", 
-                  "first_name": "Tony Jun", 
-                  "last_name": "Huang", 
-                  "name": "Tony Jun Huang", 
+                  "nsf_id": "PK0847167", 
+                  "first_name": "Vineet", 
+                  "last_name": "Kamat", 
+                  "name": "Vineet Kamat", 
                   "gender": "M", 
                   "inst": {
-                      "dept": "Engineering Sceince & Mechanics", 
-                      "name": "Pennsylvania State University, Commonwealth College", 
-                      "nsf_id": "6250009638"
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Michigan Ann Arbor", 
+                      "nsf_id": "0023259000"
                   }
               }, 
               {
-                  "nsf_id": "000130886", 
-                  "first_name": "Ellen", 
-                  "last_name": "Williams", 
-                  "middle_name": "D", 
-                  "name": "Ellen D Williams", 
+                  "nsf_id": "YE0858161", 
+                  "first_name": "Samuel", 
+                  "last_name": "Brody", 
+                  "name": "Samuel Brody", 
+                  "gender": "M", 
+                  "inst": {
+                      "dept": "Marine Sciences Urban Planning", 
+                      "name": "Texas A&M University Main Campus", 
+                      "nsf_id": "0036327000"
+                  }
+              }, 
+              {
+                  "nsf_id": "000219660", 
+                  "first_name": "Dulcy", 
+                  "last_name": "Abraham", 
+                  "middle_name": "M", 
+                  "name": "Dulcy M Abraham", 
                   "degree": {
                       "name": "PhD", 
-                      "year": "1982"
+                      "year": "1990"
                   }, 
                   "revr": [
-                      "TD0517559"
+                      "ZS0773056"
                   ], 
                   "gender": "F", 
-                  "phone": "3014056156", 
+                  "phone": "7654942239", 
                   "inst": {
-                      "dept": "Physics", 
-                      "name": "University of Maryland College Park", 
-                      "nsf_id": "0021030000"
-                  }, 
-                  "address": {
-                      "country": "US", 
-                      "state": "MD", 
-                      "street": "2120 John S. Toll Physics Building", 
-                      "zip": "207424111", 
-                      "city": "College Park"
-                  }, 
-                  "pi": [
-                      "000130886"
-                  ], 
-                  "email": "edw@physics.umd.edu", 
-                  "ethnicity": "U"
-              }, 
-              {
-                  "nsf_id": "000169270", 
-                  "first_name": "Marc", 
-                  "last_name": "Madou", 
-                  "middle_name": "J", 
-                  "name": "Marc J Madou", 
-                  "degree": {
-                      "name": "PhD", 
-                      "year": "1978"
-                  }, 
-                  "revr": [
-                      "NB0735265"
-                  ], 
-                  "gender": "M", 
-                  "phone": "9498246585", 
-                  "inst": {
-                      "dept": "Mechanical & Aerospace Engineering", 
-                      "name": "University of California-Irvine", 
-                      "nsf_id": "0013144000"
-                  }, 
-                  "address": {
-                      "country": "US", 
-                      "state": "CA", 
-                      "street": "4200 Engineering Gateway", 
-                      "zip": "926973975", 
-                      "city": "Irvine"
-                  }, 
-                  "pi": [
-                      "000169270"
-                  ], 
-                  "email": "mmadou@uci.edu", 
-                  "ethnicity": "NH"
-              }, 
-              {
-                  "nsf_id": "000236550", 
-                  "first_name": "David", 
-                  "last_name": "Norris", 
-                  "middle_name": "J", 
-                  "name": "David J Norris", 
-                  "degree": {
-                      "name": "PhD", 
-                      "year": "1995"
-                  }, 
-                  "revr": [
-                      "MS0807349"
-                  ], 
-                  "gender": "M", 
-                  "phone": "6126252043", 
-                  "inst": {
-                      "dept": "Chemical Engineering & Materials Science", 
-                      "name": "University of Minnesota-Twin Cities", 
-                      "nsf_id": "0023879000"
-                  }, 
-                  "address": {
-                      "city": "Minneapolis", 
-                      "zip": "55455", 
-                      "country": "US", 
-                      "state": "MN", 
-                      "street": "151 Amundson Hall", 
-                      "street_additional": "421 Washington Avenue SE"
-                  }, 
-                  "pi": [
-                      "000236550"
-                  ], 
-                  "email": "dnorris@umn.edu", 
-                  "ethnicity": "NH"
-              }, 
-              {
-                  "nsf_id": "269774221", 
-                  "first_name": "Carol", 
-                  "last_name": "Handwerker", 
-                  "middle_name": "A", 
-                  "name": "Carol A Handwerker", 
-                  "degree": {
-                      "name": "ScD", 
-                      "year": "1983"
-                  }, 
-                  "revr": [
-                      "RS0601285"
-                  ], 
-                  "gender": "F", 
-                  "phone": "7654940147", 
-                  "inst": {
-                      "dept": "Materials Engineering", 
+                      "dept": "Department of Civil Engineering", 
                       "name": "Purdue University", 
                       "nsf_id": "0018259000"
                   }, 
                   "address": {
                       "city": "West Lafayette", 
-                      "zip": "479072108", 
+                      "zip": "479072051", 
                       "country": "US", 
                       "state": "IN", 
-                      "street": "Young Hall", 
-                      "street_additional": "302 Wood Street"
+                      "street": "School of Civil Engineering", 
+                      "street_additional": "Purdue University"
                   }, 
                   "pi": [
-                      "269774221"
+                      "000219660"
                   ], 
-                  "email": "handwerker@purdue.edu", 
+                  "email": "dulcy@ecn.purdue.edu", 
                   "ethnicity": "NH"
               }, 
               {
-                  "nsf_id": "269787682", 
-                  "first_name": "Sang-Hyun", 
-                  "last_name": "Oh", 
-                  "name": "Sang-Hyun Oh", 
+                  "nsf_id": "269717446", 
+                  "first_name": "John", 
+                  "last_name": "Messner", 
+                  "middle_name": "I", 
+                  "name": "John I Messner", 
                   "degree": {
                       "name": "PhD", 
-                      "year": "2001"
+                      "year": "1994"
                   }, 
                   "revr": [
-                      "KH0907087"
+                      "NY0833779"
                   ], 
                   "gender": "M", 
-                  "phone": "6126250125", 
+                  "phone": "8148654578", 
                   "inst": {
-                      "dept": "Electrical and Computer Engineering", 
-                      "name": "University of Minnesota-Twin Cities", 
-                      "nsf_id": "0023879000"
+                      "dept": "Architectural Engineering", 
+                      "name": "Pennsylvania State Univ University Park", 
+                      "nsf_id": "0033290000"
                   }, 
                   "address": {
-                      "city": "Minneapolis", 
-                      "zip": "554552070", 
                       "country": "US", 
-                      "state": "MN", 
-                      "street": "200 Union St. SE", 
-                      "street_additional": "Room 5-119"
+                      "state": "PA", 
+                      "street": "208 Engineering Unit A", 
+                      "zip": "16802", 
+                      "city": "University Park"
                   }, 
                   "pi": [
-                      "269787682"
+                      "269717446"
                   ], 
-                  "email": "sang@umn.edu", 
+                  "email": "jmessner@engr.psu.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269773929", 
+                  "first_name": "Ioannis", 
+                  "last_name": "Brilakis", 
+                  "name": "Ioannis Brilakis", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2005"
+                  }, 
+                  "revr": [
+                      "YX0909915"
+                  ], 
+                  "gender": "M", 
+                  "phone": "4048949881", 
+                  "inst": {
+                      "dept": "Civil & Environmental Engineering", 
+                      "name": "Georgia Tech Research Corporation", 
+                      "nsf_id": "0015693000"
+                  }, 
+                  "address": {
+                      "city": "Atlanta", 
+                      "zip": "303320355", 
+                      "country": "US", 
+                      "state": "GA", 
+                      "street": "SEB 328", 
+                      "street_additional": "790 Atlantic Drive"
+                  }, 
+                  "pi": [
+                      "269773929"
+                  ], 
+                  "email": "brilakis@gatech.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269781340", 
+                  "first_name": "Sajjad", 
+                  "last_name": "Ahmad", 
+                  "name": "Sajjad Ahmad", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2002"
+                  }, 
+                  "revr": [
+                      "ZH0883995"
+                  ], 
+                  "gender": "M", 
+                  "phone": "7028955456", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "University of Nevada Las Vegas", 
+                      "nsf_id": "0025692000"
+                  }, 
+                  "address": {
+                      "city": "Las Vegas", 
+                      "zip": "89154", 
+                      "country": "US", 
+                      "state": "NV", 
+                      "street": "4505 Maryland Parkway", 
+                      "street_additional": "Box 454015"
+                  }, 
+                  "pi": [
+                      "269781340"
+                  ], 
+                  "email": "sajjad.ahmad@unlv.edu", 
+                  "ethnicity": "NH"
+              }, 
+              {
+                  "nsf_id": "269790130", 
+                  "first_name": "John", 
+                  "last_name": "Taylor", 
+                  "middle_name": "E", 
+                  "name": "John E Taylor", 
+                  "degree": {
+                      "name": "PhD", 
+                      "year": "2006"
+                  }, 
+                  "revr": [
+                      "GY0936244"
+                  ], 
+                  "gender": "M", 
+                  "phone": "5402310972", 
+                  "inst": {
+                      "dept": "Civil and Environmental Engineering", 
+                      "name": "Virginia Polytechnic Institute and State University", 
+                      "nsf_id": "0037549000"
+                  }, 
+                  "address": {
+                      "country": "US", 
+                      "state": "VA", 
+                      "street": "200 Patton Hall", 
+                      "zip": "24061", 
+                      "city": "Blacksburg"
+                  }, 
+                  "pi": [
+                      "269790130"
+                  ], 
+                  "email": "jet@vt.edu", 
                   "ethnicity": "NH"
               }
           ]
@@ -2130,6 +2230,8 @@ class ProposalsController < ApplicationController
               }
           ]
       }'
+    elsif params[:for] == 'inst_class'
+      @sampledata = '{"count": 0, "data": []}'
     end
       
     respond_to do |format|

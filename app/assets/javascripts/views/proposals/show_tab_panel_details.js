@@ -17,8 +17,10 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		data.fiscalyear = compiledpanel.panel.start_date;
 		data.proposals_count = compiledpanel.panel.prop.length;
 		data.reviewers_count = compiledpanel.panel.revr.length;
-		data.proposals_awarded_count = compiledpanel.panel.totalawards;
-		data.proposals_awarded_amount = compiledpanel.panel.totalfunding;
+		data.proposals_awarded_count = compiledpanel.panel.totalawards;		
+		var totalfunding = compiledpanel.panel.totalfunding;
+		if (totalfunding && parseInt(totalfunding)>0) data.proposals_awarded_amount = '$'+App.addCommas((totalfunding/1000).toFixed(0))+'K';
+		else data.proposals_awarded_amount = '';
 		data.proposals_fundingrate = '';
 
 		data.count = this.panels_count;
@@ -31,8 +33,8 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		return compiled(data);
 	},
 	renderPanelTopics: function(topics) {
-		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th>Research Topics ({{topics_count}})</th><th>Reviewers\' Proposal Count</th></tr></thead><tbody>{{topics}}</tbody></table>');
-		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th></th><th>Reviewers\' Proposal Count</th></tr></thead><tbody>{{topics}}</tbody></table>');
+		//var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th>Research Topics ({{topics_count}})</th><th>Proposals by Reviewers</th></tr></thead><tbody>{{topics}}</tbody></table>');
+		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th></th><th>Reviewers\' Proposals by Reviewers</th></tr></thead><tbody>{{topics}}</tbody></table>');
 		var data = {};
 		if (_.size(topics)==0) {
 			data.topics = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
