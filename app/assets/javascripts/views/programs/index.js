@@ -9,8 +9,6 @@ App.Views.IndexProgram = Backbone.View.extend({
                	// lookup using pge legend in the data api
                	$.getJSON("http://rd-dashboard.nitrd.gov/gapi/api/prop?legend=nsf_pge&q="+pges+"&jsoncallback=?", function(data){
 			var pgeList = data;
-			console.log(pgeList);
-			console.log($('#pgeTableTemplate').text());
 			var pgeTableTemplate = _.template($('#pgeTableTemplate').text());
 			var html = pgeTableTemplate({'pgeList' : pgeList});
 				$("#pge-list").html(html);
