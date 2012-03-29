@@ -155,7 +155,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 							}
 						});
 					} else {
-						renderto.html('<div class="alert">No proposals for this reviewer.</div>');						
+						renderto.html('<div class="alert">No awarded proposals for this reviewer.</div>');						
 					}
 				}
 			});		
