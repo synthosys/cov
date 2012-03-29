@@ -117,7 +117,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
 		if (_.size(topics) > 0) {
-			var template = _.template('<tr><td>{{icon}}<strong>{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
+			var template = _.template('<tr><td>{{icon}}<strong>t{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
 			var self = this;			
 
 			// sort this data by reverse count

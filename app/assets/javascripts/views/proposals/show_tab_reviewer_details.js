@@ -12,48 +12,19 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 
 		data.panelselect = this.panels_select;
 
-		//extract assignments for this proposal
-		var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
-			return (item.prop_id==prop_id);
-		});
-		//console.log(prop_reviewers);		
 		//assigned
-		var tmp = _.filter(prop_reviewers, function(item) {
-			return (item.status!='R');
+		var assigned_reviewers = _.filter(reviewers, function(reviewer) {
+			return (reviewer.status=='R');
 		});
-		//we have a list!
-		var assigned_reviewer_ids = _.pluck(tmp,"revr");
-		//console.log(assigned_reviewer_ids);				
-		//make list of assigned users by checking against the assigned
-		var assigned_reviewers = [];
-		if (assigned_reviewer_ids.length>0) {
-			assigned_reviewers = _.filter(reviewers, function(reviewer) {
-				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)!=-1
-			});
-		}
 
-		//console.log(assigned_reviewers);		
+//console.log(assigned_reviewers);		
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
-		var tmp = reviewers;
-		if (assigned_reviewer_ids.length>0) {
-			tmp = _.filter(reviewers, function(reviewer) {
-				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)==-1
-			});
-		}		
-		//console.log(tmp);		
-		//attach status
-		var other_reviewers = _.map(tmp, function(reviewer) {
-			var tmp = reviewer;
-			tmp.coi = false;
-			//find this reviewer in the status table
-			var status_record = _.find(prop_reviewers, function(item) {
-				return (item.revr==reviewer.nsf_id && item.status=='C');
-			})
-			if (status_record) tmp.coi = true;
-			return tmp;
-		})
+		var other_reviewers = _.filter(reviewers, function(reviewer) {
+			return (reviewer.status!='R');
+		});
+		
 		//console.log(other_reviewers);		
 		data.reviewers_other = this.renderReviewerList(other_reviewers);
 		//console.log(data);
@@ -70,7 +41,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var tmp = {};
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
-				if (tmp.status) tmp.name += '<i class="icon-remove"></i> (COI)';
+				if (tmp.status=='C') tmp.name += '<i class="icon-remove"></i> (COI)';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';
@@ -183,6 +154,8 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 								});
 							}
 						});
+					} else {
+						renderto.html('<div class="alert">No proposals for this reviewer.</div>');						
 					}
 				}
 			});		
@@ -243,16 +216,16 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				//topics
 				var topics = proposal.topics;
 				//yuck, not very dry at the moment but will refactor later, just trying to get this all in right now
-				data.t1 = topics[0];
+				data.t1 = topics[0]?'t'+topics[0]:'';
 				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'(not assigned)';
 				data.t1_words = topics[0]?self.legend_topics[topics[0]]["words"]:'';
-				data.t2 = topics[1];
+				data.t2 = topics[1]?'t'+topics[1]:'';
 				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'(not assigned)';
 				data.t2_words = topics[1]?self.legend_topics[topics[1]]["words"]:'';
-				data.t3 = topics[2];
+				data.t3 = topics[2]?'t'+topics[2]:'';
 				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'(not assigned)';
 				data.t3_words = topics[2]?self.legend_topics[topics[2]]["words"]:'';
-				data.t4 = topics[3];
+				data.t4 = topics[3]?'t'+topics[3]:'';
 				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'(not assigned)';
 				data.t4_words = topics[3]?self.legend_topics[topics[3]]["words"]:'';		
 
