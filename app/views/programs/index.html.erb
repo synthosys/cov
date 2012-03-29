@@ -11,13 +11,17 @@ App.views = {
 
 <script id="pgeTableTemplate" type="text/html">
 	<table class="table table-striped">
-		<tr><th>CMMI Programs</th></tr>
-		{{= _.each(pgeList, function(p){ }}
-		{{= var label = p.label; }}
-		{{= if(p.full_label != null) label = p.full_label; }} 
-<!-- use full_label when exists, otherwise use label -->
-		<tr><td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ p.nsf_pge }}&year=2007-2010>p{{ p.nsf_pge }}-{{ label }}</a></td></tr>
-		{{= }); }}
+		<tr><th colspan="2">CMMI Programs</th></tr>
+<!--		{{= _.each(pgeList, function(p){ }} -->
+		{{= for(var p = 0; p < pgeList.length; p=p+2) { }}
+<!--		{{= var label = p.label; }} -->
+<!--		{{= if(p.full_label != null) label = p.full_label; }}  -->
+		<tr>
+		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[p].nsf_pge }}&year=2007-2010>p{{ pgeList[p].nsf_pge }}-{{ pgeList[p].label }}</a></td>
+		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[p+1].nsf_pge }}&year=2007-2010>p{{ pgeList[p+1].nsf_pge }}-{{ pgeList[p+1].label }}</a></td>
+		</tr>
+		{{= } }}
+<!--		{{= }); }} -->
 	</table>
 </script>
 
