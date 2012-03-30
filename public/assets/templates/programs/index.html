@@ -1,0 +1,19 @@
+<div id="pge-list"></div>
+<div><h4>Exporting Division Data</h4></div>
+
+<script id="pgeTableTemplate" type="text/html">
+	<table class="table table-striped">
+		<tr><th colspan="2">CMMI Programs</th></tr>
+<!--		{{= _.each(pgeList, function(p){ }} -->
+		{{= for(var p = 0; p < pgeList.length; p=p+2) { }}
+<!--		{{= var label = p.label; }} -->
+<!--		{{= if(p.full_label != null) label = p.full_label; }}  -->
+		<tr>
+		<td><a href="#" id="{{pgeList[p].nsf_pge }}" class="link_to_topics">p{{ pgeList[p].nsf_pge }}-{{ pgeList[p].label }}</a></td>
+		<td><a href="{{pgeList[p].nsf_pge }}" class="link_to_topics">p{{ pgeList[p+1].nsf_pge }}-{{ pgeList[p+1].label }}</a></td>
+		</tr>
+		{{= } }}
+<!--		{{= }); }} -->
+	</table>
+</script>
+

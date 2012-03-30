@@ -1,0 +1,23 @@
+<div class="row">
+	<div class="span9">
+		<h3>Program ID: {{pge}} - "label here"</h3>
+		<p>Below is the list of Research Topics that were assigned to the Proposals in the Program you selected.</p>
+		<div id="topic_operator_container">Proposals from*: 
+			<select name="filter_year_from">
+				<option value="2007" selected>2007</option>
+				<option value="2008">2008</option>
+			</select>
+			to
+			<select name="filter_year_to"><option value="2007" selected>2007</option><option value="2008">2008</option></select>
+		</div>
+		<table class="table table-striped table-bordered table-condensed" id="topics_table">
+		</table>
+	</div><!-- span9 -->
+	<div class="span3">
+		<button class="btn btn-large btn-primary" id="view_awards">View Proposals &gt;&gt;</button>
+		<br /><br />
+		<h4>Research Topic Weighting</h4>
+		<p>Up to four Research Topics were assigned to each proposal. Topics are assigned in order of relevance.</p>
+		<p>To calculate the overall prevalence of Research Topics within a set of Proposals, a Prevalence score is calculated based on the weight of each Topic assignment. Use the form below to adjust the default weighting:</p>
+	</div><!-- span3 -->
+</div><!-- row -->

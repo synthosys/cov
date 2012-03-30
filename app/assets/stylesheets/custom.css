@@ -315,41 +315,41 @@ padding-top: 30px;
 --------------------------------------------------------------------------------------- Proposals Admin List
 */
 
-#proposals_table_length {
+.dataTables_length {
 float: right;
 }
-#proposals_table_filter {
+.dataTables_filter {
 float: left;
 }
 
-#proposals_table {
+.dataTable {
 clear: both;
 }
 
-#proposals_table_length label,
-#proposals_table_filter label {
+.dataTables_length label,
+.dataTables_filter label {
 font-weight: bold;
 }
 
-#proposals_table_length label,
-#proposals_table_length select,
-#proposals_table_filter label,
-#proposals_table_filter input {
+.dataTables_length label,
+.dataTables_length select,
+.dataTables_filter label,
+.dataTables_filter input {
 display: inline;
 }
 
-#proposals_table_length select { width: 70px; }
+.dataTables_length select { width: 70px; }
 
-#proposals_table_info {
+.dataTables_info {
 float: left;
 font-weight: bold;
 }
 
-#proposals_table_paginate {
+.dataTables_paginate {
 float: right;
 }
 
-#proposals_table_paginate a {
+.dataTables_paginate a {
   display: inline-block;
   padding: 4px 10px 4px;
   font-size: 13px;
@@ -377,4 +377,26 @@ float: right;
   cursor: pointer;
   *margin-left: .3em;
   margin-left: 10px;
+}
+
+.paging_full_numbers a {
+margin-left: 5px;
+}
+
+.paging_full_numbers .paginate_active {
+background: rgb(222,239,255);
+background: -moz-linear-gradient(top,  rgba(222,239,255,1) 0%, rgba(152,190,222,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(222,239,255,1)), color-stop(100%,rgba(152,190,222,1)));
+background: -webkit-linear-gradient(top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%);
+background: -o-linear-gradient(top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%);
+background: -ms-linear-gradient(top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%);
+background: linear-gradient(top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', endColorstr='#98bede',GradientType=0 );
+}
+
+.dataTables_paginate .paginate_button_disabled,
+.dataTables_paginate .paginate_disabled_previous,
+.dataTables_paginate .paginate_disabled_next {
+color: #ccc;
+cursor: default;
 }

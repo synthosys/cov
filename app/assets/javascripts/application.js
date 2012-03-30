@@ -13,10 +13,15 @@
 //= require json2
 //= require datatables/datatables.min.js
 //= require require/require
+//= require router
 //= require app
 //= require global
 //= require ./models/user.js
 //= require ./models/proposal.js
+//= require ./models/topic.js
+//= require ./models/award.js
 //= require ./collections/users.js
 //= require ./collections/proposals.js
+//= require ./collections/topics.js
+//= require ./collections/awards.js
 //= require_tree .

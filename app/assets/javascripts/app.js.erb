@@ -53,28 +53,27 @@ var App = {
 	  'WV': 'West Virginia',
 	  'WI': 'Wisconsin',
 	  'WY': 'Wyoming'
-	},	
+	},
+	legend_topics: {},	
     init: function() {
-	//load the requested view
-	if (this.viewparams) params = this.viewparams;
-	if (this.views && _.size(this.views)>0) {
-		_.each(this.views, function(params,view) {
-			if (App.Views[view]) {
-				var view = App.Views[view];
-				new view(params);
+		//have the navbar auto-re-adjust
+		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
+		$(window).scroll(function() {
+			if ($(window).scrollTop() > navb_dims["t"]) {
+				$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
+			} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
+				$(".navbar-inner").css("position", "relative");
 			}
 		});
-	};
 		
-	//have the navbar auto-re-adjust
-	navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
-	$(window).scroll(function() {
-		if ($(window).scrollTop() > navb_dims["t"]) {
-			$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
-		} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
-			$(".navbar-inner").css("position", "relative");
-		}
-	});
+		var self = this;
+		$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {
+			_.each(data, function(item) {
+				self.legend_topics[item["topic"]] = {"words":item["words"],"label":item["label"]};
+			});
+		    self.app_router = new AppRouter;
+		    Backbone.history.start();
+		});
     },
 	//adding commas to a number to format it
 	addCommas: function(nStr)
@@ -88,5 +87,19 @@ var App = {
 			x1 = x1.replace(rgx, '$1' + ',' + '$2');
 		}
 		return x1 + x2;
+	},
+	//Check to see if the data exists or is null 
+	keyExists: function (key, object, value) {
+		if (value == null)
+			value = "";
+		$(key.split(".")).each(function(i, v) {
+			if (v in object) 
+				object = object[v];
+			else {
+				object = value;
+				return false;
+			}
+		});
+		return object;
 	}
 };

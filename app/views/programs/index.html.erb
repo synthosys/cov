@@ -1,36 +1,19 @@
-<h1>Program Dashboard</h1>
-<p>Find me in app/views/programs/index.html.erb</p>
+<div class="page-header">
+	<h1>Program Dashboard</h1>
+</div>
+
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#dashboard" data-toggle="tab">Program Dashboard</a></li>
+	</ul>
+	<div class="tab-pane active" id="dashboard">
+	</div>
+</div>
 
 <script type="text/Javascript">
 
 App.views = {
-	'IndexProgram': { el:$("#main") },
+	'IndexProgram': { el:$("#dashboard") },
 };
 
 </script>
-
-<script id="pgeTableTemplate" type="text/html">
-	<table class="table table-striped">
-		<tr><th colspan="2">CMMI Programs</th></tr>
-<!--		{{= _.each(pgeList, function(p){ }} -->
-		{{= for(var p = 0; p < pgeList.length; p=p+2) { }}
-<!--		{{= var label = p.label; }} -->
-<!--		{{= if(p.full_label != null) label = p.full_label; }}  -->
-		<tr>
-		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[p].nsf_pge }}&year=2007-2010>p{{ pgeList[p].nsf_pge }}-{{ pgeList[p].label }}</a></td>
-		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[p+1].nsf_pge }}&year=2007-2010>p{{ pgeList[p+1].nsf_pge }}-{{ pgeList[p+1].label }}</a></td>
-		</tr>
-		{{= } }}
-<!--		{{= }); }} -->
-	</table>
-</script>
-
-<div class="tabbable">
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#1" data-toggle="tab">Program Dashboard</a></li>
-	</ul>
-	<div class="tab-pane active" id="1">
-		<div id="pge-list"></div>
-		<div><h4>Exporting Division Data</h4></div>
-	</div>
-</div>
