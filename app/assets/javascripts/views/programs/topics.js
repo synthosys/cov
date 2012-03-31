@@ -84,7 +84,7 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			};
 		});
 		//store the totals
-		this.totalsbyrelevance[topicrelevance] = total;
+		this.totalsbyrelevance[topicrelevance] = total; //we're not using this at the moment but leaving it here in case Jan changes his mind in the future
 //console.log(this.totalsbyrelevance);		
 		this.currentlyloading++;
 		if (this.currentlyloading<=4) {
@@ -98,6 +98,7 @@ App.Views.programsTopicsView = Backbone.View.extend({
 	},
 	renderList: function() {
 		//prepare for datatable data - conv to array
+console.log(this.loaded_topics);		
 		var self = this;
 //console.log(this.totalsbyrelevance);		
 		var aaData = _.map(this.loaded_topics, function(row, topicid) {
@@ -109,7 +110,7 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			var funding_requested = 0;
 			_.each(self.totalsbyrelevance, function(total,topicrelevance) {
 				if (row[topicrelevance]) {
-					//counts
+					//store all the counts
 					count_awarded += row[topicrelevance]['count_awarded'];
 					count_declined += row[topicrelevance]['count_declined'];
 					count_other += row[topicrelevance]['count_other'];
@@ -121,15 +122,23 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			var topic_weightedprevalence = 0;
 			_.each(self.totalsbyrelevance, function(total,topicrelevance) {
 				//weighted relevance
-				if (total>0) {
+				/*if (total>0) {
 					var tmp = count_awarded+count_declined+count_other;
 //console.log(tmp);					
 					//read the topic weight input
 					var el = $('input#'+topicrelevance, this.el);
 					var weight = (el&&el.val())?el.val():'0';
 //console.log(weight);					
-					topic_weightedprevalence += ((tmp/total)*weight); //HARDCODED FOR NOW!						
-				}					
+					topic_weightedprevalence += ((tmp/total)*weight);
+				}*/
+				if (row[topicrelevance]) {
+					var tmp = row[topicrelevance]['count_awarded']+row[topicrelevance]['count_declined']+row[topicrelevance]['count_other'];
+					//read the topic weight input
+					var el = $('input#'+topicrelevance, this.el);
+					var weight = (el&&el.val())?el.val():'0';
+//console.log(weight);					
+					topic_weightedprevalence += (tmp*weight);					
+				}
 			});
 			//return it
 			return [topic_weightedprevalence, topicid, row["label"], row["words"], count_awarded,funding_awarded,count_declined,count_other,funding_requested,row["suppress"]];
