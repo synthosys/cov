@@ -194,7 +194,6 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		    colors: ['#C7EDA1', '#1F8F54']
 		  }
 		}
-		$('#data_summary_researchers_loader').hide();
 		geochart.draw(data, option);				
 
 		//also show a graph, just to be fancy

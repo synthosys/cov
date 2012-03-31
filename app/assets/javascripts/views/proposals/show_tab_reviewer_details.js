@@ -35,13 +35,15 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		//researchers
 		var rendered = '';
 		if (reviewers.length > 0) {
-			var reviewers_template = _.template('<tr><td><h4><a href="#reviewer_listitem" id="{{nsf_id}}">{{name}}</a></h4><p>{{inst}}<br />{{dept}}</p></td><td class="icon"><i class="{{pi}}"></i></td></tr>');
+			var reviewers_template = _.template('<tr><td><h4><a href="#reviewer_listitem" id="{{nsf_id}}">{{name}}</a>{{status}}</h4><p>{{inst}}<br />{{dept}}</p></td><td class="icon"><i class="{{pi}}"></i></td></tr>');
 			var reviewers_compiled = [];
 			_.each(reviewers,function(reviewer) {
+//console.log(reviewer);				
 				var tmp = {};
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
-				if (tmp.status=='C') tmp.name += '<i class="icon-remove"></i> (COI)';
+				tmp.status = '';
+				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign"></i> (COI)</span>';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';

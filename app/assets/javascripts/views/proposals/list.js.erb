@@ -36,6 +36,7 @@ App.Views.ListProposal = Backbone.View.extend({
 				_.each(users, function(user) {
 					col2.push('<a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
 				});
+				col2 = col2.join(', ');
 				var col3 = '';
 				col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
 //console.log(html);							
@@ -48,14 +49,24 @@ App.Views.ListProposal = Backbone.View.extend({
 				}						
 				aaData.push([col1, col2, col3]);
 			});
+//console.log(aaData);			
 			$(this.el).dataTable({
 				"bDestroy":true,
 				"iDisplayLength": 100,
 				"aaData": aaData,
-				"aoColumns": [
-					{ "sTitle": "Title" },
-					{ "sTitle": "Assigned To" },
-					{ "sTitle": "Actions" },
+				"aoColumnDefs": [
+					{ 
+						"sTitle": "Title",
+						"aTargets": [ 0 ]
+					},
+					{
+						"sTitle": "Assigned To",
+						"aTargets": [ 1 ]
+					},
+					{ 
+						"sTitle": "Actions",
+						"aTargets": [ 2 ]
+					}
 				]
 			});			
 		} else {
@@ -139,8 +150,8 @@ App.Views.ListProposal = Backbone.View.extend({
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
 
-		/*loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
-		return; *///uncomment this to run in test mode
+		/* loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+		return; */ //uncomment this to run in test mode
 				
 	    // Check to see if we have access to nsfstarmetrics server 
 		if (!this.datacheck) {

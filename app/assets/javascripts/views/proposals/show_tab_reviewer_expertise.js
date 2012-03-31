@@ -79,7 +79,11 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 				data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_common_count = common_topicids.length;
-			data.topics_common_ids = common_topicids.join(',');
+			data.topics_common_ids = '';
+			_.each(common_topicids, function(topicid) {
+				if (data.topics_common_ids.length>0) data.topics_common_ids += ',';
+				data.topics_common_ids += 't'+topicid; 
+			});
 			//proposal only
 			var proposalonly_topicids = _.difference(proposaltopics,common_topicids); //THIS NEEDS TO BE PUT INTO A PANEL TOPIC OBJEC STRUCTURE SO IT CAN BE RENDERED BY THE FUNCTION
 			if (proposalonly_topicids.length>0) {
@@ -93,7 +97,11 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 				data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_proposalonly_count = proposalonly_topicids.length;
-			data.topics_proposalonly_ids = proposalonly_topicids.join(',');
+			data.topics_proposalonly_ids = '';
+			_.each(proposalonly_topicids, function(topicid) {
+				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ',';
+				data.topics_proposalonly_ids += 't'+topicid; 
+			});
 			//reviewers only
 			var reviewers_topicids = _.difference(paneltopicids,common_topicids);
 			if (reviewers_topicids.length>0) {
@@ -109,7 +117,11 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 				data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_reviewers_count = reviewers_topicids.length;
-			data.topics_reviewers_ids = reviewers_topicids.join(',');
+			data.topics_reviewers_ids = '';
+			_.each(reviewers_topicids, function(topicid) {
+				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ',';
+				data.topics_reviewers_ids += 't'+topicid; 
+			});
 		}
 		
 		return data;			

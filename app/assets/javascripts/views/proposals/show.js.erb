@@ -132,11 +132,17 @@ App.Views.ShowProposal = Backbone.View.extend({
 					var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
 						return (item.prop_id==self.model.get('nsf_id'));
 					});	
+//console.log(prop_reviewers);					
 					for (var i=0;i<extracted_reviewers.length;i++) {
+//console.log(extracted_reviewers[i]);						
+//console.log(extracted_reviewers[i].nsf_id);						
+//console.log(extracted_reviewers[i]['revr']);
 						extracted_reviewers[i].status = ''; //initialize
 						var reviewer_status = _.find(prop_reviewers, function(prop_reviewer) {
-							return prop_reviewer.revr_id==extracted_reviewers[i].nsf_id;
+							if (extracted_reviewers[i]['revr']) return $.inArray(prop_reviewer.revr,extracted_reviewers[i]['revr'])!=-1;	
+							else return prop_reviewer.revr==extracted_reviewers[i].nsf_id;
 						});
+//console.log(reviewer_status.status);						
 						if (reviewer_status) extracted_reviewers[i].status = reviewer_status.status;
 					}
 //console.log(extracted_reviewers);				
@@ -319,7 +325,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
 		this.showReviewerDetailsView.panels_select = this.getPanelsSelect();
 		var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
-console.log(html);		
+//console.log(html);		
 		$('#tab_reviewer_details', this.el).html(html);		
 	},
 	showReviewerDetail: function(e) {
