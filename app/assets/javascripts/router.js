@@ -3,6 +3,7 @@ var AppRouter = Backbone.Router.extend({
 		// Define some URL routes
 		'topics/:pge': 'programsTopics',
 		'awards/:pge': 'programsAwards',
+		'details/:nsf_id/*params': 'programsDetails',
 
 		// Default
 		'*actions': 'defaultAction' //using splats
@@ -19,6 +20,12 @@ var AppRouter = Backbone.Router.extend({
 		};
 		this.load();
 	},
+	programsDetails: function(nsf_id,params) {
+		App.views = {
+			'programsDetailsView': { el:$("#dashboard"), nsf_id:nsf_id, params: this.processParams(params) },
+		};
+		this.load();
+	},
 	defaultAction: function(actions){
 		//do nothing, just load any existing bootstrapped views
 		this.load();
@@ -28,7 +35,14 @@ var AppRouter = Backbone.Router.extend({
 		if (params==undefined) params = '';
 		params = params.substring(1,params.length);
 
-		return params;
+		var paramsAsHash = {};
+		var keyValues = params.split('&');
+		for (var i in keyValues) {
+		    var key = keyValues[i].split('=');
+		    paramsAsHash[key[0]] = key[1];
+		}
+
+		return paramsAsHash;
 	},
 	load: function() {
 		//load the requested view

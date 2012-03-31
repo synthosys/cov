@@ -19,7 +19,7 @@ App.Views.IndexProgram = Backbone.View.extend({
 		$(this.el).html(this.html); //is it better to do this when we load template on initialize or here? ponder!
 		
        	// get a list of pges
-		$.getJSON("http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI&summ=pge&jsoncallback=?", function(data) {
+		$.getJSON(apiurl+"topic?org=CMMI&summ=pge&jsoncallback=?", function(data) {
 			var pges = _.pluck(data["data"], "pge").join();
 			// lookup using pge legend in the data api
 			$.getJSON("http://rd-dashboard.nitrd.gov/gapi/api/prop?legend=nsf_pge&q="+pges+"&jsoncallback=?", function(data){

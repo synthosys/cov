@@ -19,5 +19,34 @@
 		<h4>Research Topic Weighting</h4>
 		<p>Up to four Research Topics were assigned to each proposal. Topics are assigned in order of relevance.</p>
 		<p>To calculate the overall prevalence of Research Topics within a set of Proposals, a Prevalence score is calculated based on the weight of each Topic assignment. Use the form below to adjust the default weighting:</p>
+		<form id="topic_weights">
+			<table class="noborder">
+				<thead>
+					<tr>
+						<th>Topic Assignment</th>
+						<th>Weight</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>1st</td>
+						<td><input type="text" id="t1" class="input-small" value="40">%</td>
+					</tr>
+					<tr>
+						<td>2nd</td>
+						<td><input type="text" id="t2" class="input-small" value="30">%</td>
+					</tr>
+					<tr>
+						<td>3rd</td>
+						<td><input type="text" id="t3" class="input-small" value="20">%</td>
+					</tr>
+					<tr>
+						<td>4th</td>
+						<td><input type="text" id="t4" class="input-small" value="10">%</td>
+					</tr>							
+				</tbody>
+			</table>
+			<button type="submit" class="btn">Update Table</button>
+		</form>
 	</div><!-- span3 -->
 </div><!-- row -->

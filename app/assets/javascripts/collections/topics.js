@@ -6,7 +6,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 			return key+'='+param;
 		});
 //console.log(params);		
-		return apiurl+'topic?'+params.join('&')+'&summ=status,t1'+'&jsoncallback=?'; 
+		return apiurl+'topic?'+params.join('&')+'&jsoncallback=?'; 
 	},
 	parse: function(data) {
 		var rawdata = data["data"];
