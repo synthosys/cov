@@ -60,7 +60,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		$("div#load_help").hide();
 		//prepare to load data
 		var user_id = $("#user_id").val();
-		var nsf_ids = $("#proposal_nsf_id").val().split(',');
+		var nsf_ids = [$("#proposal_nsf_id").val()]; //.split(','); //don't accept more than one, for now
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
 		var allloadedproposals = new App.Collections.Proposals();

@@ -109,6 +109,12 @@ App.Views.LoadProposal = Backbone.View.extend({
 			error: function() {
 //console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
+				//set the others here too so we return
+				self.processLoadProgress('researchers', 'error', {}, '');
+				self.processLoadProgress('topics', 'error', {}, '');
+				self.processLoadProgress('panels', 'error', {}, '');
+				self.processLoadProgress('reviewers', 'error', {}, '');
+				self.processLoadProgress('reviewerproposals', 'error', {}, '');
 			}
 		});									
 	},
@@ -190,6 +196,11 @@ App.Views.LoadProposal = Backbone.View.extend({
 						},
 						error: function() {
 							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
+							//set the others here too so we return
+							self.processLoadProgress('researchers', 'error', {}, '');
+							self.processLoadProgress('topics', 'error', {}, '');
+							self.processLoadProgress('reviewers', 'error', {}, '');
+							self.processLoadProgress('reviewerproposals', 'error', {}, '');
 						}
 					});
 					if (proposalaccessallowed) {
@@ -214,6 +225,11 @@ App.Views.LoadProposal = Backbone.View.extend({
 			error: function() {
 //console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
+				//set the others here too so we return
+				self.processLoadProgress('researchers', 'error', {}, '');
+				self.processLoadProgress('topics', 'error', {}, '');
+				self.processLoadProgress('reviewers', 'error', {}, '');
+				self.processLoadProgress('reviewerproposals', 'error', {}, '');
 			}
 		});									
 	},

@@ -1,16 +1,7 @@
-<div id="pge-list"></div>
-<div><h4>Exporting Division Data</h4></div>
-
-<script id="pgeTableTemplate" type="text/html">
-	<table class="table table-striped">
-		<tr><th colspan="2">CMMI Programs</th></tr>
-		{{= for(var i = 0; i < pgeList.length; i=i+2) { }}
-		<!-- TODO: check full_label, also check if pgeList[i+1] exists -->
-		<tr>
-			<td><a href="#" id="{{pgeList[i].nsf_pge }}" class="link_to_topics">p{{ pgeList[i].nsf_pge }}-{{ pgeList[i].label }}</a></td>
-			<td><a href="#" id="{{pgeList[i+1].nsf_pge }}" class="link_to_topics">p{{ pgeList[i+1].nsf_pge }}-{{ pgeList[i+1].label }}</a></td>
-		</tr>
-		{{= } }}
+<div id="pge-list">
+	<div id="loader"></div>
+	<table class="table table-striped" id="pge_table">
+		<tr><th colspan="2">{{division}} Programs</th></tr>	
 	</table>
-</script>
-
+</div>
+<div><h4>Exporting Division Data</h4></div>

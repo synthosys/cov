@@ -53,6 +53,9 @@ class Ability
         end
         cannot :destroy, Proposal
       elsif user.role? :internal
+        can :read
+        can :manage, Program
+        cannot :manage, User
         cannot :manage, Proposal        
       end
     end 

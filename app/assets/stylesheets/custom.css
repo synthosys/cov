@@ -6,7 +6,9 @@ body {
   line-height: 16px;
 }
 
-.table td.text-right { text-align: right;}
+.text-left { text-align: left;}
+.text-right { text-align: right;}
+.text-center { text-align: center;}
 
 #tab_reviewer_expertise_topics [class^="icon-"] {
   margin-right: 5px;
@@ -94,6 +96,15 @@ header .seal-nsf {
 background: transparent url(seal-nsf.png) no-repeat top left;
 right: 15px;
 }
+
+.cf:before, .cf:after {
+display: table;
+content: "";
+}
+.cf:after {
+clear: both;
+}
+
 
 /*
 --------------------------------------------------------------------------------------- VENN
@@ -399,4 +410,45 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#deefff', end
 .dataTables_paginate .paginate_disabled_next {
 color: #ccc;
 cursor: default;
+}
+
+.table-header-controls {
+margin-bottom: 20px;
+border: 1px solid #ccc;
+background: #f1f1f1;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px; 
+}
+
+.table-header-controls form {
+margin: 5px;
+}
+
+.table-header-controls .control-group {
+margin: 0;
+}
+
+#topic_weights .add-on {
+width: 70px;
+color: #666;
+font-weight: bold;
+}
+
+#topic_weights {
+width: 145px;
+margin: 0 auto;
+}
+
+#topic_weights .btn {
+margin: 0 auto;
+}
+
+#topic_weights th {
+vertical-align: bottom;
+}
+
+#topic_weights input[type="text"] {
+text-align: center;
+font-weight: bold;
 }

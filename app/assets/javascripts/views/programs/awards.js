@@ -9,26 +9,35 @@ App.Views.programsAwardsView = Backbone.View.extend({
 
 		var self = this;
 		require(['text!templates/programs/awards.html'], function(html) {
-			self.html = html; //save it off
-			self.render();
+			var template = _.template(html);
+			//we make this query so many times, think about how to improve it
+			// lookup using pge legend in the data api
+			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+self.options.pge+"&jsoncallback=?", function(data){
+				self.html = template({pge:self.options.pge,label:data?data[0].label:''}); //save it off
+				self.render();
+            });
 		})
 	},
 	gotoTopics: function(e) {
 		e.preventDefault();
 
-		App.app_router.navigate('topics/'+this.options.pge, {trigger: true});
+		var year = this.options.params['year'];	
+		App.app_router.navigate('topics/'+this.options.pge+'/?year='+year, {trigger: true});
 	},
 	gotoDetails: function(e) {
 		e.preventDefault();
-console.log('hello!');
 
 		var id = $(e.currentTarget).attr('id');
-		App.app_router.navigate('details/'+id+'/?pge='+this.options.pge, {trigger: true});
+		
+		var year = this.options.params['year'];		
+		App.app_router.navigate('details/'+id+'/?pge='+this.options.pge+'&year='+year, {trigger: true});
 	},
 	loadList: function() {
+		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading awards");
+		
 		var self = this;
 		//pass along the params
-		this.collection.params = {org:'CMMI,'+this.options.pge,year:'2007'}; //ALERT: DIVISION hardcoded here! HAVE to change this to pick it up from Rails authenticated user, DATE ALSO HARDCODED - CHANGE THIS TOO
+		this.collection.params = {org:getDivision()+','+this.options.pge,year:this.options.params['year']};
 		this.collection.fetch({
 			success: function(data) {
 				self.renderList(data);
@@ -40,6 +49,8 @@ console.log('hello!');
 		this.loadList();
 	},
 	renderList: function(data) {
+		$('div#loader', this.el).html('');
+		
 //console.log(data);		
 		var aaData = _.map(data.models, function(v) { 
 			return [
@@ -106,7 +117,7 @@ console.log('hello!');
 				},
 				{ 
 					"fnRender": function ( oObj ) {
-						return '<a class="award_details" title="'+oObj.aData[7]+'" id="'+oObj.aData[0]+'">Show</a>';
+						return '<a href="#" class="award_details" title="'+oObj.aData[7]+'" id="'+oObj.aData[0]+'">Show</a>';
 					},
 					"bSortable": false,						
 					"sTitle": "Details",

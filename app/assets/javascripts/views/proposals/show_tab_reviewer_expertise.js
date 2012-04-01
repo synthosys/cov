@@ -39,24 +39,28 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 //console.log(topics);		
 		var data = {};
 		data.proposal_topics_count = _.size(topics);
+		var proposaltopics = this.topics;
+//console.log(proposaltopics);			
+		//all topics in this proposal as well, we need to show it in the venn
+		data.topics_proposal_count = proposaltopics.length;
+		data.topics_proposal_ids = '';			
+		_.each(proposaltopics, function(topicid) {
+			if (data.topics_proposal_ids.length>0) data.topics_proposal_ids += ',';
+			data.topics_proposal_ids += 't'+topicid; 
+		});
 		if (_.size(topics)==0) {
-			data.topics_common = '<tr><td colspan="2"><div class="alert">No overlapping Research Topics</div></td></tr>';
+			data.topics_common = '<tr><td colspan="2"><div class="alert">None of the Panel Reviewers are known to have submitted Proposals to NSF as PI/Co-PI. As a result, Reviewers\' Expertise (Research Topics) cannot be determined for any of the Panel Reviewers.</div></td></tr>';
 			data.topics_common_count = 0;
 			data.topics_common_ids = '';
 			data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">None. All of this Proposal\'s Research Topics match Reviewers\' Expertise!</div></td></tr>';
 			data.topics_proposalonly_count = 0;
 			data.topics_proposalonly_ids = '';
-			data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
+			data.topics_proposal_count = 0;
+			data.topics_proposal_ids = '';
+			data.topics_reviewers = '<tr><td colspan="2"><div class="alert">None of the Panel Reviewers are known to have submitted Proposals to NSF as PI/Co-PI. As a result, Reviewers\' Expertise (Research Topics) cannot be determined for any of the Panel Reviewers.</div></td></tr>';
 			data.topics_reviewers_count = 0;
 			data.topics_reviewers_ids = '';
 		} else {
-			/*var proposaltopics = [];
-			for (var i=0;i<topicrelevance;i++) {
-				if (this.topics[i]) proposaltopics.push(this.topics[i]);
-			}*/
-			//changed above as per Jan - compare all proposal topics against relevant reviewer topics
-			var proposaltopics = this.topics;
-//console.log(proposaltopics);			
 			//now figure out common ones etc.
 			//extract the reviewer proposal topic ids
 			var paneltopicids = [];

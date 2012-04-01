@@ -70,7 +70,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th></th><th>Reviewers\' Proposals by Reviewers</th></tr></thead><tbody>{{topics}}</tbody></table>');
 		var data = {};
 		if (_.size(topics)==0) {
-			data.topics = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
+			data.topics = '<tr><td colspan="2"><div class="alert">None of the Panel Reviewers are known to have submitted Proposals to NSF as PI/Co-PI. As a result, Reviewers\' Expertise (Research Topics) cannot be determined for any of the Panel Reviewers.</div></td></tr>';
 			data.topics_count = 0;
 		} else {
 			data.topics = this.renderPanelTopicListItems(topics,null).join("\n");

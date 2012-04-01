@@ -1,5 +1,4 @@
-
-<% if can? :create, User %>
+<% if can? :create, User and 1==0 %>
 	<div class="alert well">
 	<div>
 		<b>Assigned to:</b>
@@ -19,14 +18,13 @@
 <% end%>
 
 <div class="page-header">
+	<div class="pull-right"><%= link_to raw('<i class="icon-chevron-left"></i> Back to List'), proposals_path, :class => 'btn' %></div>
 	<div>
 		<h1>Proposal: ID <%= @proposal_nsf_id %></h1>
 		<% if can? :comment, Proposal and 1==0 %>
 			<a class="btn btn-warning" href="#comment"><i class="icon-comment icon-white"></i> Comment</a>
 		<% end %>
 	</div>
-
-	<div class="pull-right"><%= link_to 'Back to Dashboard', proposals_path %></div>
 </div><!-- /page-header -->
 
 <h2><%= @proposal_title %></h2>

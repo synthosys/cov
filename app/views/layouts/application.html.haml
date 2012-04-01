@@ -51,8 +51,10 @@
                     %li.divider
                     %li= link_to "All Users", users_path
                     %li= link_to "Add User", new_user_path
+              - elsif can? :read, Proposal
+                %li= link_to "Assigned Proposals", proposals_path
               - else 
-                %li= link_to "Dashboard", proposals_path
+                %li= link_to "Programs", programs_path
           %ul.nav.pull-right
             - if user_signed_in?
               %li.navbar-text.dropdown
