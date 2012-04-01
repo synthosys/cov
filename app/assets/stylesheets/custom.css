@@ -51,16 +51,16 @@ border-radius: 0;
 height: 40px;
 }
 
-header {
+.header-base {
 position: relative;
 height: 128px;
 margin: 0 -15px;
 }
 
-header { background: transparent url(headerbg-wide.png) no-repeat bottom; }
+.header-base { background: transparent url(headerbg-wide.png) no-repeat bottom; }
 
 
-header h1 {
+.header-base h1 {
 height: 87px;
 width: 588px;
 margin: 0 auto;
@@ -68,7 +68,7 @@ position: relative;
 top: 22px;
 }
 
-header h1 a {
+.header-base h1 a {
 display: block;
 height: 87px;
 width: 588px;
@@ -77,8 +77,8 @@ overflow: hidden;
 text-indent: -100%;
 }
 
-header .seal-pres,
-header .seal-nsf {
+.header-base .seal-pres,
+.header-base .seal-nsf {
 display: block;
 height: 69px;
 width: 69px;
@@ -88,12 +88,12 @@ overflow: hidden;
 text-indent: -100%;
 }
 
-header .seal-pres {
+.header-base .seal-pres {
 background: transparent url(seal-pres.png) no-repeat top left;
 left: 15px;
 }
 
-header .seal-nsf {
+.header-base .seal-nsf {
 background: transparent url(seal-nsf.png) no-repeat top left;
 right: 15px;
 }
