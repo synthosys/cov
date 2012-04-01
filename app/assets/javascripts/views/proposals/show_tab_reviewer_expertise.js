@@ -70,6 +70,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 //console.log(paneltopicids);			
 			//common
 			var common_topicids = _.intersection(paneltopicids,proposaltopics);
+			common_topicids = _.reject(common_topicids, function(t) { return (t=="0"); });
 			if (common_topicids.length>0) {
 				//find the common topics and their counts
 				var topics_common = {};
@@ -90,6 +91,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			});
 			//proposal only
 			var proposalonly_topicids = _.difference(proposaltopics,common_topicids); //THIS NEEDS TO BE PUT INTO A PANEL TOPIC OBJEC STRUCTURE SO IT CAN BE RENDERED BY THE FUNCTION
+			proposalonly_topicids = _.reject(proposalonly_topicids, function(t) { return (t=="0"); });
 			if (proposalonly_topicids.length>0) {
 				var tmp = {};
 				_.each(proposalonly_topicids, function(topicid) {
@@ -108,6 +110,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			});
 			//reviewers only
 			var reviewers_topicids = _.difference(paneltopicids,common_topicids);
+			reviewers_topicids = _.reject(reviewers_topicids, function(t) { return (t=="0"); });
 			if (reviewers_topicids.length>0) {
 				var topics_reviewers = {};
 				_.each(reviewers_topicids, function(topicid) {
