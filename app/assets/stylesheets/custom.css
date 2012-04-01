@@ -27,6 +27,7 @@ iframe {
 .content {
 background: #fff;
 padding: 15px;
+min-height: 500px;
 }
 
 .header {
