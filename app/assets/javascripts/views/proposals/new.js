@@ -60,7 +60,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		$("div#load_help").hide();
 		//prepare to load data
 		var user_id = $("#user_id").val();
-		var nsf_ids = [$("#proposal_nsf_id").val()]; //.split(','); //don't accept more than one, for now
+		var nsf_ids = [$("#proposal_nsf_id").val().split(',')[0]]; //don't accept more than one, for now
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
 		var allloadedproposals = new App.Collections.Proposals();
@@ -193,13 +193,13 @@ App.Views.NewProposal = Backbone.View.extend({
 						} 
 					}, {
 					success: function(data) {
-			           //run the callback
-						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
-
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html(message);
+
+			           //run the callback
+						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
 					},
 					error: function(data) {
 						//update status

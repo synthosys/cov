@@ -14,13 +14,13 @@ var Proposal = Backbone.Model.extend({
 	},
 	//getters for the more embedded attributes
 	title: function() {
-		return this.details_parsed.title;
+		return this.details_parsed.title?this.details_parsed.title:'';
 	},
 	status: function() {
-		return this.details_parsed.status.name;
+		return (this.details_parsed.status && this.details_parsed.status.name)?this.details_parsed.status.name:'';
 	},
 	status_date: function() {
-		return this.details_parsed.status.date;
+		return (this.details_parsed.status && this.details_parsed.status.date)?this.details_parsed.status.date:'';
 	},
 	amount: function() {
 		if (this.details_parsed.status.name=="award") {
