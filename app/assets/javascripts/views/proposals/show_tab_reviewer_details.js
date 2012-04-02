@@ -190,7 +190,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
 					data.links = '<p><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a> | <a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';			
 				} else {
-					data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
+					data.status = '<tr><td class="lbl"><strong>Status</td><td>('+details.status.name+')</td></tr>';
 					data.links = '<p><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';
 				}
 				data.pge = details.pge.code;
