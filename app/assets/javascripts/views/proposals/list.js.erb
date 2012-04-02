@@ -44,7 +44,7 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(associations);				
 				_.each(associations, function(association) {
 //console.log(association.lastviewed);					
-					if (association.lastviewed) col3.push($.timeago(association.lastviewed));
+					if (association.lastviewed) col3.push(association.lastviewed);
 				});
 				col3 = _.last(col3)?_.last(col3):''; //.join('<br />');
 //console.log(col3);					
@@ -79,14 +79,20 @@ App.Views.ListProposal = Backbone.View.extend({
 					},
 					{
 						"sTitle": "Last Viewed",
+						"fnRender": function( oObj ) {
+							if (oObj.aData[2]) return $.timeago(oObj.aData[2]);
+							else return '';
+						},
 						"aTargets": [ 2 ]
 					},
 					{ 
 						"sTitle": "Actions",
 						"sClass": "proposal-actions",
+						"bSortable": false;
 						"aTargets": [ 3 ]
 					}
-				]
+				],
+				"aaSorting": [[2, 'desc']]
 			});	
 		} else {
 			this.collection.each(this.addOne);			
