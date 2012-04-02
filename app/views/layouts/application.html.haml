@@ -39,7 +39,6 @@
       .navbar
         .navbar-inner
           %ul.nav
-            -# %li= link_to "Home", pages_home_path
             - if user_signed_in?
               - if can? :create, User
                 %li.navbar-text.dropdown
@@ -58,6 +57,8 @@
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
                 %li= link_to "Programs", programs_path
+            - else
+              %li= link_to "Home", pages_home_path
           %ul.nav.pull-right
             - if user_signed_in?
               %li.navbar-text.dropdown
