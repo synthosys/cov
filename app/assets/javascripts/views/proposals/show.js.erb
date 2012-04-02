@@ -347,7 +347,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 	getPanelsSelect: function(id,span) {
 		var panels_select = '';
 		var self = this;
-		if (this.panels.length==1) panels_select = this.panels[0].panel.nsf_id+' - '+this.panels[0].panel.name+' ('+this.panels[0].panel.officer+')';
+		if (this.panels.length==1) panels_select = '<p><strong>'+this.panels[0].panel.nsf_id+' - '+this.panels[0].panel.name+' ('+this.panels[0].panel.officer+')</strong></p>';
 		else {
 			panels_select = '<select id="'+id+'" class="span'+span+'">';
 			_.each(this.panels, function(panel) {

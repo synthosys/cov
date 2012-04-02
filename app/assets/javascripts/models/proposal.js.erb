@@ -30,8 +30,9 @@ var Proposal = Backbone.Model.extend({
 		} else return "(declined)";
 	},
 	lastviewed: function() {
-		//return this.associations[0].lastviewed ? this.associations[0] : null;
-		return ''; //put this back in when you get it working
+		var associations = this.associations();
+		if (associations.length>0 && associations[0].lastviewed) return $.timeago(associations[0].lastviewed);
+		else return '';
 	},
 	panels_raw: function() {
 		return this.panels_count()>0 ? this.panels_parsed : [];

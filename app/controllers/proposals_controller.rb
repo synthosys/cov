@@ -26,7 +26,7 @@ class ProposalsController < ApplicationController
     authorize! :read, @proposal
 
     respond_to do |format|
-      format.json { render json: @proposal.to_json(:include => [:users]) }
+      format.json { render json: @proposal.to_json(:include => [:users, :associations]) }
     end
   end
 

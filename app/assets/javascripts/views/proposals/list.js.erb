@@ -83,12 +83,13 @@ App.Views.ListProposal = Backbone.View.extend({
 							if (oObj.aData[2]) return $.timeago(oObj.aData[2]);
 							else return '';
 						},
+						"bUseRendered": false,
 						"aTargets": [ 2 ]
 					},
 					{ 
 						"sTitle": "Actions",
 						"sClass": "proposal-actions",
-						"bSortable": false;
+						"bSortable": false,
 						"aTargets": [ 3 ]
 					}
 				],
