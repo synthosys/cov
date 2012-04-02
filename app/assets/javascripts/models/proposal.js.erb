@@ -40,6 +40,10 @@ var Proposal = Backbone.Model.extend({
 //console.log(this.users);		
 		return this.get('users') ? this.get('users') : [];		
 	},
+	associations: function() {
+//console.log(this.associations);		
+		return this.get('associations') ? this.get('associations') : [];		
+	},
 	researchers_count: function() {
 		return this.researchers_parsed ? this.researchers_parsed.length : 0;
 	},

@@ -171,6 +171,8 @@ App.Views.programsTopicsView = Backbone.View.extend({
 		var self = this;
 		$('#topics_table', this.el).dataTable({
 			"bDestroy": true,
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers",
 			"iDisplayLength": 50,
 			"aaData": aaData,
 			"aoColumnDefs": [

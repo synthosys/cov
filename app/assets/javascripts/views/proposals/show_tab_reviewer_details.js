@@ -181,17 +181,17 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var details = proposal.details;
 				data.nsf_id = details.nsf_id;
 				data.title = details.title;
-
+				data.abstract = details.abstract;
 				if (details.status.name=='award') {
 					var funding = details.awarded.dollar;
 					if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
 					else var award_amount = '';			
 					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
-					data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>';			
+					data.links = '<p><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a> | <a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';			
 				} else {
 					data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
-					data.links = 'N/A';
+					data.links = '';
 				}
 				data.pge = details.pge.code;
 				data.division = details.org.name;
@@ -238,5 +238,9 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			rendered = '<div class="alert">No awards</div>';
 		}	
 		renderto.html(rendered);			
+		$('div.abstract').expander({
+		  expandEffect: 'slideDown',
+		  collapseEffect: 'slideUp'
+		});
 	}
 });

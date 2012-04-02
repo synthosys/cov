@@ -10,10 +10,11 @@
 	    	<li class="nav-header">About</li>
 	    	<li><i class="icon-envelope"></i>Email: <%= @user.email %></li>
 			<li><i class="icon-user"></i>Username: <%= @user.username %></li>
+			<li><i class="icon-home"></i>Division: <%= @user.division %></li>
 			<li><i class="icon-lock"></i>Role: <%= @user.role %></li>
 			<li class="nav-header">Accessed</li>
-			<li><i class="icon-calendar"></i>Created on: <%= @user.created_at %></li>
-			<li><i class="icon-calendar"></i>Last Sign In: <%= @user.last_sign_in_at %></li>
+			<li><i class="icon-calendar"></i>Created: <%= if @user.created_at then "#{time_ago_in_words @user.created_at} ago" end %></li>
+			<li><i class="icon-calendar"></i>Last Sign In: <%= @user.last_sign_in_at ? "#{time_ago_in_words @user.last_sign_in_at} ago" : 'never' %></li>
 			<li><i class="icon-lock"></i>Sign In Count: <%= @user.sign_in_count %></li>
 			<li class="nav-header">Actions</li>
 			<li><%= link_to_if(can?(:update,@user), raw("<i class='icon-pencil'></i> Edit"), edit_user_path(@user)) %></li>
@@ -46,14 +47,15 @@
 <td>{{amount}}</td>
 <td>{{lastviewed}}</td>
 <td>{{panels}}</td>
-<td>
+<td class="proposal-actions">
 	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 	<% if can? :manage, :assignDivisionCan %>
 		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
-		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
 	<% end %>
 	<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a>
-
+	<% if can? :manage, :assignDivisionCan %>
+		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
+	<% end %>
 </td>
 </script>
 

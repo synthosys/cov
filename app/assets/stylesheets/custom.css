@@ -30,6 +30,29 @@ padding: 15px;
 min-height: 500px;
 }
 
+/*
+------------------------------------------------------------ Data Tables Reset
+*/
+
+.ui-state-default, 
+.ui-widget-content .ui-state-default, 
+.ui-widget-header .ui-state-default {
+    background: none;
+    color: #333;
+    border: none;
+}
+
+.ui-widget-header {
+    background: none;
+    border: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.ui-icon {
+display: inline-block;
+}
+
 .header {
 margin: 0 auto;
 padding: 15px 15px 0 15px;
@@ -130,6 +153,7 @@ position: absolute;
 }
 .venn-wrap .title {
 font-size: 13px;
+line-height: 13px;
 font-weight: bold;
 }
 .venn-wrap .common {
@@ -138,6 +162,7 @@ font-weight: bold;
 }
 .venn-wrap .items {
 font-size: 12px;
+line-height: 14px;
 font-weight: bold;
 width: 70px;
 }
@@ -145,9 +170,10 @@ width: 70px;
 font-weight: normal;
 display: block;
 font-size: 11px;
+line-height: 11px;
 }
 .venn-wrap .props { top: 5px; left: 2px; color: #326389; }
-.venn-wrap .props-list { top: 60px; left: 15px; color: #aa170a; }
+.venn-wrap .props-list { top: 55px; left: 15px; color: #aa170a; }
 .venn-wrap .reviewers { top: 24px; left: 198px; color: #9e9e9e; }
 .venn-wrap .reviewers-list { top: 79px; left: 83px; color: #797979; }
 .venn-wrap .common { top: 57px; left: 115px; color: #797979; }
@@ -361,7 +387,8 @@ font-weight: bold;
 float: right;
 }
 
-.dataTables_paginate a {
+.dataTables_paginate a,
+.dataTables_paginate .ui-state-default {
   display: inline-block;
   padding: 4px 10px 4px;
   font-size: 13px;
@@ -453,3 +480,28 @@ vertical-align: bottom;
 text-align: center;
 font-weight: bold;
 }
+
+.proposal-actions {
+width: 140px;
+}
+
+.proposal-actions br {
+display: none;
+}
+
+.proposal-actions a {
+display: block;
+width: 70px;
+overflow: hidden;
+float: left;
+/*
+color: #000;
+opacity: .5;
+*/
+}
+
+/*
+#proposals_table td:last-child a:hover {
+opacity: 1;
+}
+*/

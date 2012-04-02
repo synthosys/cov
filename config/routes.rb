@@ -1,7 +1,5 @@
 Cov::Application.routes.draw do
-  resources :proposals do
-    get 'sample', :on => :collection
-  end
+  resources :proposals
 
   get "pages/home"
   get "pages/contact"

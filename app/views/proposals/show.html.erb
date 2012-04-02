@@ -28,17 +28,32 @@
 </div><!-- /page-header -->
 
 <h2><%= @proposal_title %></h2>
+<% topics = ActiveSupport::JSON.decode(@proposal.topics) %>
 <div class="tabbable">
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="#tab_proposal_details" data-toggle="tab">Proposal Details</a></li>
 		<li><a href="#tab_panel_details" data-toggle="tab">Panel Details</a></li>
+<%
+#only show if the proposal has topics and at least one of them is something besides t0
+unless topics && topics.length==1 && topics[0]=='0' then
+%>		
 		<li><a href="#tab_reviewer_expertise" data-toggle="tab">Reviewer Expertise</a></li>
+<%
+end
+%>		
 		<li><a href="#tab_reviewer_details" data-toggle="tab">Reviewer Details</a></li>
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active" id="tab_proposal_details"></div>
 		<div class="tab-pane" id="tab_panel_details"></div>
+<%
+#only show if the proposal has topics and at least one of them is something besides t0
+unless topics && topics.length==1 && topics[0]=='0' then
+%>		
 		<div class="tab-pane" id="tab_reviewer_expertise"></div>
+<%
+end
+%>		
 		<div class="tab-pane" id="tab_reviewer_details"></div>
 	</div><!-- /tab-content -->
 </div><!-- /tabbable -->

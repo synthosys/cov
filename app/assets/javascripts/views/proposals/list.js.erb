@@ -31,44 +31,63 @@ App.Views.ListProposal = Backbone.View.extend({
 				var col1 = '<a href="'+baseURI+'/proposals/'+proposal.id+'">'+proposal.get('nsf_id')+'</a> - '+proposal.title();
 				var col2 = [];
 				var users = proposal.assigned_users();
-//console.log(this.model.attributes);		
+//console.log(proposal.attributes);		
 //console.log(users);		
 				_.each(users, function(user) {
-					col2.push('<a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
+					col2.push('<i class="icon-user"></i> <a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
 				});
-				col2 = col2.join(', ');
-				var col3 = '';
-				col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
+				col2 = col2.join('<br />');
+				//associations - last viewed
+				var col3 = [];
+				var associations = proposal.associations();
+				associations = _.sortBy(associations, function(association){ association.lastviewed; });
+//console.log(associations);				
+				_.each(associations, function(association) {
+//console.log(association.lastviewed);					
+					if (association.lastviewed) col3.push($.timeago(association.lastviewed));
+				});
+				col3 = _.last(col3)?_.last(col3):''; //.join('<br />');
+//console.log(col3);					
+				var col4 = '';
+				col4 += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
 //console.log(html);							
 				if (self.options.allowEdit) {
-					col3 += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a><br />';
-					col3 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a><br />';
-					col3 += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+					col4 += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a>';
+					col4 += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+					col4 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a>';
 				} else {
-					col3 += '<a href="#" id="proposals_unassign_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+					col4 += '<a href="#" id="proposals_unassign_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
 				}						
-				aaData.push([col1, col2, col3]);
+				aaData.push([col1, col2, col3, col4]);
 			});
 //console.log(aaData);			
 			$(this.el).dataTable({
 				"bDestroy":true,
-				"iDisplayLength": 100,
+				"bJQueryUI": true,
+				"sPaginationType": "full_numbers",
+				"iDisplayLength": 25,
 				"aaData": aaData,
 				"aoColumnDefs": [
 					{ 
 						"sTitle": "Title",
+						"sWidth": "500",
 						"aTargets": [ 0 ]
 					},
 					{
 						"sTitle": "Assigned To",
 						"aTargets": [ 1 ]
 					},
+					{
+						"sTitle": "Last Viewed",
+						"aTargets": [ 2 ]
+					},
 					{ 
 						"sTitle": "Actions",
-						"aTargets": [ 2 ]
+						"sClass": "proposal-actions",
+						"aTargets": [ 3 ]
 					}
 				]
-			});			
+			});	
 		} else {
 			this.collection.each(this.addOne);			
 		}
@@ -78,7 +97,7 @@ App.Views.ListProposal = Backbone.View.extend({
 	},
 	getProposals: function() {
 		//make sure you get using json
-		if (this.options.user_id) var url = this.collection.url+'/user/'+this.options.user_id;	
+		if (this.options.user_id) var url = this.collection.url+'/user/'+this.options.user_id+'.json';	
 		else var url = this.collection.url+'.json';	
 		this.collection.fetch({url: url});		
 	},

@@ -59,13 +59,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
 		this.updateLoadStatus('proposals','start',null,'');
-		if (!proposalaccessallowed) {
-			var url = baseURI+'/proposals'+'/sample?for=proposals';
-			var datatype = 'JSON';
-		} else {
-			var url = apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?';
-			var datatype = 'JSONP';			
-		}
+		var url = apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?';
+		var datatype = 'JSONP';			
 		$.ajax({
 			url: url,
 			dataType: datatype,
@@ -124,13 +119,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
 		this.updateLoadStatus('panels','start',null,'');
-		if (!proposalaccessallowed) {
-			var url = baseURI+'/proposals'+'/sample?for=panels';
-			var datatype = 'JSON';
-		} else {
-			var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
-			var datatype = 'JSONP';			
-		}
+		var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
+		var datatype = 'JSONP';			
 		$.ajax({
 			url: url,
 			dataType: datatype,
@@ -151,13 +141,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 						panel_propids = panel_propids.concat(panel["prop"]);
 					});
 //console.log(_.uniq(panel_propids).join(','));					
-					if (!proposalaccessallowed) {
-						var url = baseURI+'/proposals'+'/sample?for=panel_proposals';
-						var datatype = 'JSON';
-					} else {
-						var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
-						var datatype = 'JSONP';			
-					}
+					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
 					$.ajax({
 						url: url,
 						dataType: datatype,
@@ -203,21 +188,9 @@ App.Views.LoadProposal = Backbone.View.extend({
 							self.processLoadProgress('reviewerproposals', 'error', {}, '');
 						}
 					});
-					if (proposalaccessallowed) {
-						//I don't bother running these in my local dev env when trying to load test data
-						//get proposal researcher and topic data				
-						self.loadResearchers();
-						self.loadTopics();
-					} else {
-						//store data
-						var tmp_data = {};
-						_.each(self.nsf_ids, function(nsf_id) {
-							tmp_data[nsf_id] = [];
-						});
-//console.log(loaded_data);						
-						self.processLoadProgress('topics', 'ok', tmp_data, 'Done');
-						self.processLoadProgress('researchers', 'ok', tmp_data, 'Done');						
-					}
+					//get proposal researcher and topic data				
+					self.loadResearchers();
+					self.loadTopics();
 					//get reviewer data
 					self.loadReviewers(panels);
 				}
@@ -300,13 +273,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 		});
 //console.log(_.uniq(reviewer_ids).join(','));		
 		//now go get them
-		if (!proposalaccessallowed) {
-			var url = baseURI+'/proposals'+'/sample?for=panel_reviewers';
-			var datatype = 'JSON';
-		} else {	
-			var url = apiurl+'user?rid='+_.uniq(reviewer_ids).join(',')+'&jsoncallback=?';
-			var datatype = 'JSONP';			
-		}
+		var url = apiurl+'user?rid='+_.uniq(reviewer_ids).join(',')+'&jsoncallback=?';
+		var datatype = 'JSONP';			
 		$.ajax({
 			url: url,
 			dataType: datatype,
@@ -333,13 +301,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 						});
 //console.log(reviewers);								
 						//so now, get the inst classifications
-						if (!proposalaccessallowed) {
-							var url = baseURI+'/proposals'+'/sample?for=inst_class';
-							var datatype = 'JSON';
-						} else {
-							var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
-							var datatype = 'JSONP';			
-						}
+						var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+						var datatype = 'JSONP';			
 						$.ajax({
 							url: url,
 							dataType: datatype,

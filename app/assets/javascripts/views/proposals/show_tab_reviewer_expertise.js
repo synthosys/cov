@@ -21,6 +21,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		data.topics = this.renderReviewerExpertiseTopicsList(topics);
 		data.venn = this.renderReviewerExpertiseTopicsVenn(topics);
 
+//console.log(data);		
 		return compiled(data);
 	},
 	renderReviewerExpertiseTopicsList: function(data) {
@@ -45,7 +46,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		data.topics_proposal_count = proposaltopics.length;
 		data.topics_proposal_ids = '';			
 		_.each(proposaltopics, function(topicid) {
-			if (data.topics_proposal_ids.length>0) data.topics_proposal_ids += ',';
+			if (data.topics_proposal_ids.length>0) data.topics_proposal_ids += ', ';
 			data.topics_proposal_ids += 't'+topicid; 
 		});
 		if (_.size(topics)==0) {
@@ -86,7 +87,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			data.topics_common_count = common_topicids.length;
 			data.topics_common_ids = '';
 			_.each(common_topicids, function(topicid) {
-				if (data.topics_common_ids.length>0) data.topics_common_ids += ',';
+				if (data.topics_common_ids.length>0) data.topics_common_ids += ', ';
 				data.topics_common_ids += 't'+topicid; 
 			});
 			//proposal only
@@ -105,7 +106,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			data.topics_proposalonly_count = proposalonly_topicids.length;
 			data.topics_proposalonly_ids = '';
 			_.each(proposalonly_topicids, function(topicid) {
-				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ',';
+				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ', ';
 				data.topics_proposalonly_ids += 't'+topicid; 
 			});
 			//reviewers only
@@ -126,7 +127,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			data.topics_reviewers_count = reviewers_topicids.length;
 			data.topics_reviewers_ids = '';
 			_.each(reviewers_topicids, function(topicid) {
-				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ',';
+				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ', ';
 				data.topics_reviewers_ids += 't'+topicid; 
 			});
 		}

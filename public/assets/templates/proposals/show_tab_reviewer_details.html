@@ -5,9 +5,7 @@
 		<div class="row">
 			<div class="span4 left">
 				<h5>Panel: 
-				<select id="panelselect_reviewerdetails">
 					{{panelselect}}
-				</select>
 				</h5>
 				<table class="table table-condensed" id="reviewers_assigned">
 				<tr>
@@ -72,6 +70,8 @@
 
 <script type="text/template" id="template_reviewer_awards">
 <h3><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber={{nsf_id}}" target="_blank">Award #{{nsf_id}}</a> {{title}}</h3>
+{{links}}
+<div class="abstract"><p>{{abstract}}</p></div>
 <div class="row">
 	<div class="span2">
 		<table class="table table-condensed lbl-right table-noborder">
@@ -106,16 +106,16 @@
 <div class="row">
 	<div class="span8">
 		<h4>Proposal Research Topics (in order)</h4>
-		{{= if (t1 != null) { }}
+		{{= if (t1 != '') { }}
    			<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
 		{{= } }}
-		{{= if (t2 != null) { }}
+		{{= if (t2 != '') { }}
    			<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
 		{{= } }}
-		{{= if (t3 != null) { }}
+		{{= if (t3 != '') { }}
    			<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
 		{{= } }}
-		{{= if (t4 != null) { }}
+		{{= if (t4 != '') { }}
    			<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
 		{{= } }}
 	</div><!-- /span8 -->

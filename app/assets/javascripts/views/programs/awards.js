@@ -58,8 +58,6 @@ App.Views.programsAwardsView = Backbone.View.extend({
 				App.keyExists("awarded.dollar", v["attributes"], null),
 				App.keyExists("awarded.date", v["attributes"], null),
 				App.keyExists("request.date", v["attributes"], null),
-				v["attributes"]["pge"]["code"], 
-				v["attributes"]["org"]["name"],
 				v["attributes"]["topic"]["id"].join(", ").replace(', ,', ""), 
 				v["attributes"]["proposal"]["title"],
 			]; 
@@ -99,29 +97,21 @@ App.Views.programsAwardsView = Backbone.View.extend({
 					"aTargets": [ 3 ] 
 				}, 
 				{ 
-					"fnRender": function (oObj ) {
-						return '<span id="pgecode_lookup_'+oObj.aData[4]+'">p'+oObj.aData[4]+'</span>';
-					},
-					"sTitle": "Prg. Elem. Code", 
-					"aTargets": [ 4 ] 
-				}, 
-				{ "sTitle": "Division", "aTargets": [ 5 ] }, 
-				{ 
 					"fnRender": function ( oObj ) {
-						var topics = oObj.aData[6].split(', ');
+						var topics = oObj.aData[4].split(', ');
 						var collated = _.map(topics, function(item) { if (App.legend_topics[item]) return 't'+item+':'+App.legend_topics[item]["label"]; else return 't'+item; });
 						return collated.join(', ');
 					},
 					"sTitle": "Topics",
-					"aTargets": [ 6 ]
+					"aTargets": [ 4 ]
 				},
 				{ 
 					"fnRender": function ( oObj ) {
-						return '<a href="#" class="award_details" title="'+oObj.aData[7]+'" id="'+oObj.aData[0]+'">Show</a>';
+						return '<a href="#" class="award_details" title="'+oObj.aData[5]+'" id="'+oObj.aData[0]+'">Show</a>';
 					},
 					"bSortable": false,						
 					"sTitle": "Details",
-					"aTargets": [ 7 ]
+					"aTargets": [ 5 ]
 				}
 			],
 			"aaData": aaData,
