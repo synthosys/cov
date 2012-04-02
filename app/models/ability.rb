@@ -6,6 +6,7 @@ class Ability
 
     if user.role? :su
       can :manage, :all
+      cannot :manage, :internalUserCan
     elsif user.role? :admin
       can :manage, :all
       cannot :manage, :assignDivisionCan
@@ -57,6 +58,7 @@ class Ability
         can :manage, Program
         cannot :manage, User
         cannot :manage, Proposal        
+        can :update, User, :id => user.id
       end
     end 
   end
