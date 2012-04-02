@@ -1,0 +1,17 @@
+.new-base {
+  padding-top: 50px;
+  .left-side {
+    padding: 30px;
+  }
+  .right-side {
+    padding: 30px;
+    border-left: 1px solid darken(#fff, 15%);
+    background: darken(#fff, 1%);
+    input {
+      margin-bottom: 10px;
+    }
+    .checkbox {
+      font-size: 9pt;
+    }
+  }
+}

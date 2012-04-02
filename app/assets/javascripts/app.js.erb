@@ -58,13 +58,17 @@ var App = {
     init: function() {
 		//have the navbar auto-re-adjust
 		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
-		$(window).scroll(function() {
-			if ($(window).scrollTop() > navb_dims["t"]) {
-				$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
-			} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
-				$(".navbar-inner").css("position", "relative");
-			}
-		});
+
+
+		if ($.browser.msie != true) {
+			$(window).scroll(function() {
+				if ($(window).scrollTop() > navb_dims["t"]) {
+					$(".navbar-inner").css("position", "fixed").css("top", "0px").css("width", navb_dims["w"]);
+				} else if ($(window).scrollTop() < (navb_dims["t"] + navb_dims["h"])) {
+					$(".navbar-inner").css("position", "relative");
+				}
+			});
+		}
 		
 		var self = this;
 		$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {

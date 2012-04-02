@@ -4,7 +4,7 @@ class CreateUserProposalJoinTable < ActiveRecord::Migration
       t.integer :user_id
       t.integer :proposal_id
       t.text :comments
-      t.date :lastviewed
+      t.datetime :lastviewed
       t.timestamps
     end
   end
