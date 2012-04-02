@@ -50,7 +50,7 @@ App.Views.NewProposal = Backbone.View.extend({
 	},
 	assignProposal: function(e) {
 		e.preventDefault();		
-		if ($("#proposal_nsf_id").val()=='') {
+		if ($("#proposal_nsf_id").val()=='' || $("#proposal_nsf_id").val().replace(/\D/g,'')=='') {
 			alert('Please specify one or more proposal ids');
 			return;
 		}
@@ -60,7 +60,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		$("div#load_help").hide();
 		//prepare to load data
 		var user_id = $("#user_id").val();
-		var nsf_ids = [$.trim($("#proposal_nsf_id").val().split(',')[0])]; //don't accept more than one, for now
+		var nsf_ids = [$.trim($("#proposal_nsf_id").val().split(',')[0]).replace(/\D/g,'')]; //don't accept more than one, for now
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
 		var allloadedproposals = new App.Collections.Proposals();

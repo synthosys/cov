@@ -24,7 +24,7 @@ App.Views.ShowProposalDetails = Backbone.View.extend({
 				data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a><br /><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a>';
 			} else {
 				data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
-				data.links = 'N/A';
+				data.links = '<a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a>';
 			}			
 		}
 		data.pge = (details.pge && details.pge.code)?details.pge.code:'';
