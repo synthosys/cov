@@ -7,6 +7,8 @@ class Ability
     if user.role? :su
       can :manage, :all
       cannot :manage, :internalUserCan
+      #cannot [:destroy, :update], User, :role => "su"
+      #can :manage, User, :id => user.id
     elsif user.role? :admin
       can :manage, :all
       cannot :manage, :assignDivisionCan
@@ -59,6 +61,9 @@ class Ability
         cannot :manage, User
         cannot :manage, Proposal        
         can :update, User, :id => user.id
+      end
+      if User.all.length == 0
+        can :create, User
       end
     end 
   end
