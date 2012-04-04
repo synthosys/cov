@@ -96,6 +96,9 @@ App.Views.LoadProposal = Backbone.View.extend({
 							});
 						});								
 						self.loadPanels(); //this will load reviewers and other stuff
+						//get proposal researcher and topic data				
+						self.loadResearchers();
+						self.loadTopics();
 						//ALL DONE! run callback function
 						self.processLoadProgress(component, 'ok', loaded_data, 'Done');											
 					}
@@ -125,15 +128,13 @@ App.Views.LoadProposal = Backbone.View.extend({
 			url: url,
 			dataType: datatype,
 			success: function(data) {
-				/* if (data["data"].length==0) {
+				if (data["data"].length==0) {
 					//return with error
-					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
+					self.processLoadProgress(component, 'ok', loaded_data, 'No panels found' );
 					//set the others here too so we return
-					self.processLoadProgress('researchers', 'error', {}, '');
-					self.processLoadProgress('topics', 'error', {}, '');
-					self.processLoadProgress('reviewers', 'error', {}, '');
-					self.processLoadProgress('reviewerproposals', 'error', {}, '');
-				} else { */
+					self.processLoadProgress('reviewers', 'ok', {}, 'No reviewers');
+					self.processLoadProgress('reviewerproposals', 'ok', {}, 'No reviewer proposals');
+				} else { 
 					var panels = data["data"];
 					//load counts for panel proposals, make a list
 					var panel_propids = [];
@@ -182,25 +183,18 @@ App.Views.LoadProposal = Backbone.View.extend({
 						error: function() {
 							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
 							//set the others here too so we return
-							self.processLoadProgress('researchers', 'error', {}, '');
-							self.processLoadProgress('topics', 'error', {}, '');
 							self.processLoadProgress('reviewers', 'error', {}, '');
 							self.processLoadProgress('reviewerproposals', 'error', {}, '');
 						}
 					});
-					//get proposal researcher and topic data				
-					self.loadResearchers();
-					self.loadTopics();
 					//get reviewer data
 					self.loadReviewers(panels);
-				//}
+				}
 			},
 			error: function() {
 //console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 				//set the others here too so we return
-				self.processLoadProgress('researchers', 'error', {}, '');
-				self.processLoadProgress('topics', 'error', {}, '');
 				self.processLoadProgress('reviewers', 'error', {}, '');
 				self.processLoadProgress('reviewerproposals', 'error', {}, '');
 			}
