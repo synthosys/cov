@@ -80,7 +80,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 					topics_common[topicid]['count'] = 0;
 					if (topics[topicid]) topics_common[topicid]['count'] = topics[topicid]['count'];
 				});
-				data.topics_common = this.renderPanelTopicListItems(topics_common,'ok').join("\n");				
+				data.topics_common = this.renderPanelTopicListItems(topics_common,'ok icon-green').join("\n");				
 			} else {
 				data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
@@ -137,7 +137,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
 		if (_.size(topics) > 0) {
-			var template = _.template('<tr><td>{{icon}}<strong>t{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
+			var template = _.template('<tr><td>{{icon}}<strong>t{{t}}: </strong> {{words}}</td><td>{{count}}</td></tr>');
 			var self = this;			
 
 			// sort this data by reverse count

@@ -21,7 +21,7 @@ App.Views.IndexProgram = Backbone.View.extend({
 		
        	// get a list of pges
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Programs");
-		$.getJSON(apiurl+"topic?org="+getDivision()+"&summ=pge&jsoncallback=?", function(data) {
+		$.getJSON(apiurl+"topic?org="+getDivision()+"&year=>="+getStartYear()+"&summ=pge&jsoncallback=?", function(data) {
 			var pges = _.pluck(data["data"], "pge").join();
 			// lookup using pge legend in the data api
 			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+pges+"&jsoncallback=?", function(data){

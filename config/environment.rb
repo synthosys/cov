@@ -15,3 +15,6 @@ ActionMailer::Base.smtp_settings = {
 
 # Initialize the rails application
 Cov::Application.initialize!
+
+# Load a yaml file with globals
+GLOBAL = YAML.load_file("#{::Rails.root.to_s}/config/global.yml")

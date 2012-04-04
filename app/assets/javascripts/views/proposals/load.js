@@ -125,7 +125,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 			url: url,
 			dataType: datatype,
 			success: function(data) {
-				if (data["data"].length==0) {
+				/* if (data["data"].length==0) {
 					//return with error
 					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
 					//set the others here too so we return
@@ -133,7 +133,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					self.processLoadProgress('topics', 'error', {}, '');
 					self.processLoadProgress('reviewers', 'error', {}, '');
 					self.processLoadProgress('reviewerproposals', 'error', {}, '');
-				} else {
+				} else { */
 					var panels = data["data"];
 					//load counts for panel proposals, make a list
 					var panel_propids = [];
@@ -193,7 +193,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					self.loadTopics();
 					//get reviewer data
 					self.loadReviewers(panels);
-				}
+				//}
 			},
 			error: function() {
 //console.log('error panels');										

@@ -46,7 +46,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign"></i> (COI)</span>';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
-				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';
+				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';
 				reviewers_compiled.push(reviewers_template(tmp));
 			});
 			rendered = reviewers_compiled.join("\n");
@@ -188,10 +188,10 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 					else var award_amount = '';			
 					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
-					data.links = '<p><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a> | <a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';			
+					data.links = '<p><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>'; // | <a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';			
 				} else {
 					data.status = '<tr><td class="lbl"><strong>Status</td><td>('+details.status.name+')</td></tr>';
-					data.links = '<p><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';
+					data.links = ''; //'<p><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';
 				}
 				data.pge = details.pge.code;
 				data.division = details.org.name;

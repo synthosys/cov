@@ -8,7 +8,7 @@ body {
 
 .text-left { text-align: left;}
 .text-right { text-align: right;}
-.text-center { text-align: center;}
+.text-center, td.text-center, th.text-center { text-align: center;}
 
 #tab_reviewer_expertise_topics [class^="icon-"] {
   margin-right: 5px;
@@ -28,6 +28,18 @@ iframe {
 background: #fff;
 padding: 15px;
 min-height: 500px;
+}
+
+.icon-red {
+  background-image: url(../img/glyphicons-halflings-red.png);
+}
+
+.icon-green {
+  background-image: url(../img/glyphicons-halflings-green.png);
+}
+
+.icon-gray {
+  background-image: url(../img/glyphicons-halflings-gray.png);
 }
 
 /*
@@ -82,17 +94,17 @@ margin: 0 -15px;
 
 .header-base { background: transparent url(headerbg-wide.png) no-repeat bottom; }
 .header-base h1 {
-height: 87px;
-width: 588px;
+height: 101px;
+width: 452px;
 margin: 0 auto;
 position: relative;
-top: 22px;
+top: 13px;
 }
 
 .header-base h1 a {
 display: block;
-height: 87px;
-width: 588px;
+height: 101px;
+width: 452px;
 background: transparent url(cov-logo.png) no-repeat top left;
 overflow: hidden;
 text-indent: -100%;
