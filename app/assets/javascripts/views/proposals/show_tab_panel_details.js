@@ -58,7 +58,18 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept?reviewer.inst.dept:'';
-				tmp.classification = (reviewer.inst.flag&&self.legend_flags[reviewer.inst.flag])?self.legend_flags[reviewer.inst.flag]["label"]:'';
+//console.log(reviewer.inst.flag);
+				tmp.classification = '';
+				if (reviewer.inst.flag) {
+					_.each(reviewer.inst.flag, function(flag) {
+						var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
+						if (flag) {
+							if (tmp.classification) tmp.classification += ', ';
+							tmp.classification += flag;
+						}
+					});
+				}
+//				tmp.classification = (reviewer.inst.flag&&self.legend_flags[reviewer.inst.flag])?self.legend_flags[reviewer.inst.flag]["label"]:'';
 				tmp.gender = reviewer.gender;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';
 				reviewers_compiled.push(template(tmp));
