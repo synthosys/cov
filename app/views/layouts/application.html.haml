@@ -61,7 +61,7 @@
                     %b.caret
                   %ul.dropdown-menu                  
                     - if can? :manage, :internalUserCan
-                      %li= link_to "Internal Access", programs_path
+                      %li= link_to "Internal Access", programs_path(:anchor => "index")
                     %li= link_to "Loaded Proposals", proposals_path
                     %li.divider
                     %li= link_to "All Users", users_path
@@ -69,7 +69,7 @@
               - elsif can? :read, Proposal
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
-                %li= link_to "Programs", programs_path
+                %li= link_to "Programs", programs_path(:anchor => "index")
             - else
               %li= link_to "Home", pages_home_path
           %ul.nav.pull-right

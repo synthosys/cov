@@ -260,7 +260,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 								researchers[i]['inst']['flag'] = '';
 								if (org) researchers[i]['inst']['flag'] = org['flag'];
 							}
-							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td><td>{{classification}}</td></tr>');
+							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td></tr>');
 							var researchers_compiled = [];
 							_.each(proposal.researchers,function(researcher) {
 								var tmp = {};
@@ -268,26 +268,27 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 								tmp.name = researcher.name;
 								tmp.inst = researcher.inst.name;
 								tmp.inst += researcher.inst.dept?'<br />Dept.: '+researcher.inst.dept:'';
-								tmp.classification = '';
+								var classification = '';
 								if (researcher.inst.flag) {
 									_.each(researcher.inst.flag, function(flag) {
 										var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
 										if (label) {
-											if (tmp.classification) tmp.classification += '<br />';
-											tmp.classification += label;
+											if (classification) tmp.classification += '<br />';
+											classification += label;
 										}
 									});
 								}
+								if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
 								researchers_compiled.push(researchers_template(tmp));
 							});
 							$('#researchers_'+nsf_id, self.el).html(researchers_compiled.join("\n"));
 						},
 						error: function() {
-							$('#researchers_'+nsf_id, self.el).html('<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>');							
+							$('#researchers_'+nsf_id, self.el).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');							
 						}
 					});														
 				} else {
-					$('#researchers_'+nsf_id, this.el).html('<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>');
+					$('#researchers_'+nsf_id, this.el).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');
 				}
 			});
 		}

@@ -35,10 +35,10 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		return compiled(data);
 	},
 	renderPanelReviewers: function(reviewers) {
-		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th class="text-center">Assigned to this Proposal</th><th>Panel Reviewer</th><th>Institution</th><th>Institution Classification</th><th class="text-center">Gender</th><th class="text-center">Known to NSF as PI</th></tr></thead><tbody>{{reviewers}}</tbody></table>');
+		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th class="text-center">Assigned to this Proposal</th><th>Panel Reviewer</th><th>Institution</th><th class="text-center">Gender</th><th class="text-center">Known to NSF as PI</th></tr></thead><tbody>{{reviewers}}</tbody></table>');
 		var data = {};
 		if (reviewers.length==0) {
-			data.reviewers = '<tr><td colspan="6"><div class="alert">No reviewers</div></td></tr>';
+			data.reviewers = '<tr><td colspan="5"><div class="alert">No reviewers</div></td></tr>';
 		} else {
 			data.reviewers = this.renderPanelReviewerListItems(reviewers).join("\n");
 		}
@@ -49,7 +49,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 
 		var self = this;
 		if (reviewers.length > 0) {
-			var template = _.template('<tr><td class="text-center"><i class="{{status}}"></i></td><td>{{name}}</td><td>{{inst}}</td><td>{{classification}}</td><td class="text-center">{{gender}}</td><td class="text-center"><i class="{{pi}}"></i></td></tr>');
+			var template = _.template('<tr><td class="text-center"><i class="{{status}}"></i></td><td>{{name}}</td><td>{{inst}}</td><td class="text-center">{{gender}}</td><td class="text-center"><i class="{{pi}}"></i></td></tr>');
 			_.each(reviewers,function(reviewer) {
 				var tmp = {};
 				if (reviewer.status=='R') tmp.status = 'icon-ok icon-green';
@@ -59,16 +59,17 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				tmp.inst = reviewer.inst.name;
 				tmp.inst += reviewer.inst.dept?'<br />Dept.: '+reviewer.inst.dept:'';
 //console.log(reviewer.inst.flag);
-				tmp.classification = '';
+				var classification = '';
 				if (reviewer.inst.flag) {
 					_.each(reviewer.inst.flag, function(flag) {
 						var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
 						if (label) {
-							if (tmp.classification) tmp.classification += '<br />';
-							tmp.classification += label;
+							if (classification) classification += '<br />';
+							classification += label;
 						}
 					});
 				}
+				if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
 //				tmp.classification = (reviewer.inst.flag&&self.legend_flags[reviewer.inst.flag])?self.legend_flags[reviewer.inst.flag]["label"]:'';
 				tmp.gender = reviewer.gender;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';
@@ -94,7 +95,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		var topics_compiled = [];	
 
 		if (_.size(topics) > 0) {
-			var template = _.template('<tr><td>t{{icon}}<strong>{{t}}: </strong> {{words}}</td><td>{{count}}</td></tr>');
+			var template = _.template('<tr><td>t{{icon}}<strong>{{t}}: </strong> {{words}}</td><td class="text-center">{{count}}</td></tr>');
 			var self = this;
 
 			// sort this data by reverse count

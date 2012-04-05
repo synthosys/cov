@@ -1,12 +1,19 @@
 var AppRouter = Backbone.Router.extend({
 	routes: {
 		// Define some URL routes
+		'index': 'programs',
 		'topics/:pge/*params': 'programsTopics',
 		'awards/:pge/*params': 'programsAwards',
 		'details/:nsf_id/*params': 'programsDetails',
 
 		// Default
 		'*actions': 'defaultAction' //using splats
+	},
+	programs: function() {
+		App.views = {
+			'IndexProgram': { el:$("#dashboard") },
+		};
+		this.load();		
 	},
 	programsTopics: function(pge,params) {
 		App.views = {
