@@ -14,6 +14,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 
 		var self = this;
 		this.model = new Proposal({id: this.id + ".json"});
+		$('div#reviewdata', this.el).hide();
 		this.model.fetch({
 			success: function() {
 				self.legend_flags = {};
@@ -237,6 +238,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 		} else this.renderDetails();
 	},
 	renderDetails: function() {
+		$('div#loader', this.el).hide();
+		$('div#reviewdata', this.el).show();
 		if ($.trim($('#tab_proposal_details', this.el).html())) return; //already loaded
 		var html = this.showProposalDetailsView.render();
 //console.log(html);		
@@ -276,7 +279,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//institution classification
 		//$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers));
 		//render reviewer map
-		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocation(reviewers,'reviewers_location_map'));		
+		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocationMap(reviewers,'reviewers_location_map'));
+		//also, by country		
+		this.showPanelDetailsView.renderReviewerLocationByCountry(reviewers,$('#reviewers_location_country', this.el));
 	},
 	showReviewerExpertise: function() {
 		if (this.selectedpanel!=null) {

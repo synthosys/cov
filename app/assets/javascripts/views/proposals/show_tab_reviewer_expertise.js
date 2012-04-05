@@ -99,7 +99,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 					tmp[topicid] = {};
 					tmp[topicid]['count'] = 0;
 				});
-				data.topics_proposalonly = this.renderPanelTopicListItems(tmp,'warning-sign').join("\n");
+				data.topics_proposalonly = this.renderPanelTopicListItems(tmp,'warning-sign icon-red').join("\n");
 			} else {
 				data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}

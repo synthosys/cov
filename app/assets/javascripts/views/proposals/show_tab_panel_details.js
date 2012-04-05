@@ -35,7 +35,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		return compiled(data);
 	},
 	renderPanelReviewers: function(reviewers) {
-		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th class="text-center">Assigned to this Proposal</th><th>Panel Reviewer</th><th>Institution</th><th>Department</th><th>Institution Classification</th><th class="text-center">Gender</th><th class="text-center">Known to NSF as PI</th></tr></thead><tbody>{{reviewers}}</tbody></table>');
+		var template = _.template('<table class="table table-condensed table-noborder"><thead><tr><th class="text-center">Assigned to this Proposal</th><th>Panel Reviewer</th><th>Institution</th><th>Institution Classification</th><th class="text-center">Gender</th><th class="text-center">Known to NSF as PI</th></tr></thead><tbody>{{reviewers}}</tbody></table>');
 		var data = {};
 		if (reviewers.length==0) {
 			data.reviewers = '<tr><td colspan="6"><div class="alert">No reviewers</div></td></tr>';
@@ -49,7 +49,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 
 		var self = this;
 		if (reviewers.length > 0) {
-			var template = _.template('<tr><td class="text-center"><i class="{{status}}"></i></td><td>{{name}}</td><td>{{inst}}</td><td>{{dept}}</td><td>{{classification}}</td><td class="text-center">{{gender}}</td><td class="text-center"><i class="{{pi}}"></i></td></tr>');
+			var template = _.template('<tr><td class="text-center"><i class="{{status}}"></i></td><td>{{name}}</td><td>{{inst}}</td><td>{{classification}}</td><td class="text-center">{{gender}}</td><td class="text-center"><i class="{{pi}}"></i></td></tr>');
 			_.each(reviewers,function(reviewer) {
 				var tmp = {};
 				if (reviewer.status=='R') tmp.status = 'icon-ok icon-green';
@@ -57,15 +57,15 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				else tmp.status = 'icon-remove icon-red';
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
 				tmp.inst = reviewer.inst.name;
-				tmp.dept = reviewer.inst.dept?reviewer.inst.dept:'';
+				tmp.inst += reviewer.inst.dept?'<br />Dept.: '+reviewer.inst.dept:'';
 //console.log(reviewer.inst.flag);
 				tmp.classification = '';
 				if (reviewer.inst.flag) {
 					_.each(reviewer.inst.flag, function(flag) {
 						var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
-						if (flag) {
-							if (tmp.classification) tmp.classification += ', ';
-							tmp.classification += flag;
+						if (label) {
+							if (tmp.classification) tmp.classification += '<br />';
+							tmp.classification += label;
 						}
 					});
 				}
@@ -168,7 +168,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		if (list.length>0) return '<p>'+list.join('<br />')+'</p>';
 		else return '';
 	},
-	renderReviewerLocation: function(data,map_renderto,list_renderto) {
+	renderReviewerLocationMap: function(data,map_renderto) {
 //console.log(data);
 		//group by state
 		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["state"]) return row["inst"]["state"]; });
@@ -208,7 +208,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		}
 		geochart.draw(data, option);				
 
-		//also show a graph, just to be fancy
+		//also show a list, just to be fancy
 		collated = _.sortBy(collated,function(row) { return row[1]; }).reverse();
 		var list = [];
 		_.each(collated, function(value,key) {
@@ -217,4 +217,57 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		if (list.length>0) return '<p>'+list.join('<br />')+'</p>';
 		else return '';
 	},
+	renderReviewerLocationByCountry: function(reviewers,renderto) {
+		var orgs = [];
+		if (reviewers) {
+			renderto.html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading...");			
+			_.each(reviewers,function(reviewer) {
+				if (reviewer.inst && reviewer.inst.nsf_id) orgs.push(reviewer.inst.nsf_id);
+			})
+			//now get the org info
+			var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+			var datatype = 'JSONP';			
+			$.ajax({
+				url: url,
+				dataType: datatype,
+				success: function(data) {
+					//found it! save it back
+					for (var i=0;i<reviewers.length;i++) {
+						var org = _.find(data["data"], function(item) {
+							return item['nsf_id']==reviewers[i]['inst']['nsf_id'];
+						});
+						reviewers[i]['inst']['address'] = '';
+						if (org && org['address']) reviewers[i]['inst']['address'] = org['address'];
+					}
+//console.log(reviewers);
+					//cool, now group by country
+					var grouped = _.groupBy(reviewers,function(row) {
+						if (typeof(row["inst"]["address"]["country"])!="undefined") return row["inst"]["address"]["country"]; 
+					});
+//console.log(grouped);			
+					//now put it together
+					var collated = [];
+					for (var key in grouped) {
+						//get the institution id for all the institutions in this state
+						var count = grouped[key].length;
+						//add up the totals
+						if (count>0) collated.push([key,count]);
+					}
+					collated = _.sortBy(collated,function(row) { return row[1]; }).reverse();
+					var list = [];
+					_.each(collated, function(value,key) {
+//console.log(value[0]);						
+						if (value[0]!='undefined') {
+							list.push('<img src="'+baseURI+'/assets/blank.gif" class="flag flag-'+value[0].toLowerCase()+'" /> '+value[0]+' ('+value[1]+')');							
+						}
+					});
+					if (list.length>0) renderto.html('<p>'+list.join('<br />')+'</p>');
+					else renderto.html('');					
+				},
+				error: function() {
+					renderto.html();
+				}
+			});
+		}
+	}
 });

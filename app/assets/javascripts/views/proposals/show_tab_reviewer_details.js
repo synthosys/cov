@@ -143,6 +143,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 //console.log(proposal["proposal"]["nsf_id"]);											
 														return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
 													});
+
 //console.log(researchers);										
 													tmp["researchers"] = researchers;
 													return tmp;
@@ -166,7 +167,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		}
 	},
 	renderAwards: function(proposals,renderto) {
-		//researchers
+		//awards
 		var rendered = '';
 		if (proposals.length > 0) {
 			var self = this;
@@ -197,23 +198,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				data.division = details.org.name;
 
 				//researchers
-				var researchers = '';
-				if (proposal.researchers.length > 0) {
-					var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td><td>{{dept}}</td></tr>');
-					var researchers_compiled = [];
-					_.each(proposal.researchers,function(researcher) {
-						var tmp = {};
-						tmp.nsf_id = researcher.nsf_id;
-						tmp.name = researcher.name;
-						tmp.inst = researcher.inst.name;
-						tmp.dept = researcher.inst.dept;
-						researchers_compiled.push(researchers_template(tmp));
-					});
-					researchers = researchers_compiled.join("\n");
-				} else {
-					researchers = '<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>';
-				}
-				data.researchers = researchers;
+				data.researchers = "<tr><td colspan='4'><img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading researchers</td></tr>";
 
 				//topics
 				var topics = proposal.topics;
@@ -237,10 +222,74 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		} else {
 			rendered = '<div class="alert">No awards</div>';
 		}	
-		renderto.html(rendered);			
+		renderto.html(rendered);
+		//render researchers
+		this.renderResearchers(proposals);			
 		$('div.abstract').expander({
 		  expandEffect: 'slideDown',
 		  collapseEffect: 'slideUp'
 		});
+	},
+	renderResearchers: function(proposals) {
+		var rendered = '';
+		if (proposals.length > 0) {
+			_.each(proposals, function(proposal) {
+				var nsf_id = proposal.details.nsf_id;
+				//researchers
+				var researchers = '';
+				if (proposal.researchers.length > 0) {
+					var orgs = [];
+					//pull out the orgs
+					_.each(proposal.researchers, function(researcher) {
+						orgs.push(researcher['inst']['nsf_id']);
+					});
+	//console.log(reviewers);								
+					//so now, get the inst classifications
+					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
+					var self = this;
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {
+							//found it! save it back
+							for (var i=0;i<researchers.length;i++) {
+								var org = _.find(data["data"], function(item) {
+									return item['nsf_id']==researchers[i]['inst']['nsf_id'];
+								});
+								researchers[i]['inst']['flag'] = '';
+								if (org) researchers[i]['inst']['flag'] = org['flag'];
+							}
+							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td><td>{{classification}}</td></tr>');
+							var researchers_compiled = [];
+							_.each(proposal.researchers,function(researcher) {
+								var tmp = {};
+								tmp.nsf_id = researcher.nsf_id;
+								tmp.name = researcher.name;
+								tmp.inst = researcher.inst.name;
+								tmp.inst += researcher.inst.dept?'<br />Dept.: '+researcher.inst.dept:'';
+								tmp.classification = '';
+								if (researcher.inst.flag) {
+									_.each(researcher.inst.flag, function(flag) {
+										var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
+										if (label) {
+											if (tmp.classification) tmp.classification += '<br />';
+											tmp.classification += label;
+										}
+									});
+								}
+								researchers_compiled.push(researchers_template(tmp));
+							});
+							$('#researchers_'+nsf_id, self.el).html(researchers_compiled.join("\n"));
+						},
+						error: function() {
+							$('#researchers_'+nsf_id, self.el).html('<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>');							
+						}
+					});														
+				} else {
+					$('#researchers_'+nsf_id, this.el).html('<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>');
+				}
+			});
+		}
 	}
 });

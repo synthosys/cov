@@ -30,7 +30,8 @@
 <h2><%= @proposal_title %></h2>
 <% topics = ActiveSupport::JSON.decode(@proposal.topics) %>
 <% panels = ActiveSupport::JSON.decode(@proposal.panels) %>
-<div class="tabbable">
+<div id="loader"><%= image_tag("ajax-load.gif", :alt => "loading") %> Loading data for review </div>
+<div id="reviewdata" class="tabbable" style="display: none;">
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="#tab_proposal_details" data-toggle="tab">Proposal Details</a></li>
 <%
