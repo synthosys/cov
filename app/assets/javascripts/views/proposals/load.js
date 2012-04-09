@@ -281,7 +281,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					});
 					//now find the corresponding reviewers
 					var proposal_panel_reviewers = [];
-					var orgs = [];
+					//var orgs = [];
 					_.each(proposal_panels, function(panel) {
 						var tmp = {};
 						tmp['panel_id'] = panel["nsf_id"];
@@ -289,13 +289,16 @@ App.Views.LoadProposal = Backbone.View.extend({
 							if (item["revr"]) return _.intersection(item["revr"],panel["revr"]).length>0;
 							else return $.inArray(item["nsf_id"],panel["revr"])!=-1;							
 						});
+						tmp['reviewers'] = reviewers;
+						proposal_panel_reviewers.push(tmp);
 						//pull out the orgs
-						_.each(reviewers, function(reviewer) {
-							orgs.push(reviewer['inst']['nsf_id']);
-						});
+						//_.each(reviewers, function(reviewer) {
+						//	orgs.push(reviewer['inst']['nsf_id']);
+						//});
 //console.log(reviewers);								
 						//so now, get the inst classifications
-						var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+						//we're not doing this here anymore, this is public data, retrieve upon show instead of storing in the db needlessly
+						/*var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
 						var datatype = 'JSONP';			
 						$.ajax({
 							url: url,
@@ -313,7 +316,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 								tmp['reviewers'] = reviewers;
 								proposal_panel_reviewers.push(tmp);
 							}
-						});
+						}); */
 					});
 					loaded_data[nsf_id] = proposal_panel_reviewers;
 				});

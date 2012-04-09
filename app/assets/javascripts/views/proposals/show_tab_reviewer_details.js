@@ -64,7 +64,17 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		data.name = reviewer.first_name+' '+reviewer.last_name;
 		data.inst = reviewer.inst.name;
 		data.dept = reviewer.inst.dept;
-		data.classification = (reviewer.inst.flag&&this.legend_flags[reviewer.inst.flag])?this.legend_flags[reviewer.inst.flag]["label"]:'';
+		//data.classification = (reviewer.inst.flag&&this.legend_flags[reviewer.inst.flag])?this.legend_flags[reviewer.inst.flag]["label"]:'';
+		data.classification = '';
+		if (reviewer.inst['class']) {
+			var legend = _.find(this.legend_classes, function(item) {
+				return item['class']==reviewer.inst['class'];
+			});
+//console.log(legend);			
+			if (legend) {
+				data.classification = legend['label'];
+			}
+		}		
 		data.email = reviewer.email?reviewer.email:'';
 		data.degree = (reviewer.degree && reviewer.degree.name)?reviewer.degree.name:'';
 		data.year = (reviewer.degree && reviewer.degree.year)?reviewer.degree.year:'';
@@ -224,14 +234,15 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		}	
 		renderto.html(rendered);
 		//render researchers
-		this.renderResearchers(proposals);			
+		this.renderResearchers(proposals,renderto);			
 		$('div.abstract').expander({
 		  expandEffect: 'slideDown',
 		  collapseEffect: 'slideUp'
 		});
 	},
-	renderResearchers: function(proposals) {
+	renderResearchers: function(proposals,renderto) {
 		var rendered = '';
+		var self = this;
 		if (proposals.length > 0) {
 			_.each(proposals, function(proposal) {
 				var nsf_id = proposal.details.nsf_id;
@@ -247,29 +258,33 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 					//so now, get the inst classifications
 					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
 					var datatype = 'JSONP';			
-					var self = this;
 					$.ajax({
 						url: url,
 						dataType: datatype,
 						success: function(data) {
 							//found it! save it back
-							for (var i=0;i<researchers.length;i++) {
+							for (var i=0;i<proposal.researchers.length;i++) {
 								var org = _.find(data["data"], function(item) {
-									return item['nsf_id']==researchers[i]['inst']['nsf_id'];
+									return item['nsf_id']==proposal.researchers[i]['inst']['nsf_id'];
 								});
-								researchers[i]['inst']['flag'] = '';
-								if (org) researchers[i]['inst']['flag'] = org['flag'];
+								proposal.researchers[i]['inst']['flag'] = '';
+								proposal.researchers[i]['inst']['class'] = '';
+								if (org) {
+									proposal.researchers[i]['inst']['flag'] = org['flag'];
+									proposal.researchers[i]['inst']['class'] = org['class'];
+								}
 							}
 							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td></tr>');
 							var researchers_compiled = [];
 							_.each(proposal.researchers,function(researcher) {
+//console.log(researcher);								
 								var tmp = {};
 								tmp.nsf_id = researcher.nsf_id;
 								tmp.name = researcher.name;
 								tmp.inst = researcher.inst.name;
 								tmp.inst += researcher.inst.dept?'<br />Dept.: '+researcher.inst.dept:'';
 								var classification = '';
-								if (researcher.inst.flag) {
+								/*if (researcher.inst.flag) {
 									_.each(researcher.inst.flag, function(flag) {
 										var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
 										if (label) {
@@ -277,18 +292,29 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 											classification += label;
 										}
 									});
+								}*/	 //replacing with class information
+								if (researcher.inst['class']) {
+//console.log(researcher.inst['class']);									
+//console.log(self.legend_classes);									
+									var legend = _.find(self.legend_classes, function(item) {
+										return item['class']==researcher.inst['class'];
+									})
+//console.log(legend);									
+									if (legend) {
+										classification = legend['label'];
+									}
 								}
 								if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
 								researchers_compiled.push(researchers_template(tmp));
 							});
-							$('#researchers_'+nsf_id, self.el).html(researchers_compiled.join("\n"));
+							$('#researchers_'+nsf_id, renderto).html(researchers_compiled.join("\n"));
 						},
 						error: function() {
-							$('#researchers_'+nsf_id, self.el).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');							
+							$('#researchers_'+nsf_id, renderto).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');							
 						}
 					});														
 				} else {
-					$('#researchers_'+nsf_id, this.el).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');
+					$('#researchers_'+nsf_id, renderto).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');
 				}
 			});
 		}

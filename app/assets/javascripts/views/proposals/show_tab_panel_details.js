@@ -60,7 +60,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				tmp.inst += reviewer.inst.dept?'<br />Dept.: '+reviewer.inst.dept:'';
 //console.log(reviewer.inst.flag);
 				var classification = '';
-				if (reviewer.inst.flag) {
+				/*if (reviewer.inst.flag) {
 					_.each(reviewer.inst.flag, function(flag) {
 						var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
 						if (label) {
@@ -68,6 +68,14 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 							classification += label;
 						}
 					});
+				}*/ //replacing with class information
+				if (reviewer.inst['class']) {
+					var legend = _.find(self.legend_classes, function(item) {
+						return item['class']==reviewer.inst['class'];
+					})
+					if (legend) {
+						classification = legend['label'];
+					}
 				}
 				if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
 //				tmp.classification = (reviewer.inst.flag&&self.legend_flags[reviewer.inst.flag])?self.legend_flags[reviewer.inst.flag]["label"]:'';

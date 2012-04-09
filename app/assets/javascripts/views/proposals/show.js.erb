@@ -17,7 +17,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 		$('div#reviewdata', this.el).hide();
 		this.model.fetch({
 			success: function() {
-				self.legend_flags = {};
+				//self.legend_flags = {};
+				self.legend_classes = {};
 				//load topic legend
 				self.legend_topics = {};
 				$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {
@@ -207,16 +208,97 @@ App.Views.ShowProposal = Backbone.View.extend({
 			});
 			//set defaults for selected panels
 			this.selectedpanel = this.panels[0].panel.nsf_id; //index of first panel
+			//load panel reviewer org data
+			this.loadPanelData(0); //first one, callback from this function will call render when it's done
+		} else {
+			//render
+			this.render();
 		}
+	},
+	preparePanelData: function(index,panel) {
+		//take the data returned and store it against the appropriate panel
+		if (this.panels[index]) this.panels[index] = panel;
+		index++;
+		if (index==this.panels.length) {
+			//all done, render!
+			this.render();
+		} else {
+			//load the next one
+			this.loadPanelData(index);
+		}
+	},
+	loadPanelData: function(index) {
+		var panel = this.panels[index];
+//console.log(panel);				
+		//if panel reviewer org info is not loaded, load it first
+		if (panel) {
+			if (typeof panel.orgloaded == "undefined" || !panel.orgloaded) {
+				var reviewers = panel.reviewers;
+				if (reviewers.length==0) {
+					panel.orgloaded = true;
+					this.preparePanelData(index,panel);
+				} else {
+					//load org data
+					var orgs = [];
+					//pull out the orgs
+					_.each(reviewers, function(reviewer) {
+						orgs.push(reviewer['inst']['nsf_id']);
+					});
+//console.log(reviewers);		
+					var self = this;
+					//so now, get the inst classifications
+					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {
+							//found it! save it back
+							for (var i=0;i<reviewers.length;i++) {
+								var org = _.find(data["data"], function(item) {
+									return item['nsf_id']==reviewers[i]['inst']['nsf_id'];
+								});
+								reviewers[i]['inst']['flag'] = '';
+								reviewers[i]['inst']['class'] = '';
+								if (org) {
+									reviewers[i]['inst']['flag'] = org['flag'];
+									reviewers[i]['inst']['class'] = org['class'];
+								}
+							}
+							panel.orgloaded = true;
+							panel.reviewers = reviewers;
+//console.log(reviewers);						
+							self.preparePanelData(index,panel);							
+						},
+						error: function() {
+							self.preparePanelData(index,panel);							
+						}
+					});
+				}
+			} else {
+				this.preparePanelData(index,panel);				
+			}
+		} else {
+			this.preparePanelData(index,panel);
+		}		
 	},
 	render: function() {		
 		//load classification legends
-		if (_.size(this.legend_flags)==0) {
+		/* if (_.size(this.legend_flags)==0) {
 			var self = this;
 			$.getJSON(apiurl+'org?legend=flag'+'&jsoncallback=?', function(data) {
 				_.each(data, function(item) {
 					self.legend_flags[item["flag"]] = {"label":item["label"]};
 				});
+				self.showDetails();
+			});
+		} else {
+			this.showDetails();		
+		} */
+		if (_.size(this.legend_classes)==0) {
+			var self = this;
+			$.getJSON(apiurl+'org?legend=class'+'&jsoncallback=?', function(data) {
+				self.legend_classes = data;
 				self.showDetails();
 			});
 		} else {
@@ -256,7 +338,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 					self.showPanelDetailsView = new App.Views.ShowPanelDetails({html: html});
 					self.showPanelDetailsView.panels_count = self.panels.length;
 					self.showPanelDetailsView.legend_topics = self.legend_topics;
-					self.showPanelDetailsView.legend_flags = self.legend_flags;
+					//self.showPanelDetailsView.legend_flags = self.legend_flags;
+					self.showPanelDetailsView.legend_classes = self.legend_classes;
+					//prepare panel data
 					self.renderPanel(panel,paneltopics);
 				});
 			} else {
@@ -317,7 +401,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 				require(['text!templates/proposals/show_tab_reviewer_details.html'], function(html) {
 					self.showReviewerDetailsView = new App.Views.ShowReviewerDetails({html: html});
 					self.showReviewerDetailsView.legend_topics = self.legend_topics;
-					self.showReviewerDetailsView.legend_flags = self.legend_flags;
+					//self.showReviewerDetailsView.legend_flags = self.legend_flags;
+					self.showReviewerDetailsView.legend_classes = self.legend_classes;
 					self.renderReviewerDetails(panel.reviewers);
 				});
 			} else {
@@ -400,8 +485,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 //console.log(this.panels);			
 			return _.find(this.panels,function(panel) {
 				return panel.panel.nsf_id == selectedpanel;
-			})
-		} else 
+			});
+		} else {
 			return {};
+		}
 	}
 });
