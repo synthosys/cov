@@ -176,8 +176,8 @@ App.Views.ListProposal = Backbone.View.extend({
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
 
-loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
-		return; //uncomment this to run in test mode
+/* loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+		return; */ //uncomment this to run in test mode
 				
 	    // Check to see if we have access to nsfstarmetrics server 
 		if (!this.datacheck) {
