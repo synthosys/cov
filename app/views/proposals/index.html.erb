@@ -23,7 +23,7 @@
 	</script>
 	<script type="text/Javascript">
 	App.views = {
-		'ListProposal': { el:$("#proposals_table"), division:'<%= current_user.division %>', useDataTables: true, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> }
+		'ListProposal': { el:$("#proposals_table"), division:'<%= current_user.division %>', allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> }
 	};
 	</script>
 <% else %>

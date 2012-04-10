@@ -304,7 +304,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 										classification = legend['label'];
 									}
 								}
-								if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
+								if (classification) tmp.inst += '<br />('+classification+')';
 								researchers_compiled.push(researchers_template(tmp));
 							});
 							$('#researchers_'+nsf_id, renderto).html(researchers_compiled.join("\n"));

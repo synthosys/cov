@@ -15,6 +15,7 @@
 //= require jquery.expander.min
 //= require jquery-ui/js/jquery-ui-1.8.18.custom.min
 //= require datatables/datatables.min.js
+//= require datatables/dataTables.fnFindCellRowIndexes.js
 //= require require/require
 //= require router
 //= require app

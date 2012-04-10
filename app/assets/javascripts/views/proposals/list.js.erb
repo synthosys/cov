@@ -16,88 +16,104 @@ App.Views.ListProposal = Backbone.View.extend({
 		this.getProposals();
 	},
 	addOne: function(proposal) {
-		var proposal = new App.Views.ListItemProposal({model: proposal})
-		$(this.el).append(proposal.render().el);
+//		var proposal = new App.Views.ListItemProposal({model: proposal})
+//		$(this.el).append(proposal.render().el);
+		//add to the datatable
+		$(this.el).dataTable().fnAddData( proposal.prepareData(this.options.allowEdit,this.options.user_id) );
 	},
 	addAll: function() {
 		$('tbody', $(this.el)).empty();
-		//if we're using data tables
-		if (this.options.useDataTables) {
-			var aaData = [];
+		//we're using data tables!
+		var aaData = [];
 //console.log(this.collection.models);			
-			var self = this;
-			_.each(this.collection.models,function(proposal) {
-				proposal.extractData();
-				var col1 = '<a href="'+baseURI+'/proposals/'+proposal.id+'">'+proposal.get('nsf_id')+'</a> - '+proposal.title();
-				var col2 = [];
-				var users = proposal.assigned_users();
-//console.log(proposal.attributes);		
-//console.log(users);		
-				_.each(users, function(user) {
-					col2.push('<i class="icon-user"></i> <a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a>');
-				});
-				col2 = col2.join('<br />');
-				//associations - last viewed
-				var col3 = [];
-				var associations = proposal.associations();
-				associations = _.sortBy(associations, function(association){ association.lastviewed; });
-//console.log(associations);				
-				_.each(associations, function(association) {
-//console.log(association.lastviewed);					
-					if (association.lastviewed) col3.push(association.lastviewed);
-				});
-				col3 = _.last(col3)?_.last(col3):''; //.join('<br />');
-//console.log(col3);					
-				var col4 = '';
-				col4 += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
-//console.log(html);							
-				if (self.options.allowEdit) {
-					col4 += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a>';
-					col4 += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
-					col4 += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a>';
-				} else {
-					col4 += '<a href="#" id="proposals_unassign_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
-				}						
-				aaData.push([col1, col2, col3, col4]);
-			});
+		var self = this;
+		_.each(this.collection.models,function(proposal) {
+			aaData.push(proposal.prepareData(self.options.allowEdit,self.options.user_id));
+		});
 //console.log(aaData);			
-			$(this.el).dataTable({
-				"bDestroy":true,
-				"bJQueryUI": true,
-				"sPaginationType": "full_numbers",
-				"iDisplayLength": 25,
-				"aaData": aaData,
-				"aoColumnDefs": [
-					{ 
-						"sTitle": "Title",
-						"sWidth": "500",
-						"aTargets": [ 0 ]
-					},
-					{
-						"sTitle": "Assigned To",
-						"aTargets": [ 1 ]
-					},
-					{
-						"sTitle": "Last Viewed",
-						"fnRender": function( oObj ) {
-							if (oObj.aData[2]) return $.timeago(oObj.aData[2]);
-							else return '';
-						},
-						"bUseRendered": false,
-						"aTargets": [ 2 ]
-					},
-					{ 
-						"sTitle": "Actions",
-						"sClass": "proposal-actions",
-						"bSortable": false,
-						"aTargets": [ 3 ]
-					}
-				],
-				"aaSorting": [[2, 'desc']]
-			});	
-		} else {
-			this.collection.each(this.addOne);			
+		//prepare columns to be displayed
+		//this is the default list proposals page view
+		//any other view that wants to use can pass in the custom column params
+		//like { "colname" : { params}, "colname" : { params }}
+		var aoColumns = [
+			{ 
+				"sTitle": "ID",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "id"
+			},
+			{ 
+				"sTitle": "Prop ID",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "nsf_id"
+			},
+			{ 
+				"sTitle": "Title",
+				"sWidth": "500",
+				"mDataProp": "title"
+			},
+			{
+				"sTitle": "Proposal Date",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "date"
+			},
+			{
+				"sTitle": "Award",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "amount"
+			},
+			{
+				"sTitle": "Panel/s (Program Officer/s)",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "panels"
+			},
+			{
+				"sTitle": "Assigned To",
+				"mDataProp": "assigned"
+			},
+			{
+				"sTitle": "Last Viewed",
+				"fnRender": function( oObj ) {
+					if (oObj.aData.lastviewed) return $.timeago(oObj.aData.lastviewed);
+					else return '';
+				},
+				"bUseRendered": false,
+				"mDataProp": "lastviewed"
+			},
+			{ 
+				"sTitle": "Actions",
+				"sClass": "proposal-actions",
+				"bSortable": false,
+				"mDataProp": "actions"
+			}
+		];
+		//does a calling view pass in any options to configure this display?
+		if (this.options.columns) {
+			//override/append to the existing options
+			for (var i=0; i<aoColumns.length;i++) {
+				if (this.options.columns[aoColumns[i]["mDataProp"]]) {
+					var options = this.options.columns[aoColumns[i]["mDataProp"]];
+					//found one, bring over the column options
+					_.each(options, function(value, key) {
+						aoColumns[i][key] = value;
+					});
+				}
+			}
 		}
+//console.log(aoColumns);			
+		$(this.el).dataTable({
+			"bDestroy":true,
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers",
+			"iDisplayLength": 25,
+			"aaData": aaData,
+			"aoColumns": aoColumns,
+			"aaSorting": [[5, 'desc']]
+		});	
 	},
 	addProposal: function(proposal) {
 		this.collection.add(proposal);
@@ -109,8 +125,23 @@ App.Views.ListProposal = Backbone.View.extend({
 		this.collection.fetch({url: url});		
 	},
 	updateProposal: function(proposal) {
-		//dirty way to do it, we should just update the collection instead of realoading it
-		this.getProposals();
+		//do we need to update the collection? is it updated automatically when the model is saved? not sure about this
+		//update the row in the datatable
+		var oTable = $(this.el).dataTable();
+		var index = oTable.fnFindCellRowIndexes(proposal.id, "id");
+//console.log(proposal.prepareData(this.options.allowEdit,this.options.user_id));		
+		if (index!=-1) oTable.fnUpdate( proposal.prepareData(this.options.allowEdit,this.options.user_id), index[0], 0 ); // Row
+	},
+	clearProposal: function(proposal) {
+//console.log(proposal);		
+		//remove from collection - is this removed automatically when the model is destroyed? not sure
+		//update - not is not! you have to remove it
+		this.collection.remove(proposal);		
+		//remove from datatable
+		var oTable = $(this.el).dataTable();
+		var index = oTable.fnFindCellRowIndexes(proposal.id, "id");
+//console.log(index);		
+		if (index!=-1) oTable.fnDeleteRow( index[0] ); // Row		
 	},
 	removeProposal: function(e) {
 		e.preventDefault();
@@ -121,30 +152,12 @@ App.Views.ListProposal = Backbone.View.extend({
 		//load proposal
 		var proposal = this.collection.get(id); //new Proposal({ id: id });
 //console.log(proposal);		
-		//this.collection.remove(proposal);
 		var self = this;
 		proposal.destroy({
 			success: function(model, response) {
-				self.addAll();
+				self.clearProposal(proposal);
 			}
 		});
-/*		var self = this;
-		proposal.fetch({
-			success: function(model,response) {
-//console.log(model);	
-				//post update to server
-				model.remove({
-					success: function() {
-						//remove it from the collection
-						//dirty way to update
-						var params = {};
-						if (self.user_id) params = {data: { user: self.user_id }};
-						self.collection.fetch(params);
-						//self.collection.remove(model);						
-					}
-				});
-			}
-		});*/
 	},
 	refreshProposal: function(e) {
 		e.preventDefault();
@@ -155,19 +168,6 @@ App.Views.ListProposal = Backbone.View.extend({
 		//find proposal in collection
 		var proposal = this.collection.get(id);
 
-		//add a row below the current row to show the status
-		/*var row = $(e.currentTarget).closest("tr");
-		var template = '<tr id="loadstatus_'+id+'">';
-		template += '<td><div class="alert" id="text_'+id+'"></div></td>';
-		template += '<td id="component_proposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td id="component_researchers_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td id="component_topics_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td id="component_panels_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td id="component_reviewers_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td id="component_reviewerproposals_'+id+'"><span class="label"><i class="icon-cog icon-white"></i> <span class="status">Pending</span></span></td>';
-		template += '<td colspan="2"><div id="load_complete_'+id+'"></div></td>';
-		row.after(template);*/
-
 		$(e.currentTarget).after('<div id="loadstatus_'+id+'"><div class="alert" id="text_'+id+'"></div></div>');
 		var load_elem = $('div#loadstatus_'+id);
 //console.log(load_elem);		
@@ -176,8 +176,8 @@ App.Views.ListProposal = Backbone.View.extend({
 		//refresh proposal data
 		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
 
-		/* loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
-		return; */ //uncomment this to run in test mode
+loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+		return; //uncomment this to run in test mode
 				
 	    // Check to see if we have access to nsfstarmetrics server 
 		if (!this.datacheck) {
@@ -217,11 +217,11 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(foundproposals);				
 				var proposal = foundproposals.first();
 //console.log(proposal);				
-				var index = self.collection.indexOf(proposal);
 //console.log(tmp);	
 				var load_elem = 'div#loadstatus_'+proposal.id;				
 				proposal.save({ 
-					proposal: { 
+					proposal: {
+						'division': proposal_data["details"]["org"]["name"],
 						'details': JSON.stringify(proposal_data["details"]), 
 						'researchers': JSON.stringify(proposal_data["researchers"]), 
 						'topics': JSON.stringify(proposal_data["topics"]), 
@@ -232,16 +232,7 @@ App.Views.ListProposal = Backbone.View.extend({
 					}, {
 					success: function(data) {
 						$(load_elem).remove();
-						//self.collection.models[index] = proposal;
-						self.updateProposal();
-						/*self.collection.fetch({ 
-							data: { user: self.options.user_id },
-							success: function() {
-								self.addAll();
-							}
-						});*/ //dirty way to do this, try to figure out how to update the collection, fighting me at the moment, will come back to this
-//						$("div#loadstatus div#status").html('<p><strong>Success!</strong> Everything loaded and assigned!');
-//						$("div#loadstatus div#status").addClass("alert-success");
+						self.updateProposal(proposal);
 					},
 					error: function(data) {
 						//update status
@@ -261,7 +252,10 @@ App.Views.ListProposal = Backbone.View.extend({
 		e.preventDefault();
 
 		//what is the id? //last elem in id attr
-		var id = $(e.currentTarget).attr('id').split('_').pop();
+		var tmp = $(e.currentTarget).attr('id').split('_').pop();
+		var id = tmp.split('-')[0];
+		var user_id = tmp.split('-')[1];
+		
 		//load proposal
 		var proposal = new Proposal({ id: id });
 		var self = this;
@@ -279,17 +273,21 @@ App.Views.ListProposal = Backbone.View.extend({
 //console.log(assigned_user_ids);				
 				var new_user_ids = [];
 				//remove current user id from this list
-				if (self.options.user_id) var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
+				//if (self.options.user_id) var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
+				if (user_id) var new_user_ids = _.without(assigned_user_ids, [user_id]);
 //console.log(new_user_ids);				
 				//post update to server
 				model.save({ proposal: { user_ids: new_user_ids} },{
 					success: function() {
-						//remove it from the collection
-						//dirty way to update
-						/*self.collection.fetch({ 
-							data: { user: self.options.user_id }});*/
-						self.updateProposal();
-						//self.collection.remove(model);						
+						if (self.options.user_id) self.clearProposal(proposal);
+						else {
+							//get the updated value
+							proposal.fetch({
+								success: function(model,response) {
+									self.updateProposal(model);
+								}
+							});
+						}
 					}
 				});				
 			}

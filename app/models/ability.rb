@@ -17,11 +17,12 @@ class Ability
       cannot :editProposal, Proposal
       can :manage, User, :division => user.division
       can [:read, :update, :create], Proposal do |proposal|
-        @found = false
-        proposal.users.each do |u|
-          @found ||= (u.division == user.division)
-        end
-        @found
+        #@found = false
+        #proposal.users.each do |u|
+        #  @found ||= (u.division == user.division)
+        #end
+        #@found
+        proposal.division == user.division
       end
     else 
       cannot :manage, User

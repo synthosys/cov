@@ -5,10 +5,10 @@ App.Views.NewProposal = Backbone.View.extend({
 	initialize: function() {
 		var self = this;
 
-		/* require(['text!templates/proposals/new.html'], function(html) {
+		require(['text!templates/proposals/new.html'], function(html) {
         	self.render(html);
 		});
-		return; */ //uncomment this when trying to test locally
+		return; //uncomment this when trying to test locally
 		
 	    // Check to see if we have access to nsfstarmetrics server 
 	    $.ajax({
@@ -77,11 +77,13 @@ App.Views.NewProposal = Backbone.View.extend({
 					loaded_nsf_ids.push(proposal.get("nsf_id"));
 
 					var nsf_id = proposal.get("nsf_id");
+					var division = proposal.get("division");
 					$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
 					
 					//if division does not match!
 					var details = $.parseJSON(proposal.get("details"));
-					if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
+					//if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
+					if (division==self.options.division) { //Rails will only return division props for user, unless you are super user, so we have to do this check here
 						if ($("#user_id").val()) {
 							var users = proposal.get("users");
 				//console.log(users);					
@@ -182,7 +184,8 @@ App.Views.NewProposal = Backbone.View.extend({
 	//console.log(tmp);								
 				proposal.save({ 
 					proposal: { 
-						'nsf_id': nsf_id, 
+						'nsf_id': nsf_id,
+						'division': proposal_data["details"]["org"]["name"],
 						'details': JSON.stringify(proposal_data["details"]), 
 						'researchers': JSON.stringify(proposal_data["researchers"]), 
 						'topics': JSON.stringify(proposal_data["topics"]), 

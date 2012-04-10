@@ -77,7 +77,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 						classification = legend['label'];
 					}
 				}
-				if (classification) tmp.inst += '<br />Inst. Class.: '+classification;
+				if (classification) tmp.inst += '<br />('+classification+')';
 //				tmp.classification = (reviewer.inst.flag&&self.legend_flags[reviewer.inst.flag])?self.legend_flags[reviewer.inst.flag]["label"]:'';
 				tmp.gender = reviewer.gender;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';
