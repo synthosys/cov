@@ -49,6 +49,12 @@ App.Views.ListProposal = Backbone.View.extend({
 				"mDataProp": "nsf_id"
 			},
 			{ 
+				"sTitle": "Division",
+				"bSearchable": false,
+				"bVisible": false,
+				"mDataProp": "division"
+			},
+			{ 
 				"sTitle": "Title",
 				"sWidth": "500",
 				"mDataProp": "title"
@@ -92,7 +98,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			}
 		];
 		//does a calling view pass in any options to configure this display?
-		if (this.options.columns) {
+		if (this.options.columns && _.size(this.options.columns) > 0) {
 			//override/append to the existing options
 			for (var i=0; i<aoColumns.length;i++) {
 				if (this.options.columns[aoColumns[i]["mDataProp"]]) {
@@ -112,7 +118,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			"iDisplayLength": 25,
 			"aaData": aaData,
 			"aoColumns": aoColumns,
-			"aaSorting": [[5, 'desc']]
+			"aaSorting": [[8, 'desc']]
 		});	
 	},
 	addProposal: function(proposal) {

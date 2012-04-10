@@ -64,6 +64,7 @@ var Proposal = Backbone.Model.extend({
 		//returns as an array, datatable ready
 		this.extractData();
 		var nsf_id = this.get('nsf_id');
+		var division = this.get('division');
 		var title = '<a href="'+baseURI+'/proposals/'+this.id+'">'+nsf_id+'</a> - '+this.title();
 		var date = this.status_date();
 		if (this.status()=="award") var amount = this.amount(); else var amount = "(declined)";			
@@ -105,6 +106,6 @@ var Proposal = Backbone.Model.extend({
 		}
 		//title, date, amount, panels, assigned users, lastviewed, actions
 		//return [col1, col2, col3, col4, col5, col6, col7]; //datatable ready
-		return { "id": this.id, "nsf_id": nsf_id, "title": title, "date": date, "amount": amount, "panels": panels, "assigned": assigned, "lastviewed": lastviewed, "actions": actions };
+		return { "id": this.id, "nsf_id": nsf_id, "division": division, "title": title, "date": date, "amount": amount, "panels": panels, "assigned": assigned, "lastviewed": lastviewed, "actions": actions };
 	}
 });
