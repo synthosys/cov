@@ -16,6 +16,7 @@ class Ability
       cannot :manage, Proposal
       cannot :editProposal, Proposal
       can :manage, User, :division => user.division
+      cannot :manage, User, :role => "su"
       can [:read, :update, :create], Proposal do |proposal|
         #@found = false
         #proposal.users.each do |u|

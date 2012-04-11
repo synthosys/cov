@@ -10,7 +10,7 @@ class ProposalsController < ApplicationController
       @proposal = Proposal.all(:include => [:associations]).select { |prop| can? :update, prop }
     else
       # This one is weird... improve it
-      @proposal = Proposal.all :include => [:users, :associations], :conditions => ["proposals.division = ?", current_user.division] #["users.id = ?", current_user]
+      @proposal = Proposal.all :include => [:users, :associations], :conditions => ["users.id = ?", current_user]
     end
 
     respond_to do |format|
