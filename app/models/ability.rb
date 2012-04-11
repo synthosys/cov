@@ -58,7 +58,7 @@ class Ability
         cannot :destroy, Proposal
       elsif user.role? :internal
         can :read
-        can :manage, Program
+        can :manage, Dashboard
         cannot :manage, User
         cannot :manage, Proposal        
         can :update, User, :id => user.id

@@ -1,35 +1,34 @@
 var AppRouter = Backbone.Router.extend({
 	routes: {
 		// Define some URL routes
-		'index': 'programs',
-		'topics/:pge/*params': 'programsTopics',
-		'awards/:pge/*params': 'programsAwards',
-		'details/:nsf_id/*params': 'programsDetails',
+		'programs': 'programs',
+		'programs/topics/:pge/*params': 'programsTopics',
+		'programs/awards/:pge/*params': 'programsAwards',
+		'programs/details/:nsf_id/*params': 'programsDetails',
 
 		// Default
 		'*actions': 'defaultAction' //using splats
 	},
+	//dashboard routes already bootstrap a dashboard view, so attach additional views
 	programs: function() {
-		App.views = {
-			'IndexProgram': { el:$("#dashboard") },
-		};
+		App.views['IndexProgram'] = { el:$("#tab_programs") };
 		this.load();		
 	},
 	programsTopics: function(pge,params) {
 		App.views = {
-			'programsTopicsView': { el:$("#dashboard"), pge:pge, params: this.processParams(params) },
+			'programsTopicsView': { el:$("#tab_programs"), pge:pge, params: this.processParams(params) },
 		};
 		this.load();
 	},
 	programsAwards: function(pge,params) {
 		App.views = {
-			'programsAwardsView': { el:$("#dashboard"), pge:pge, params: this.processParams(params) },
+			'programsAwardsView': { el:$("#tab_programs"), pge:pge, params: this.processParams(params) },
 		};
 		this.load();
 	},
 	programsDetails: function(nsf_id,params) {
 		App.views = {
-			'programsDetailsView': { el:$("#dashboard"), nsf_id:nsf_id, params: this.processParams(params) },
+			'programsDetailsView': { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) },
 		};
 		this.load();
 	},
