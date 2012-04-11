@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  ROLES = %w(su admin internal auditor)
+  ROLES = %w(su admin internal auditor+ auditor)
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
