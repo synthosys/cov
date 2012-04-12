@@ -1,0 +1,26 @@
+.row.new-base
+  .span8
+    .left-side
+      .page-header
+        %h1 Welcome Committee of Visitors Members
+      %p Welcome to the C.O.V. module of the NSF STAR METRICS Portfolio Explorer. This online tool is designed to provide C.O.V members with new data to support the review of their assigned proposals and the overall division portfolio. This module was developed as collaboration between two Engineering divisions: Civil, Mechanical and Manufacturing Innovation (CMMI) and Chemical, Bioengineering, Environmental, and Transport Systems (CBET).
+
+  .span4
+    .right-side
+      %h2 Sign in
+
+      = form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f|
+        = f.label :username
+        = f.text_field :username
+        = f.label :password 
+        = f.password_field :password
+        - if devise_mapping.rememberable?
+          %label.checkbox
+            = f.check_box :remember_me 
+            Keep me signed in
+
+        %br
+        %br
+        = f.submit "Sign in"
+
+      = render "links"

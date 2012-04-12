@@ -2,42 +2,19 @@
 	<h1>Program Dashboard</h1>
 </div>
 
-<div class="tabbable">
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#dashboard" data-toggle="tab">Program Dashboard</a></li>
-	</ul>
-	<div class="tab-pane active" id="dashboard">
-	</div>
+<div id="dashboard">
 </div>
 
 <script type="text/Javascript">
-App.views = {
-	'IndexProgram': { el:$("#dashboard") },
-};
-</script>
-<<<<<<< HEAD
 
-<script id="pgeTableTemplate" type="text/html">
-	<table class="table table-striped">
-		<tr><th colspan="2">CMMI Programs</th></tr>
-		{{= for(var i = 0; i < pgeList.length; i=i+2) { }}
-<!-- TODO: check full_label, also check if pgeList[i+1] exists -->
-		<tr>
-		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[i].nsf_pge }}&year=2007-2010>p{{ pgeList[i].nsf_pge }}-{{ pgeList[i].label }}</a></td>
-		<td><a href=http://rd-dashboard.nitrd.gov/gapi/api/topic?org=CMMI,p{{ pgeList[i+1].nsf_pge }}&year=2007-2010>p{{ pgeList[i+1].nsf_pge }}-{{ pgeList[i+1].label }}</a></td>
-		</tr>
-		{{= } }}
-	</table>
+
+function getDivision(){
+	return '<%= current_user.division %>';
+}
+
+function getStartYear(){
+	return '<%= GLOBAL["program_start_year"] %>';
+}
+
 </script>
 
-<div class="tabbable">
-	<ul class="nav nav-tabs">
-		<li class="active"><a href="#1" data-toggle="tab">Program Dashboard</a></li>
-	</ul>
-	<div class="tab-pane active" id="1">
-		<div id="pge-list"></div>
-		<div><h4>Exporting Division Data</h4></div>
-	</div>
-</div>
-=======
->>>>>>> 08bfbb91f11b3d6456fc6ef64965c06885521702

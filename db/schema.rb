@@ -11,13 +11,13 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120319202324) do
+ActiveRecord::Schema.define(:version => 20120319202325) do
 
-  create_table "associations", :id => false, :force => true do |t|
+  create_table "associations", :force => true do |t|
     t.integer  "user_id"
     t.integer  "proposal_id"
     t.text     "comments"
-    t.date     "lastviewed"
+    t.datetime "lastviewed"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20120319202324) do
     t.text     "reviewerproposals"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "division"
   end
 
   create_table "users", :force => true do |t|

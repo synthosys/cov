@@ -1,7 +1,9 @@
 App.Views.programsTopicsView = Backbone.View.extend({
 	events: {
 		"click button#view_awards": "gotoAwards",
-		"submit form#topic_weights": "loadList"
+		"submit form#topic_weights": "loadList",
+		"change select#filter_year_from": "loadList",
+		"change select#filter_year_to": "loadList"
 	},
 	initialize: function() {
 		_.bindAll(this, 'render'); //you must do this to trap bound events
@@ -17,30 +19,49 @@ App.Views.programsTopicsView = Backbone.View.extend({
 
 		var self = this;
 		require(['text!templates/programs/topics.html'], function(html) {
-			self.html = html; //save it off
-			self.render();
+			var template = _.template(html);
+			//we make this query so many times, think about how to improve it
+			// lookup using pge legend in the data api
+			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+self.options.pge+"&jsoncallback=?", function(data){
+				self.html = template({pge:self.options.pge,label:data?data[0].label:''}); //save it off
+				self.render();
+            });
 		});
 	},
 	gotoAwards: function(e) {
 		e.preventDefault();
 
-		App.app_router.navigate('awards/'+this.options.pge, {trigger: true});
+		App.app_router.navigate('awards/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
 	},
-	loadList: function() {
+	render: function() {
+		$(this.el).html(this.html); //is it better to do this when we load template on initialize or here? ponder!
+		//set year selection
+		var year = this.options.params['year']?this.options.params['year'].split('-'):['2007','2012'];
+		$("select#filter_year_from", this.el).val(year[0]?year[0]:'2007');
+		$("select#filter_year_to", this.el).val(year[1]?year[1]:'2012');
+		this.loadList();
+	},
+	loadList: function(e) {
+		if (e) e.preventDefault();
+		
+		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
+			alert('Pick an appropriate date range');
+			return;
+		}
 //console.log('loading...');
 		this.currentlyloading = 1;
 		this.totalsbyrelevance = {t1:0,t2:0,t3:0,t4:0}; //initialized
 		this.loaded_topics = {}; //intialize
 		
+		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
+		
 		this.loadData(this.currentlyloading);
-	},
-	render: function() {
-		$(this.el).html(this.html); //is it better to do this when we load template on initialize or here? ponder!
-		this.loadList();
-	},
+	},	
 	loadData: function(topicrelevance) {
 		//we have to make multiple calls here for each topic relevance (t1, t2, t3, t4)
-		var params = 'org=CMMI,'+this.options.pge+'&year=2007&summ=status,t'+topicrelevance.toString(); //ALERT: DIVISION hardcoded here! HAVE to change this to pick it up from Rails authenticated user, DATE ALSO HARDCODED - CHANGE THIS TOO		
+		//year
+		var year = $('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val();
+		var params = 'org='+getDivision()+','+this.options.pge+'&year='+year+'&summ=status,t'+topicrelevance.toString();	
 
 		var self = this;
 		//pass along the params
@@ -84,13 +105,14 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			};
 		});
 		//store the totals
-		this.totalsbyrelevance[topicrelevance] = total;
+		this.totalsbyrelevance[topicrelevance] = total; //we're not using this at the moment but leaving it here in case Jan changes his mind in the future
 //console.log(this.totalsbyrelevance);		
 		this.currentlyloading++;
 		if (this.currentlyloading<=4) {
 			this.loadData(this.currentlyloading);
 		} else {
 			//ready to render!
+			$('div#loader', this.el).html('');
 			//we have all by relevance, put them together
 //console.log(this.loaded_topics);
 			this.renderList();
@@ -98,6 +120,7 @@ App.Views.programsTopicsView = Backbone.View.extend({
 	},
 	renderList: function() {
 		//prepare for datatable data - conv to array
+//console.log(this.loaded_topics);		
 		var self = this;
 //console.log(this.totalsbyrelevance);		
 		var aaData = _.map(this.loaded_topics, function(row, topicid) {
@@ -109,7 +132,7 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			var funding_requested = 0;
 			_.each(self.totalsbyrelevance, function(total,topicrelevance) {
 				if (row[topicrelevance]) {
-					//counts
+					//store all the counts
 					count_awarded += row[topicrelevance]['count_awarded'];
 					count_declined += row[topicrelevance]['count_declined'];
 					count_other += row[topicrelevance]['count_other'];
@@ -121,15 +144,23 @@ App.Views.programsTopicsView = Backbone.View.extend({
 			var topic_weightedprevalence = 0;
 			_.each(self.totalsbyrelevance, function(total,topicrelevance) {
 				//weighted relevance
-				if (total>0) {
+				/*if (total>0) {
 					var tmp = count_awarded+count_declined+count_other;
 //console.log(tmp);					
 					//read the topic weight input
 					var el = $('input#'+topicrelevance, this.el);
 					var weight = (el&&el.val())?el.val():'0';
 //console.log(weight);					
-					topic_weightedprevalence += ((tmp/total)*weight); //HARDCODED FOR NOW!						
-				}					
+					topic_weightedprevalence += ((tmp/total)*weight);
+				}*/
+				if (row[topicrelevance]) {
+					var tmp = row[topicrelevance]['count_awarded']+row[topicrelevance]['count_declined']+row[topicrelevance]['count_other'];
+					//read the topic weight input
+					var el = $('input#'+topicrelevance, this.el);
+					var weight = (el&&el.val())?el.val():'0';
+//console.log(weight);					
+					topic_weightedprevalence += (tmp*weight);					
+				}
 			});
 			//return it
 			return [topic_weightedprevalence, topicid, row["label"], row["words"], count_awarded,funding_awarded,count_declined,count_other,funding_requested,row["suppress"]];
@@ -140,6 +171,8 @@ App.Views.programsTopicsView = Backbone.View.extend({
 		var self = this;
 		$('#topics_table', this.el).dataTable({
 			"bDestroy": true,
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers",
 			"iDisplayLength": 50,
 			"aaData": aaData,
 			"aoColumnDefs": [

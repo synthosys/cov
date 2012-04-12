@@ -5,9 +5,7 @@
 		<div class="row">
 			<div class="span4 left">
 				<h5>Panel: 
-				<select id="panelselect_reviewerdetails">
 					{{panelselect}}
-				</select>
 				</h5>
 				<table class="table table-condensed" id="reviewers_assigned">
 				<tr>
@@ -47,7 +45,7 @@
 			{{dept}}<br/>
 		{{= } }}
 		{{= if (classification != "") { }}
-			Classification: {{classification}}
+			{{classification}}
 		{{= } }}
 	</div><!-- /span3 -->
 	<div class="span3">
@@ -72,6 +70,8 @@
 
 <script type="text/template" id="template_reviewer_awards">
 <h3><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber={{nsf_id}}" target="_blank">Award #{{nsf_id}}</a> {{title}}</h3>
+{{links}}
+<div class="abstract"><p>{{abstract}}</p></div>
 <div class="row">
 	<div class="span2">
 		<table class="table table-condensed lbl-right table-noborder">
@@ -94,11 +94,10 @@
 					<th>NSF ID</th>
 					<th>Name</th>
 					<th>Institution</th>
-					<th>Department</th>
 				</tr>
 			</thead>
-			<tbody>
-				{{researchers}}
+			<tbody id="researchers_{{nsf_id}}">
+			{{researchers}}
 			</tbody>
 		</table>
 	</div><!-- /span6 -->
@@ -106,17 +105,17 @@
 <div class="row">
 	<div class="span8">
 		<h4>Proposal Research Topics (in order)</h4>
-		{{= if (t1 != null) { }}
-   			<p><strong>{{t1}}: {{t1_label}}</strong> {{t1_words}}</p>
+		{{= if (t1 != '') { }}
+   			<p><strong>{{t1}}: </strong> {{t1_words}}</p>
 		{{= } }}
-		{{= if (t2 != null) { }}
-   			<p><strong>{{t2}}: {{t2_label}}</strong> {{t2_words}}</p>
+		{{= if (t2 != '') { }}
+   			<p><strong>{{t2}}: </strong> {{t2_words}}</p>
 		{{= } }}
-		{{= if (t3 != null) { }}
-   			<p><strong>{{t3}}: {{t3_label}}</strong> {{t3_words}}</p>
+		{{= if (t3 != '') { }}
+   			<p><strong>{{t3}}: </strong> {{t3_words}}</p>
 		{{= } }}
-		{{= if (t4 != null) { }}
-   			<p><strong>{{t4}}: {{t4_label}}</strong> {{t4_words}}</p>
+		{{= if (t4 != '') { }}
+   			<p><strong>{{t4}}: </strong> {{t4_words}}</p>
 		{{= } }}
 	</div><!-- /span8 -->
 </div><!-- /row -->

@@ -50,7 +50,7 @@ App.Views.NewProposal = Backbone.View.extend({
 	},
 	assignProposal: function(e) {
 		e.preventDefault();		
-		if ($("#proposal_nsf_id").val()=='') {
+		if ($("#proposal_nsf_id").val()=='' || $("#proposal_nsf_id").val().replace(/\D/g,'')=='') {
 			alert('Please specify one or more proposal ids');
 			return;
 		}
@@ -60,7 +60,7 @@ App.Views.NewProposal = Backbone.View.extend({
 		$("div#load_help").hide();
 		//prepare to load data
 		var user_id = $("#user_id").val();
-		var nsf_ids = $("#proposal_nsf_id").val().split(',');
+		var nsf_ids = [$.trim($("#proposal_nsf_id").val().split(',')[0]).replace(/\D/g,'')]; //don't accept more than one, for now
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
 		var allloadedproposals = new App.Collections.Proposals();
@@ -77,11 +77,13 @@ App.Views.NewProposal = Backbone.View.extend({
 					loaded_nsf_ids.push(proposal.get("nsf_id"));
 
 					var nsf_id = proposal.get("nsf_id");
+					var division = proposal.get("division");
 					$("ul#load_proposals").append('<li id="load_proposals_'+nsf_id+'"><i class="icon-refresh"></i>'+nsf_id+': <span>Loading...</span></li>')
 					
 					//if division does not match!
 					var details = $.parseJSON(proposal.get("details"));
-					if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
+					//if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
+					if (division==self.options.division) { //Rails will only return division props for user, unless you are super user, so we have to do this check here
 						if ($("#user_id").val()) {
 							var users = proposal.get("users");
 				//console.log(users);					
@@ -182,7 +184,8 @@ App.Views.NewProposal = Backbone.View.extend({
 	//console.log(tmp);								
 				proposal.save({ 
 					proposal: { 
-						'nsf_id': nsf_id, 
+						'nsf_id': nsf_id,
+						'division': proposal_data["details"]["org"]["name"],
 						'details': JSON.stringify(proposal_data["details"]), 
 						'researchers': JSON.stringify(proposal_data["researchers"]), 
 						'topics': JSON.stringify(proposal_data["topics"]), 
@@ -193,13 +196,13 @@ App.Views.NewProposal = Backbone.View.extend({
 						} 
 					}, {
 					success: function(data) {
-			           //run the callback
-						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
-
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html(message);
+
+			           //run the callback
+						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
 					},
 					error: function(data) {
 						//update status

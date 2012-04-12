@@ -12,19 +12,23 @@ App.Views.ShowProposalDetails = Backbone.View.extend({
 		var data = {};
 		var details = this.details;
 		data.abstract = details.abstract;
-		if (details.status.name=='award') {
-			var funding = details.awarded.dollar;
-			if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
-			else var award_amount = '';			
-			data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
-			data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
-			data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>';			
-		} else {
-			data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
-			data.links = 'N/A';
+		data.status = '';
+		data.links = '';
+		if (details.status && details.status.name) {
+			if (details.status.name=='award') {
+				var funding = details.awarded.dollar;
+				if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
+				else var award_amount = '';			
+				data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
+				data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
+				data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a><br /><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a>';
+			} else {
+				data.status = '<tr><td class="lbl"><strong>Status</td><td>('+details.status.name+')</td></tr>';
+				data.links = '<a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a>';
+			}			
 		}
-		data.pge = details.pge.code;
-		data.division = details.org.name;
+		data.pge = (details.pge && details.pge.code)?details.pge.code:'';
+		data.division = (details.org && details.org.name)? details.org.name:'';
 
 		//researchers
 		var researchers = '';

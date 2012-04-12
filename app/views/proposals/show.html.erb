@@ -1,5 +1,4 @@
-
-<% if can? :create, User %>
+<% if can? :create, User and 1==0 %>
 	<div class="alert well">
 	<div>
 		<b>Assigned to:</b>
@@ -19,29 +18,59 @@
 <% end%>
 
 <div class="page-header">
+	<div class="pull-right"><%= link_to raw('<i class="icon-chevron-left"></i> Back to List'), proposals_path, :class => 'btn' %></div>
 	<div>
 		<h1>Proposal: ID <%= @proposal_nsf_id %></h1>
 		<% if can? :comment, Proposal and 1==0 %>
 			<a class="btn btn-warning" href="#comment"><i class="icon-comment icon-white"></i> Comment</a>
 		<% end %>
 	</div>
-
-	<div class="pull-right"><%= link_to 'Back to Dashboard', proposals_path %></div>
 </div><!-- /page-header -->
 
 <h2><%= @proposal_title %></h2>
-<div class="tabbable">
+<% topics = ActiveSupport::JSON.decode(@proposal.topics) %>
+<% panels = ActiveSupport::JSON.decode(@proposal.panels) %>
+<div id="loader"><%= image_tag("ajax-load.gif", :alt => "loading") %> Loading data for review </div>
+<div id="reviewdata" class="tabbable" style="display: none;">
 	<ul class="nav nav-tabs">
 		<li class="active"><a href="#tab_proposal_details" data-toggle="tab">Proposal Details</a></li>
+<%
+#only show if the proposal has panels
+unless panels.length==0 then
+%>		
 		<li><a href="#tab_panel_details" data-toggle="tab">Panel Details</a></li>
+<%
+#only show if the proposal has topics and at least one of them is something besides t0
+unless topics && topics.length==1 && topics[0]=='0' then
+%>		
 		<li><a href="#tab_reviewer_expertise" data-toggle="tab">Reviewer Expertise</a></li>
+<%
+end
+%>		
 		<li><a href="#tab_reviewer_details" data-toggle="tab">Reviewer Details</a></li>
+<%
+end
+%>		
 	</ul>
 	<div class="tab-content">
 		<div class="tab-pane active" id="tab_proposal_details"></div>
+<%
+#only show if the proposal has panels
+unless panels.length==0 then
+%>		
 		<div class="tab-pane" id="tab_panel_details"></div>
+<%
+#only show if the proposal has topics and at least one of them is something besides t0
+unless topics && topics.length==1 && topics[0]=='0' then
+%>		
 		<div class="tab-pane" id="tab_reviewer_expertise"></div>
+<%
+end
+%>		
 		<div class="tab-pane" id="tab_reviewer_details"></div>
+<%
+end
+%>		
 	</div><!-- /tab-content -->
 </div><!-- /tabbable -->
 

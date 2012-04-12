@@ -6,6 +6,9 @@ class Ability
 
     if user.role? :su
       can :manage, :all
+      cannot :manage, :internalUserCan
+      #cannot [:destroy, :update], User, :role => "su"
+      #can :manage, User, :id => user.id
     elsif user.role? :admin
       can :manage, :all
       cannot :manage, :assignDivisionCan
@@ -13,12 +16,14 @@ class Ability
       cannot :manage, Proposal
       cannot :editProposal, Proposal
       can :manage, User, :division => user.division
+      cannot :manage, User, :role => "su"
       can [:read, :update, :create], Proposal do |proposal|
-        @found = false
-        proposal.users.each do |u|
-          @found ||= (u.division == user.division)
-        end
-        @found
+        #@found = false
+        #proposal.users.each do |u|
+        #  @found ||= (u.division == user.division)
+        #end
+        #@found
+        proposal.division == user.division
       end
     else 
       cannot :manage, User
@@ -53,7 +58,14 @@ class Ability
         end
         cannot :destroy, Proposal
       elsif user.role? :internal
+        can :read
+        can :manage, Program
+        cannot :manage, User
         cannot :manage, Proposal        
+        can :update, User, :id => user.id
+      end
+      if User.all.length == 0
+        can :create, User
       end
     end 
   end

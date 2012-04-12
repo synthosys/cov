@@ -21,6 +21,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		data.topics = this.renderReviewerExpertiseTopicsList(topics);
 		data.venn = this.renderReviewerExpertiseTopicsVenn(topics);
 
+//console.log(data);		
 		return compiled(data);
 	},
 	renderReviewerExpertiseTopicsList: function(data) {
@@ -39,24 +40,28 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 //console.log(topics);		
 		var data = {};
 		data.proposal_topics_count = _.size(topics);
+		var proposaltopics = this.topics;
+//console.log(proposaltopics);			
+		//all topics in this proposal as well, we need to show it in the venn
+		data.topics_proposal_count = proposaltopics.length;
+		data.topics_proposal_ids = '';			
+		_.each(proposaltopics, function(topicid) {
+			if (data.topics_proposal_ids.length>0) data.topics_proposal_ids += ', ';
+			data.topics_proposal_ids += 't'+topicid; 
+		});
 		if (_.size(topics)==0) {
-			data.topics_common = '<tr><td colspan="2"><div class="alert">No overlapping Research Topics</div></td></tr>';
+			data.topics_common = '<tr><td colspan="2"><div class="alert">None of the Panel Reviewers are known to have submitted Proposals to NSF as PI/Co-PI. As a result, Reviewers\' Expertise (Research Topics) cannot be determined for any of the Panel Reviewers.</div></td></tr>';
 			data.topics_common_count = 0;
 			data.topics_common_ids = '';
 			data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">None. All of this Proposal\'s Research Topics match Reviewers\' Expertise!</div></td></tr>';
 			data.topics_proposalonly_count = 0;
 			data.topics_proposalonly_ids = '';
-			data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
+			data.topics_proposal_count = 0;
+			data.topics_proposal_ids = '';
+			data.topics_reviewers = '<tr><td colspan="2"><div class="alert">None of the Panel Reviewers are known to have submitted Proposals to NSF as PI/Co-PI. As a result, Reviewers\' Expertise (Research Topics) cannot be determined for any of the Panel Reviewers.</div></td></tr>';
 			data.topics_reviewers_count = 0;
 			data.topics_reviewers_ids = '';
 		} else {
-			/*var proposaltopics = [];
-			for (var i=0;i<topicrelevance;i++) {
-				if (this.topics[i]) proposaltopics.push(this.topics[i]);
-			}*/
-			//changed above as per Jan - compare all proposal topics against relevant reviewer topics
-			var proposaltopics = this.topics;
-//console.log(proposaltopics);			
 			//now figure out common ones etc.
 			//extract the reviewer proposal topic ids
 			var paneltopicids = [];
@@ -66,6 +71,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 //console.log(paneltopicids);			
 			//common
 			var common_topicids = _.intersection(paneltopicids,proposaltopics);
+			common_topicids = _.reject(common_topicids, function(t) { return (t=="0"); });
 			if (common_topicids.length>0) {
 				//find the common topics and their counts
 				var topics_common = {};
@@ -74,36 +80,38 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 					topics_common[topicid]['count'] = 0;
 					if (topics[topicid]) topics_common[topicid]['count'] = topics[topicid]['count'];
 				});
-				data.topics_common = this.renderPanelTopicListItems(topics_common,'ok').join("\n");				
+				data.topics_common = this.renderPanelTopicListItems(topics_common,'ok icon-green').join("\n");				
 			} else {
 				data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_common_count = common_topicids.length;
 			data.topics_common_ids = '';
 			_.each(common_topicids, function(topicid) {
-				if (data.topics_common_ids.length>0) data.topics_common_ids += ',';
+				if (data.topics_common_ids.length>0) data.topics_common_ids += ', ';
 				data.topics_common_ids += 't'+topicid; 
 			});
 			//proposal only
 			var proposalonly_topicids = _.difference(proposaltopics,common_topicids); //THIS NEEDS TO BE PUT INTO A PANEL TOPIC OBJEC STRUCTURE SO IT CAN BE RENDERED BY THE FUNCTION
+			proposalonly_topicids = _.reject(proposalonly_topicids, function(t) { return (t=="0"); });
 			if (proposalonly_topicids.length>0) {
 				var tmp = {};
 				_.each(proposalonly_topicids, function(topicid) {
 					tmp[topicid] = {};
 					tmp[topicid]['count'] = 0;
 				});
-				data.topics_proposalonly = this.renderPanelTopicListItems(tmp,'warning-sign').join("\n");
+				data.topics_proposalonly = this.renderPanelTopicListItems(tmp,'warning-sign icon-red').join("\n");
 			} else {
 				data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_proposalonly_count = proposalonly_topicids.length;
 			data.topics_proposalonly_ids = '';
 			_.each(proposalonly_topicids, function(topicid) {
-				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ',';
+				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ', ';
 				data.topics_proposalonly_ids += 't'+topicid; 
 			});
 			//reviewers only
 			var reviewers_topicids = _.difference(paneltopicids,common_topicids);
+			reviewers_topicids = _.reject(reviewers_topicids, function(t) { return (t=="0"); });
 			if (reviewers_topicids.length>0) {
 				var topics_reviewers = {};
 				_.each(reviewers_topicids, function(topicid) {
@@ -119,7 +127,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			data.topics_reviewers_count = reviewers_topicids.length;
 			data.topics_reviewers_ids = '';
 			_.each(reviewers_topicids, function(topicid) {
-				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ',';
+				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ', ';
 				data.topics_reviewers_ids += 't'+topicid; 
 			});
 		}
@@ -129,7 +137,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
 		if (_.size(topics) > 0) {
-			var template = _.template('<tr><td>{{icon}}<strong>t{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
+			var template = _.template('<tr><td>{{icon}}<strong>t{{t}}: </strong> {{words}}</td><td class="text-center">{{count}}</td></tr>');
 			var self = this;			
 
 			// sort this data by reverse count

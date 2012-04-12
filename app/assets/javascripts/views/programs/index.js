@@ -31,7 +31,8 @@ App.Views.IndexProgram = Backbone.View.extend({
 =======
 		var self = this;
 		require(['text!templates/programs/index.html'], function(html) {
-			self.html = html; //save it off
+			var template = _.template(html);
+			self.html = template({division:getDivision()}); //save it off
 			self.render();
 		})
     },
@@ -39,24 +40,30 @@ App.Views.IndexProgram = Backbone.View.extend({
 		e.preventDefault();
 		
 		var id = $(e.currentTarget).attr('id');
-		App.app_router.navigate('topics/'+id, {trigger: true});
+		App.app_router.navigate('topics/'+id+'/', {trigger: true});
 	},
    	render: function() {
 		$(this.el).html(this.html); //is it better to do this when we load template on initialize or here? ponder!
 		
        	// get a list of pges
-		$.getJSON(apiurl+"topic?org=CMMI&summ=pge&jsoncallback=?", function(data) {
+		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Programs");
+		$.getJSON(apiurl+"topic?org="+getDivision()+"&year=>="+getStartYear()+"&summ=pge&jsoncallback=?", function(data) {
 			var pges = _.pluck(data["data"], "pge").join();
 			// lookup using pge legend in the data api
-			$.getJSON("http://rd-dashboard.nitrd.gov/gapi/api/prop?legend=nsf_pge&q="+pges+"&jsoncallback=?", function(data){
+			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+pges+"&jsoncallback=?", function(data){
 				var pgeList = data;
-				var pgeTableTemplate = _.template($('#pgeTableTemplate', this.el).html());
-				var html = pgeTableTemplate({'pgeList' : pgeList});
-				$("#pge-list", this.el).html(html);
+				for (var i = 0; i < pgeList.length; i=i+2) {
+					var html = '<tr>';
+					html += '<td><a href="#" id="'+pgeList[i].nsf_pge+'" class="link_to_topics">p'+ pgeList[i].nsf_pge+' - '+pgeList[i].label+'</a></td>';
+					html += '<td>';
+					if (pgeList[i+1]) html += '<a href="#" id="'+pgeList[i+1].nsf_pge+'" class="link_to_topics">p'+ pgeList[i+1].nsf_pge+' - '+pgeList[i+1].label+'</a>';
+					html += '</td>';
+					html+= '</tr>';
+					$("#pge_table", this.el).append(html);
+				}
+				$('div#loader', this.el).html('');				
             });
        	});        
    	}
 >>>>>>> 08bfbb91f11b3d6456fc6ef64965c06885521702
 });
-
-

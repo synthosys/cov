@@ -1,3 +1,9 @@
+For production:
+bundle install
+rake db:create  RAILS_ENV=production
+rake db:migrate RAILS_ENV=production
+bundle exec rake assets:precompile
+
 == Welcome to Rails
 
 Rails is a web-application framework that includes everything needed to create

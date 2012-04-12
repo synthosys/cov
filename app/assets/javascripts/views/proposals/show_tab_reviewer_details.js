@@ -46,7 +46,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign"></i> (COI)</span>';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
-				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';
+				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';
 				reviewers_compiled.push(reviewers_template(tmp));
 			});
 			rendered = reviewers_compiled.join("\n");
@@ -64,7 +64,17 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		data.name = reviewer.first_name+' '+reviewer.last_name;
 		data.inst = reviewer.inst.name;
 		data.dept = reviewer.inst.dept;
-		data.classification = (reviewer.inst.flag&&this.legend_flags[reviewer.inst.flag])?this.legend_flags[reviewer.inst.flag]["label"]:'';
+		//data.classification = (reviewer.inst.flag&&this.legend_flags[reviewer.inst.flag])?this.legend_flags[reviewer.inst.flag]["label"]:'';
+		data.classification = '';
+		if (reviewer.inst['class']) {
+			var legend = _.find(this.legend_classes, function(item) {
+				return item['class']==reviewer.inst['class'];
+			});
+//console.log(legend);			
+			if (legend) {
+				data.classification = legend['label'];
+			}
+		}		
 		data.email = reviewer.email?reviewer.email:'';
 		data.degree = (reviewer.degree && reviewer.degree.name)?reviewer.degree.name:'';
 		data.year = (reviewer.degree && reviewer.degree.year)?reviewer.degree.year:'';
@@ -143,6 +153,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 //console.log(proposal["proposal"]["nsf_id"]);											
 														return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
 													});
+
 //console.log(researchers);										
 													tmp["researchers"] = researchers;
 													return tmp;
@@ -166,7 +177,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		}
 	},
 	renderAwards: function(proposals,renderto) {
-		//researchers
+		//awards
 		var rendered = '';
 		if (proposals.length > 0) {
 			var self = this;
@@ -181,39 +192,23 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var details = proposal.details;
 				data.nsf_id = details.nsf_id;
 				data.title = details.title;
-
+				data.abstract = details.abstract;
 				if (details.status.name=='award') {
 					var funding = details.awarded.dollar;
 					if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
 					else var award_amount = '';			
 					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
-					data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>';			
+					data.links = '<p><a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>'; // | <a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';			
 				} else {
-					data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
-					data.links = 'N/A';
+					data.status = '<tr><td class="lbl"><strong>Status</td><td>('+details.status.name+')</td></tr>';
+					data.links = ''; //'<p><a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+details.nsf_id+'&docid='+details.nsf_id+'" target="_blank">Open in e-Jacket</a></p>';
 				}
 				data.pge = details.pge.code;
 				data.division = details.org.name;
 
 				//researchers
-				var researchers = '';
-				if (proposal.researchers.length > 0) {
-					var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td><td>{{dept}}</td></tr>');
-					var researchers_compiled = [];
-					_.each(proposal.researchers,function(researcher) {
-						var tmp = {};
-						tmp.nsf_id = researcher.nsf_id;
-						tmp.name = researcher.name;
-						tmp.inst = researcher.inst.name;
-						tmp.dept = researcher.inst.dept;
-						researchers_compiled.push(researchers_template(tmp));
-					});
-					researchers = researchers_compiled.join("\n");
-				} else {
-					researchers = '<tr><td colspan="4"><div class="alert">No researchers</div></td></tr>';
-				}
-				data.researchers = researchers;
+				data.researchers = "<tr><td colspan='4'><img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading researchers</td></tr>";
 
 				//topics
 				var topics = proposal.topics;
@@ -237,6 +232,91 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		} else {
 			rendered = '<div class="alert">No awards</div>';
 		}	
-		renderto.html(rendered);			
+		renderto.html(rendered);
+		//render researchers
+		this.renderResearchers(proposals,renderto);			
+		$('div.abstract').expander({
+		  expandEffect: 'slideDown',
+		  collapseEffect: 'slideUp'
+		});
+	},
+	renderResearchers: function(proposals,renderto) {
+		var rendered = '';
+		var self = this;
+		if (proposals.length > 0) {
+			_.each(proposals, function(proposal) {
+				var nsf_id = proposal.details.nsf_id;
+				//researchers
+				var researchers = '';
+				if (proposal.researchers.length > 0) {
+					var orgs = [];
+					//pull out the orgs
+					_.each(proposal.researchers, function(researcher) {
+						orgs.push(researcher['inst']['nsf_id']);
+					});
+	//console.log(reviewers);								
+					//so now, get the inst classifications
+					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {
+							//found it! save it back
+							for (var i=0;i<proposal.researchers.length;i++) {
+								var org = _.find(data["data"], function(item) {
+									return item['nsf_id']==proposal.researchers[i]['inst']['nsf_id'];
+								});
+								proposal.researchers[i]['inst']['flag'] = '';
+								proposal.researchers[i]['inst']['class'] = '';
+								if (org) {
+									proposal.researchers[i]['inst']['flag'] = org['flag'];
+									proposal.researchers[i]['inst']['class'] = org['class'];
+								}
+							}
+							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td></tr>');
+							var researchers_compiled = [];
+							_.each(proposal.researchers,function(researcher) {
+//console.log(researcher);								
+								var tmp = {};
+								tmp.nsf_id = researcher.nsf_id;
+								tmp.name = researcher.name;
+								tmp.inst = researcher.inst.name;
+								tmp.inst += researcher.inst.dept?'<br />Dept.: '+researcher.inst.dept:'';
+								var classification = '';
+								/*if (researcher.inst.flag) {
+									_.each(researcher.inst.flag, function(flag) {
+										var label = (self.legend_flags[flag])?self.legend_flags[flag]["label"]:'';
+										if (label) {
+											if (classification) tmp.classification += '<br />';
+											classification += label;
+										}
+									});
+								}*/	 //replacing with class information
+								if (researcher.inst['class']) {
+//console.log(researcher.inst['class']);									
+//console.log(self.legend_classes);									
+									var legend = _.find(self.legend_classes, function(item) {
+										return item['class']==researcher.inst['class'];
+									})
+//console.log(legend);									
+									if (legend) {
+										classification = legend['label'];
+									}
+								}
+								if (classification) tmp.inst += '<br />('+classification+')';
+								researchers_compiled.push(researchers_template(tmp));
+							});
+							$('#researchers_'+nsf_id, renderto).html(researchers_compiled.join("\n"));
+						},
+						error: function() {
+							$('#researchers_'+nsf_id, renderto).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');							
+						}
+					});														
+				} else {
+					$('#researchers_'+nsf_id, renderto).html('<tr><td colspan="3"><div class="alert">No researchers</div></td></tr>');
+				}
+			});
+		}
 	}
 });

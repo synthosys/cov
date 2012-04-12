@@ -10,10 +10,11 @@
 	    	<li class="nav-header">About</li>
 	    	<li><i class="icon-envelope"></i>Email: <%= @user.email %></li>
 			<li><i class="icon-user"></i>Username: <%= @user.username %></li>
+			<li><i class="icon-home"></i>Division: <%= @user.division %></li>
 			<li><i class="icon-lock"></i>Role: <%= @user.role %></li>
 			<li class="nav-header">Accessed</li>
-			<li><i class="icon-calendar"></i>Created on: <%= @user.created_at %></li>
-			<li><i class="icon-calendar"></i>Last Sign In: <%= @user.last_sign_in_at %></li>
+			<li><i class="icon-calendar"></i>Created: <%= if @user.created_at then "#{time_ago_in_words @user.created_at} ago" end %></li>
+			<li><i class="icon-calendar"></i>Last Sign In: <%= @user.last_sign_in_at ? "#{time_ago_in_words @user.last_sign_in_at} ago" : 'never' %></li>
 			<li><i class="icon-lock"></i>Sign In Count: <%= @user.sign_in_count %></li>
 			<li class="nav-header">Actions</li>
 			<li><%= link_to_if(can?(:update,@user), raw("<i class='icon-pencil'></i> Edit"), edit_user_path(@user)) %></li>
@@ -23,18 +24,6 @@
 </div>
 <h2>Assigned Proposals</h2>
 <table class="table table-striped table-bordered table-condensed" id="proposals_table">
-	<thead>
-		<tr>
-			<th width="300px">Title</th>
-			<th>Proposal Date</th>
-			<th>Award</th>
-			<th>Last Viewed</th>
-			<th width="200px">Panel/s (Program Officer/s)</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-	</tbody>
 </table>
 
 <script type="text/template" id="template_proposals_listitem">
@@ -46,19 +35,20 @@
 <td>{{amount}}</td>
 <td>{{lastviewed}}</td>
 <td>{{panels}}</td>
-<td>
+<td class="proposal-actions">
 	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
 	<% if can? :manage, :assignDivisionCan %>
 		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
-		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
 	<% end %>
 	<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a>
-
+	<% if can? :manage, :assignDivisionCan %>
+		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
+	<% end %>
 </td>
 </script>
 
 <script type="text/Javascript">
 App.views = {
-	'ShowUser': { el:$("#main"), user_id:'<%= @user.id %>', division:'<%= @user.division %>'}
+	'ShowUser': { el:$("#main"), user_id:'<%= @user.id %>', division:'<%= @user.division %>', useDataTables: true, columns: { "title": { "sWidth": "300", "bSortable": false }, "date" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "amount" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "panels" : { "sWidth": "200", "bSearchable": true, "bVisible": true, "bSortable": false }, "assigned" : { "bSearchable": false, "bVisible": false } }, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> }
 };
 </script>

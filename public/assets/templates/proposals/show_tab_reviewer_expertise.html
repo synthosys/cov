@@ -1,12 +1,11 @@
 <script type="text/template" id="template_reviewer_expertise">
 <p>Below is a comparison of the Research Topics assigned to this proposal and the Research Topics that were assigned to the proposals submitted by the reviewers' to NSF (as PIs/Co-PIs).  The table and diagram present Research Topics that are common to this proposal and its reviewers, as a technique to characterize reviewer expertise.</p>
+<p>Excluded from this analysis is the "expertise" of reviewers who have not submitted a proposal to NSF in the last 10 years.</p>
 <h2>Proposal's Research Topics compared to Reviewers' Research Topics</h2>
 <div class="row">
 	<div class="span8">
-		<h5>Show Panel: 
-		<select id="panelselect_reviewerexpertise">
+		<h5>Panel: 
 			{{panelselect}}
-		</select>
 		</h5>
 	</div><!-- /span8 -->
 	<div class="span4" id="tab_reviewer_expertise_topics_venn">
@@ -27,9 +26,9 @@
 <script type="text/template" id="template_reviewer_expertise_topics_venn">
 <div class="venn-wrap">
 	<ul>
-		<li class="title props">Proposal<span class="num-topics">{{topics_proposalonly_count}} Topics</span></li><!-- /title -->
+		<li class="title props">Proposal<span class="num-topics">{{topics_proposal_count}} Topics</span></li><!-- /title -->
 		<li class="items props-list">{{topics_proposalonly_ids}}</li>
-		<li class="title reviewers">Reviewers<span class="num-topics">{{topics_reviewers_count}} Topics</span></li><!-- /title -->
+		<li class="title reviewers">Reviewers<span class="num-topics">{{proposal_topics_count}} Topics</span></li><!-- /title -->
 		<li class="items reviewers-list">{{topics_common_ids}}</li>
 		<li class="common">Common ({{topics_common_count}})</li>
 	</ul>
@@ -41,7 +40,7 @@
 <table class="table table-condensed table-noborder">
 	<thead>
 		<tr>
-			<th><h3>Common Research Topics ({{topics_common_count}} of {{proposal_topics_count}} Proposal Topics)</h3>
+			<th><h3>Common Research Topics ({{topics_common_count}} of {{topics_proposal_count}} Proposal Topics)</h3>
 			<h5>(Research Topics that match both the Proposal and Reviewers' expertise)</h5>
 			</th>
 			<th>Reviewers' Proposal Count</th>
@@ -54,7 +53,7 @@
 <table class="table table-condensed table-noborder">
 	<thead>
 		<tr>
-			<th><h3>Exclusive Proposal Research Topics ({{topics_proposalonly_count}} of {{proposal_topics_count}} Proposal Topics)</h3>
+			<th><h3>Exclusive Proposal Research Topics ({{topics_proposalonly_count}} of {{topics_proposal_count}} Proposal Topics)</h3>
 			<h5>(Proposal Research Topics that were not assigned to the Proposals submitted by the Panel's Reviewers)</h5>
 			</th>
 			<th>Reviewers' Proposal Count</th>
@@ -67,7 +66,7 @@
 <table class="table table-condensed table-noborder">
 	<thead>
 		<tr>
-			<th><h3>Exclusive Reviewers' Proposals Research Topics</h3>
+			<th><h3>Exclusive Reviewers' Proposals Research Topics ({{topics_reviewers_count}})</h3>
 			<h5>(Reviewers' Research Topics that were not assigned to this Proposal)</h5>
 			</th>
 			<th>Reviewers' Proposal Count</th>
@@ -77,4 +76,8 @@
 		{{topics_reviewers}}
 	</tbody>
 </table>
+<br />
+<h3>Methodology</h3>
+<p>The Portfolio Explorer prototype uses a <a href="http://readidata.nitrd.gov/star/uploads/Topic_Modeling_Primer.pdf">topic modeling</a> approach to describe NSF scientific portfolios.  The topic model is a probabilistic model that automatically learns a set of topics (categories) that describe a collection of documents, based on the words in those documents.  The NSF "Research Topics" were modeled based on a collection of titles and project descriptions from all NSF proposals from 2000-2011.  Each NSF proposal is characterized by multiple, weighted "Research Topics".</p>
+<p>The topic modeling approach was implemented as a result of a two year project undertaken on behalf of two NSF Advisory Committees – Computer and Information Science and Engineering (CISE) and Social, Behavioral and Economic Sciences (SBE).</p>
 </script>

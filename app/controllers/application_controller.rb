@@ -36,12 +36,11 @@ class ApplicationController < ActionController::Base
   def after_sign_in_path_for(resource)
     stored_location_for(resource) ||
       if resource.is_a?(User) 
-          #if resource.role?(:auditor)
-          #  proposals_path
-          #else
-          #  users_path
-          #end
-          proposals_path
+          if resource.role?(:internal)
+            programs_path
+          else
+            proposals_path #  users_path
+          end          
       else
         super
       end

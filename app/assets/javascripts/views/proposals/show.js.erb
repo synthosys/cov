@@ -14,9 +14,11 @@ App.Views.ShowProposal = Backbone.View.extend({
 
 		var self = this;
 		this.model = new Proposal({id: this.id + ".json"});
+		$('div#reviewdata', this.el).hide();
 		this.model.fetch({
 			success: function() {
-				self.legend_flags = {};
+				//self.legend_flags = {};
+				self.legend_classes = {};
 				//load topic legend
 				self.legend_topics = {};
 				$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {
@@ -73,7 +75,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 //console.log('changing relevance');		
 		//set it
 		this.topicrelevance = $(e.currentTarget).val();
-		$("#select[id^=topicrelevance_]", this.el).val(this.topicrelevance);
+		//$("#select[id^=topicrelevance_]", this.el).val(this.topicrelevance);
 //console.log(this.topicrelevance);
 		
 		//clear the tabs
@@ -206,16 +208,97 @@ App.Views.ShowProposal = Backbone.View.extend({
 			});
 			//set defaults for selected panels
 			this.selectedpanel = this.panels[0].panel.nsf_id; //index of first panel
+			//load panel reviewer org data
+			this.loadPanelData(0); //first one, callback from this function will call render when it's done
+		} else {
+			//render
+			this.render();
 		}
+	},
+	preparePanelData: function(index,panel) {
+		//take the data returned and store it against the appropriate panel
+		if (this.panels[index]) this.panels[index] = panel;
+		index++;
+		if (index==this.panels.length) {
+			//all done, render!
+			this.render();
+		} else {
+			//load the next one
+			this.loadPanelData(index);
+		}
+	},
+	loadPanelData: function(index) {
+		var panel = this.panels[index];
+//console.log(panel);				
+		//if panel reviewer org info is not loaded, load it first
+		if (panel) {
+			if (typeof panel.orgloaded == "undefined" || !panel.orgloaded) {
+				var reviewers = panel.reviewers;
+				if (reviewers.length==0) {
+					panel.orgloaded = true;
+					this.preparePanelData(index,panel);
+				} else {
+					//load org data
+					var orgs = [];
+					//pull out the orgs
+					_.each(reviewers, function(reviewer) {
+						orgs.push(reviewer['inst']['nsf_id']);
+					});
+//console.log(reviewers);		
+					var self = this;
+					//so now, get the inst classifications
+					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+					var datatype = 'JSONP';			
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {
+							//found it! save it back
+							for (var i=0;i<reviewers.length;i++) {
+								var org = _.find(data["data"], function(item) {
+									return item['nsf_id']==reviewers[i]['inst']['nsf_id'];
+								});
+								reviewers[i]['inst']['flag'] = '';
+								reviewers[i]['inst']['class'] = '';
+								if (org) {
+									reviewers[i]['inst']['flag'] = org['flag'];
+									reviewers[i]['inst']['class'] = org['class'];
+								}
+							}
+							panel.orgloaded = true;
+							panel.reviewers = reviewers;
+//console.log(reviewers);						
+							self.preparePanelData(index,panel);							
+						},
+						error: function() {
+							self.preparePanelData(index,panel);							
+						}
+					});
+				}
+			} else {
+				this.preparePanelData(index,panel);				
+			}
+		} else {
+			this.preparePanelData(index,panel);
+		}		
 	},
 	render: function() {		
 		//load classification legends
-		if (_.size(this.legend_flags)==0) {
+		/* if (_.size(this.legend_flags)==0) {
 			var self = this;
 			$.getJSON(apiurl+'org?legend=flag'+'&jsoncallback=?', function(data) {
 				_.each(data, function(item) {
 					self.legend_flags[item["flag"]] = {"label":item["label"]};
 				});
+				self.showDetails();
+			});
+		} else {
+			this.showDetails();		
+		} */
+		if (_.size(this.legend_classes)==0) {
+			var self = this;
+			$.getJSON(apiurl+'org?legend=class'+'&jsoncallback=?', function(data) {
+				self.legend_classes = data;
 				self.showDetails();
 			});
 		} else {
@@ -237,6 +320,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 		} else this.renderDetails();
 	},
 	renderDetails: function() {
+		$('div#loader', this.el).hide();
+		$('div#reviewdata', this.el).show();
 		if ($.trim($('#tab_proposal_details', this.el).html())) return; //already loaded
 		var html = this.showProposalDetailsView.render();
 //console.log(html);		
@@ -253,7 +338,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 					self.showPanelDetailsView = new App.Views.ShowPanelDetails({html: html});
 					self.showPanelDetailsView.panels_count = self.panels.length;
 					self.showPanelDetailsView.legend_topics = self.legend_topics;
-					self.showPanelDetailsView.legend_flags = self.legend_flags;
+					//self.showPanelDetailsView.legend_flags = self.legend_flags;
+					self.showPanelDetailsView.legend_classes = self.legend_classes;
+					//prepare panel data
 					self.renderPanel(panel,paneltopics);
 				});
 			} else {
@@ -264,7 +351,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	renderPanel: function(panel,paneltopics) {
 		if ($.trim($('#tab_panel_details', this.el).html())) return; //already loaded
-		this.showPanelDetailsView.panels_select = this.getPanelsSelect();
+		this.showPanelDetailsView.panels_select = this.getPanelsSelect('panelselect_paneldetails','7');
 		this.showPanelDetailsView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showPanelDetailsView.render(panel,paneltopics);
 //console.log(html);			
@@ -276,7 +363,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//institution classification
 		//$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers));
 		//render reviewer map
-		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocation(reviewers,'reviewers_location_map'));		
+		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocationMap(reviewers,'reviewers_location_map'));
+		//also, by country		
+		this.showPanelDetailsView.renderReviewerLocationByCountry(reviewers,$('#reviewers_location_country', this.el));
 	},
 	showReviewerExpertise: function() {
 		if (this.selectedpanel!=null) {
@@ -298,7 +387,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	renderReviewerExpertise: function(panel,paneltopics,topicrelevance) {
 		if ($.trim($('#tab_reviewer_expertise', this.el).html())) return; //already loaded
-		this.showReviewerExpertiseView.panels_select = this.getPanelsSelect();
+		this.showReviewerExpertiseView.panels_select = this.getPanelsSelect('panelselect_reviewerexpertise','6');
 		this.showReviewerExpertiseView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showReviewerExpertiseView.render(panel,paneltopics,topicrelevance);
 //console.log(html);		
@@ -312,7 +401,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 				require(['text!templates/proposals/show_tab_reviewer_details.html'], function(html) {
 					self.showReviewerDetailsView = new App.Views.ShowReviewerDetails({html: html});
 					self.showReviewerDetailsView.legend_topics = self.legend_topics;
-					self.showReviewerDetailsView.legend_flags = self.legend_flags;
+					//self.showReviewerDetailsView.legend_flags = self.legend_flags;
+					self.showReviewerDetailsView.legend_classes = self.legend_classes;
 					self.renderReviewerDetails(panel.reviewers);
 				});
 			} else {
@@ -323,7 +413,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	renderReviewerDetails: function(reviewers) {
 		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
-		this.showReviewerDetailsView.panels_select = this.getPanelsSelect();
+		this.showReviewerDetailsView.panels_select = this.getPanelsSelect('panelselect_reviewerdetails','4');
 		var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
 //console.log(html);		
 		$('#tab_reviewer_details', this.el).html(html);		
@@ -344,16 +434,22 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//awards
 		this.showReviewerDetailsView.renderReviewerAwards(reviewer,$('#reviewer_awards', this.el));
 	},	
-	getPanelsSelect: function() {
+	getPanelsSelect: function(id,span) {
 		var panels_select = '';
 		var self = this;
-		_.each(this.panels, function(panel) {
-//console.log(self.selectedpanel);		
-//console.log(panel);			
-			var selected = '';
-			if (panel.panel.nsf_id==self.selectedpanel.toString()) selected = ' selected ';
-			panels_select += '<option value="'+panel.panel.nsf_id+'"'+selected+'>'+panel.panel.nsf_id+' - '+panel.panel.name+' ('+panel.panel.officer+')</option>';
-		});
+		if (this.panels.length==1) panels_select = '<p><strong>'+this.panels[0].panel.nsf_id+' - '+this.panels[0].panel.name+' ('+this.panels[0].panel.officer+')</strong></p>';
+		else {
+			panels_select = '<select id="'+id+'" class="span'+span+'">';
+			_.each(this.panels, function(panel) {
+	//console.log(self.selectedpanel);		
+	//console.log(panel);			
+				var selected = '';
+				if (panel.panel.nsf_id==self.selectedpanel.toString()) selected = ' selected ';
+				panels_select += '<option value="'+panel.panel.nsf_id+'"'+selected+'>'+panel.panel.nsf_id+' - '+panel.panel.name+' ('+panel.panel.officer+')</option>';
+			});			
+			panels_select += '</select>';
+//console.log(panels_select);			
+		}
 		return panels_select;
 	},
 	getPanelTopics: function(topicrelevance,topics) {
@@ -389,8 +485,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 //console.log(this.panels);			
 			return _.find(this.panels,function(panel) {
 				return panel.panel.nsf_id == selectedpanel;
-			})
-		} else 
+			});
+		} else {
 			return {};
+		}
 	}
 });
