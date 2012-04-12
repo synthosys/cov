@@ -1,4 +1,4 @@
-App.Views.programsAwardsView = Backbone.View.extend({
+App.Views.dashboardProgramsAwards = Backbone.View.extend({
 	events: {
 		"click button#view_topics": "gotoTopics",
 		"click a[class=award_details]": "gotoDetails"
@@ -8,7 +8,7 @@ App.Views.programsAwardsView = Backbone.View.extend({
 		this.collection = new App.Collections.Awards;
 
 		var self = this;
-		require(['text!templates/programs/awards.html'], function(html) {
+		require(['text!templates/dashboard/programs_awards.html'], function(html) {
 			var template = _.template(html);
 			//we make this query so many times, think about how to improve it
 			// lookup using pge legend in the data api
@@ -22,7 +22,7 @@ App.Views.programsAwardsView = Backbone.View.extend({
 		e.preventDefault();
 
 		var year = this.options.params['year'];	
-		App.app_router.navigate('topics/'+this.options.pge+'/?year='+year, {trigger: true});
+		App.app_router.navigate('programs/topics/'+this.options.pge+'/?year='+year, {trigger: true});
 	},
 	gotoDetails: function(e) {
 		e.preventDefault();
@@ -30,7 +30,7 @@ App.Views.programsAwardsView = Backbone.View.extend({
 		var id = $(e.currentTarget).attr('id');
 		
 		var year = this.options.params['year'];		
-		App.app_router.navigate('details/'+id+'/?pge='+this.options.pge+'&year='+year, {trigger: true});
+		App.app_router.navigate('programs/details/'+id+'/?pge='+this.options.pge+'&year='+year, {trigger: true});
 	},
 	loadList: function() {
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading awards");

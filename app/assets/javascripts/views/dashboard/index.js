@@ -1,8 +1,37 @@
 App.Views.Dashboard = Backbone.View.extend({
+	events: {
+		"click a[href=#tab_programs]": "gotoPrograms",
+		"click a[href=#tab_division]": "gotoDivision",
+		"click a[href=#tab_geography]": "gotoGeography"
+	},
 	initialize: function() {
 		this.render();
 	},
+	gotoPrograms: function(e) {
+		e.preventDefault();
+		
+		App.app_router.navigate('programs', {trigger: true});		
+	},
+	gotoDivision: function(e) {
+		e.preventDefault();
+		
+		App.app_router.navigate('division', {trigger: true});		
+	},
+	gotoGeography: function(e) {
+		e.preventDefault();
+		
+		App.app_router.navigate('geography', {trigger: true});		
+	},
 	render: function() {
+		//clear any existing active tabs
+		$("a[href^=#tab_]", this.el).parent().removeClass("active");
+		$("div[id^=tab_]", this.el).removeClass("active");
+		//set the active tab based on the route
+		var route = Backbone.history.fragment;
+		if (route.match(/^division/)) { $("a[href=#tab_division]", this.el).parent().addClass('active'); $("div#tab_division", this.el).addClass('active'); }
+		else if (route.match(/^geography/)) { $("a[href=#tab_geography]", this.el).parent().addClass('active'); $("div#tab_geography", this.el).addClass('active'); }
+		else { $("a[href=#tab_programs]", this.el).parent().addClass('active'); $("div#tab_programs", this.el).addClass('active'); }
+		
 		//show the directorate
 		var division = getDivision();
 		var directorate = division+' Dashboard'; //default
@@ -32,7 +61,7 @@ App.Views.Dashboard = Backbone.View.extend({
 		$.getJSON(apiurl + 'topic?' + params + '&jsoncallback=?', function(data) {
 			_.each(data["data"], function(item) {
 				if (item.status=='award') {
-					$("#division_summary #awards", this.el).html(item["count"]+' - '+'$'+App.addCommas((awarded_dollar/1000000).toFixed(0))+'M');
+					$("#division_summary #awards", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["awarded_dollar"]/1000000).toFixed(0))+'M');
 				}
 			});
 			$('#division_summary #institutions', this.el).html(data["count"]);

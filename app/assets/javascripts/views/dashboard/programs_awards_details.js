@@ -1,10 +1,10 @@
-App.Views.programsDetailsView = Backbone.View.extend({
+App.Views.dashboardProgramsAwardsDetails = Backbone.View.extend({
 	events: {
 		"click button#view_awards": "gotoAwards"
 	},
 	initialize: function() {
 		var self = this;
-		require(['text!templates/programs/details.html'], function(html) {
+		require(['text!templates/dashboard/programs_awards_details.html'], function(html) {
 			var template = _.template(html);
 			//we make this query so many times, think about how to improve it
 			// lookup using pge legend in the data api
@@ -21,7 +21,7 @@ App.Views.programsDetailsView = Backbone.View.extend({
 //console.log(this.options.params);
 		var pge = this.options.params['pge'];
 		var year = this.options.params['year'];
-		App.app_router.navigate('awards/'+pge+'/?year='+year, {trigger: true});
+		App.app_router.navigate('programs/awards/'+pge+'/?year='+year, {trigger: true});
 	},
    	render: function() {
 		$(this.el).html(this.html); //is it better to do this when we load template on initialize or here? ponder!
