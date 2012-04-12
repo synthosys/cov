@@ -1,6 +1,9 @@
 App.Views.LoadProposal = Backbone.View.extend({
 	processLoadProgress: function(component,status,data,message) {
-//console.log(this);		
+//console.log(this);
+//console.log(component);
+//console.log(status);
+//console.log(data);		
 		this.updateLoadStatus(component,status,data,message);
 		//now check if all loaded
 		if (this.isDataLoaded()) {
@@ -11,14 +14,15 @@ App.Views.LoadProposal = Backbone.View.extend({
 			var loaded_data = {};
 			if (_.size(this.loadedcomponents["proposals"]["data"])>0) {
 				var loadedcomponents = this.loadedcomponents;
+//console.log(loadedcomponents);				
 				_.each(this.nsf_ids, function(nsf_id) {
 					loaded_data[nsf_id] = {};
-					(loadedcomponents["proposals"]["data"][nsf_id]) ? loaded_data[nsf_id]["details"] = loadedcomponents["proposals"]["data"][nsf_id] : {};
-					(loadedcomponents["researchers"]["data"][nsf_id]) ? loaded_data[nsf_id]["researchers"] = loadedcomponents["researchers"]["data"][nsf_id] : [];
-					(loadedcomponents["topics"]["data"][nsf_id]) ? loaded_data[nsf_id]["topics"] = loadedcomponents["topics"]["data"][nsf_id] : [];
-					(loadedcomponents["panels"]["data"][nsf_id]) ? loaded_data[nsf_id]["panels"] = loadedcomponents["panels"]["data"][nsf_id] : [];
-					(loadedcomponents["reviewers"]["data"][nsf_id]) ? loaded_data[nsf_id]["reviewers"] = loadedcomponents["reviewers"]["data"][nsf_id] : [];
-					(loadedcomponents["reviewerproposals"]["data"][nsf_id]) ? loaded_data[nsf_id]["reviewerproposals"] = loadedcomponents["reviewerproposals"]["data"][nsf_id] : [];
+					loaded_data[nsf_id]["details"] = (loadedcomponents["proposals"]["data"][nsf_id]) ? loadedcomponents["proposals"]["data"][nsf_id] : {};
+					loaded_data[nsf_id]["researchers"] = (loadedcomponents["researchers"]["data"][nsf_id]) ? loadedcomponents["researchers"]["data"][nsf_id] : [];
+					loaded_data[nsf_id]["topics"] = (loadedcomponents["topics"]["data"][nsf_id]) ? loadedcomponents["topics"]["data"][nsf_id] : [];
+					loaded_data[nsf_id]["panels"] = (loadedcomponents["panels"]["data"][nsf_id]) ? loadedcomponents["panels"]["data"][nsf_id] : [];
+					loaded_data[nsf_id]["reviewers"] = (loadedcomponents["reviewers"]["data"][nsf_id]) ? loadedcomponents["reviewers"]["data"][nsf_id] : [];
+					loaded_data[nsf_id]["reviewerproposals"] = (loadedcomponents["reviewerproposals"]["data"][nsf_id]) ? loadedcomponents["reviewerproposals"]["data"][nsf_id] : [];
 				});				
 			}
 //console.log(this.getLoadStatus());				
@@ -55,9 +59,16 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var self = this;
 		//http://128.150.10.70/py/api/panel?pid=1149460
 		this.updateLoadStatus('proposals','start',null,'');
+		if (!proposalaccessallowed) {
+			var url = baseURI+'/proposals'+'/sample?for=proposals';
+			var datatype = 'JSON';
+		} else {
+			var url = apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?';
+			var datatype = 'JSONP';			
+		}
 		$.ajax({
-			url: apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?',
-			dataType: 'JSONP',
+			url: url,
+			dataType: datatype,
 			success: function(data) {
 				if (data.count==0) {
 					//return with error
@@ -93,6 +104,111 @@ App.Views.LoadProposal = Backbone.View.extend({
 						//ALL DONE! run callback function
 						self.processLoadProgress(component, 'ok', loaded_data, 'Done');											
 					}
+				}
+			},
+			error: function() {
+//console.log('error panels');										
+				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
+			}
+		});									
+	},
+	loadPanels: function() {
+		var loaded_data = {};
+		var component = 'panels';
+		var self = this;
+		//http://128.150.10.70/py/api/panel?pid=1149460
+		this.updateLoadStatus('panels','start',null,'');
+		if (!proposalaccessallowed) {
+			var url = baseURI+'/proposals'+'/sample?for=panels';
+			var datatype = 'JSON';
+		} else {
+			var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
+			var datatype = 'JSONP';			
+		}
+		$.ajax({
+			url: url,
+			dataType: datatype,
+			success: function(data) {
+				if (data["data"].length==0) {
+					//return with error
+					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
+					//set the others here too so we return
+					self.processLoadProgress('researchers', 'error', {}, '');
+					self.processLoadProgress('topics', 'error', {}, '');
+					self.processLoadProgress('reviewers', 'error', {}, '');
+					self.processLoadProgress('reviewerproposals', 'error', {}, '');
+				} else {
+					var panels = data["data"];
+					//load counts for panel proposals, make a list
+					var panel_propids = [];
+					_.each(panels, function(panel) {
+						panel_propids = panel_propids.concat(panel["prop"]);
+					});
+//console.log(_.uniq(panel_propids).join(','));					
+					if (!proposalaccessallowed) {
+						var url = baseURI+'/proposals'+'/sample?for=panel_proposals';
+						var datatype = 'JSON';
+					} else {
+						var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
+						var datatype = 'JSONP';			
+					}
+					$.ajax({
+						url: url,
+						dataType: datatype,
+						success: function(data) {						
+							var loaded_panels = _.map(panels, function(panel) {
+								//now we have a list, so go get the counts
+								var panel_totalawards = 0;
+								var panel_totalfunding = 0;
+	//							_.each(panel["prop"], function(prop_ids) {
+									//get and store the counts
+									_.each(data["data"], function(prop) {
+	//console.log('propids');									
+	//console.log(prop_ids);									
+										//find them all out
+										if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
+											panel_totalawards++;
+											panel_totalfunding += prop["awarded"]["dollar"];
+										}
+									});
+	//							});
+								panel["totalawards"] = panel_totalawards;
+								panel["totalfunding"] = panel_totalfunding;
+								return panel;
+							});
+							//store data
+							_.each(self.nsf_ids, function(nsf_id) {
+								//find them all out
+								loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
+	//console.log('panel prop');									
+	//console.log(panel["prop"]);									
+									return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
+								});
+							});
+							//ALL DONE! run callback function
+							self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
+						},
+						error: function() {
+							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
+						}
+					});
+					if (proposalaccessallowed) {
+						//I don't bother running these in my local dev env when trying to load test data
+						//get proposal researcher and topic data				
+						self.loadResearchers();
+						self.loadTopics();
+					} else {
+						//store data
+						var tmp_data = {};
+						_.each(self.nsf_ids, function(nsf_id) {
+							tmp_data[nsf_id] = [];
+						});
+//console.log(loaded_data);						
+						self.processLoadProgress('topics', 'ok', tmp_data, 'Done');
+						self.processLoadProgress('researchers', 'ok', tmp_data, 'Done');						
+					}
+					//get reviewer data
+					self.loadReviewers(panels);
 				}
 			},
 			error: function() {
@@ -155,93 +271,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 			}
 		});									
 	},
-	loadPanels: function() {
-		var loaded_data = {};
-		var component = 'panels';
-		var self = this;
-		//http://128.150.10.70/py/api/panel?pid=1149460
-		this.updateLoadStatus('panels','start',null,'');
-		if (!proposalaccessallowed) {
-			var url = baseURI+'/proposals'+'/sample?for=panels';
-			var datatype = 'JSON';
-		} else {
-			var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
-			var datatype = 'JSONP';			
-		}
-		$.ajax({
-			url: url,
-			dataType: datatype,
-			success: function(data) {
-				if (data["data"].length==0) {
-					//return with error
-					self.processLoadProgress(component, 'error', loaded_data, 'No panels found' );
-					//set the others here too so we return
-					self.processLoadProgress('researchers', 'error', {}, '');
-					self.processLoadProgress('topics', 'error', {}, '');
-					self.processLoadProgress('reviewers', 'error', {}, '');
-					self.processLoadProgress('reviewerproposals', 'error', {}, '');
-				} else {
-					var panels = data["data"];
-					//load counts for panel proposals, make a list
-					var panel_propids = [];
-					_.each(panels, function(panel) {
-						panel_propids = panel_propids.concat(panel["prop"]);
-					});
-					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
-					var datatype = 'JSONP';			
-					$.ajax({
-						url: url,
-						dataType: datatype,
-						success: function(data) {						
-							var loaded_panels = _.map(panels, function(panel) {
-								//now we have a list, so go get the counts
-								var panel_totalawards = 0;
-								var panel_totalfunding = 0;
-	//							_.each(panel["prop"], function(prop_ids) {
-									//get and store the counts
-									_.each(data["data"], function(prop) {
-	//console.log('propids');									
-	//console.log(prop_ids);									
-										//find them all out
-										if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
-											panel_totalawards++;
-											panel_totalfunding += prop["awarded"]["dollar"];
-										}
-									});
-	//							});
-								panel["totalawards"] = panel_totalawards;
-								panel["totalfunding"] = panel_totalfunding;
-								return panel;
-							});
-							//store data
-							_.each(self.nsf_ids, function(nsf_id) {
-								//find them all out
-								loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
-	//console.log('panel prop');									
-	//console.log(panel["prop"]);									
-									return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
-								});
-							});
-							//ALL DONE! run callback function
-							self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
-						},
-						error: function() {
-							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );						
-						}
-					});
-					//get proposal researcher and topic data				
-					self.loadResearchers();
-					self.loadTopics();
-					//get reviewer data
-					self.loadReviewers(panels);
-				}
-			},
-			error: function() {
-//console.log('error panels');										
-				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
-			}
-		});									
-	},
 	loadReviewers: function(panels) {
 		var loaded_data = {};
 		var component = 'reviewers';
@@ -253,11 +282,12 @@ App.Views.LoadProposal = Backbone.View.extend({
 		_.each(panels, function(panel) {
 			reviewer_ids = reviewer_ids.concat(panel["revr"]);
 		});
+//console.log(_.uniq(reviewer_ids).join(','));		
 		//now go get them
 		if (!proposalaccessallowed) {
 			var url = baseURI+'/proposals'+'/sample?for=panel_reviewers';
 			var datatype = 'JSON';
-		} else {
+		} else {	
 			var url = apiurl+'user?rid='+_.uniq(reviewer_ids).join(',')+'&jsoncallback=?';
 			var datatype = 'JSONP';			
 		}
@@ -285,10 +315,18 @@ App.Views.LoadProposal = Backbone.View.extend({
 						_.each(reviewers, function(reviewer) {
 							orgs.push(reviewer['inst']['nsf_id']);
 						});
+//console.log(reviewers);								
 						//so now, get the inst classifications
+						if (!proposalaccessallowed) {
+							var url = baseURI+'/proposals'+'/sample?for=inst_class';
+							var datatype = 'JSON';
+						} else {
+							var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
+							var datatype = 'JSONP';			
+						}
 						$.ajax({
-							url: apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?',
-							dataType: 'JSONP',
+							url: url,
+							dataType: datatype,
 							success: function(data) {
 								//found it! save it back
 								for (var i=0;i<reviewers.length;i++) {
@@ -298,6 +336,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 									reviewers[i]['inst']['flag'] = '';
 									if (org) reviewers[i]['inst']['flag'] = org['flag'];
 								}
+//console.log(reviewers);								
 								tmp['reviewers'] = reviewers;
 								proposal_panel_reviewers.push(tmp);
 							}
@@ -305,10 +344,8 @@ App.Views.LoadProposal = Backbone.View.extend({
 					});
 					loaded_data[nsf_id] = proposal_panel_reviewers;
 				});
-				//get the orgs and store that info too
-				
 				//also, make a list of panels and reviewers as pis
-				var panel_reviewers_as_pis = [];
+				self.panel_reviewers_as_pis = [];
 				_.each(panels, function(panel) {
 					var tmp = {};
 					tmp['panel_id'] = panel["nsf_id"];
@@ -325,10 +362,21 @@ App.Views.LoadProposal = Backbone.View.extend({
 						}
 					});
 					tmp['revr'] = reviewers_as_pis;
-					panel_reviewers_as_pis.push(tmp);
-				});				
+					self.panel_reviewers_as_pis.push(tmp);
+				});		
+//console.log(panel_reviewers_as_pis);
+				var reviewer_ids = [];
+		//console.log(panels);		
+				_.each(self.panel_reviewers_as_pis, function(panel) {
+					reviewer_ids = reviewer_ids.concat(panel["revr"]);
+				});
+				self.reviewer_as_pi_ids = _.uniq(reviewer_ids); //array we will iterate over
+				self.loaded_reviewer_proposals = {}; //hash to store the results of reviewers loaded proposals, key is reviewer id, value is array of loaded proposals
+				//record the current index
+				self.load_index = 0;
+				self.updateLoadStatus('reviewerproposals','start',null,'');
 				//load Reviewer Proposals
-				self.loadReviewerProposals(panel_reviewers_as_pis);
+				self.loadReviewerProposals();
 				//ALL DONE! run callback function
 				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
 			},
@@ -337,129 +385,111 @@ App.Views.LoadProposal = Backbone.View.extend({
 			}
 		});		
 	},
-	loadReviewerProposals: function(panels) {
-		var loaded_data = {};
-		var component = 'reviewerproposals';
+	loadReviewerProposals: function() {
+		var reviewer_id = this.reviewer_as_pi_ids[this.load_index];
 		var self = this;
-		//http://128.150.10.70/py/api/user?rid=?
-		this.updateLoadStatus(component,'start',null,'');
-		//gather a list of the reviewers we have to get information for
-		var reviewer_ids = [];
-//console.log(panels);		
-		_.each(panels, function(panel) {
-			reviewer_ids = reviewer_ids.concat(panel["revr"]);
-		});
-//console.log(reviewer_ids);		
-		//now get the proposal info and topics for the reviewers who are pis
-		var url = apiurl+'user?id='+_.uniq(reviewer_ids).join(',')+'&page=prop'+'&jsoncallback=?';
-		var datatype = 'JSONP';			
-		$.ajax({
-			url: url,
-			dataType: datatype,
-			success: function(data) {
-				if (data["count"]>0) {
-					//we get a list of all the proposal ids, go through and extract them
-					//we need them to get topics
-					var prop_ids = [];
-					if (data["data"]["nsf"]["propose"] && data["data"]["nsf"]["propose"]["count"]>0) {
-						_.each(data["data"]["nsf"]["propose"]["data"],function(prop) {
-							prop_ids.push(prop["nsf_id"]);
-						});
-					}
-					if (data["data"]["nsf"]["decline"] && data["data"]["nsf"]["decline"]["count"]>0) {
-						_.each(data["data"]["nsf"]["decline"]["data"],function(prop) {
-							prop_ids.push(prop["nsf_id"]);
-						});
-					}
-					if (data["data"]["nsf"]["award"] && data["data"]["nsf"]["award"]["count"]>0) {
-						_.each(data["data"]["nsf"]["award"]["data"],function(prop) {
-							prop_ids.push(prop["nsf_id"]);
-						});
-					}
-					//get the topics for each proposal
-					var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
-					var datatype = 'JSONP';			
-					$.ajax({
-						url: url,
-						dataType: datatype,
-						success: function(data) {
-							var proposals = data["data"];											
-							//get the details for each proposal, we need to do this so we can match back to reviewers
-							var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';
-							var datatype = 'JSONP';			
-							$.ajax({
-								url: url,
-								dataType: datatype,
-								success: function(data) {
-//console.log(proposals);									
-									var loaded_proposals = _.map(proposals,function(proposal) {
-										var tmp = {};
-										tmp["nsf_id"] = proposal["proposal"]["nsf_id"];
-										tmp["topics"] = proposal["topic"]["id"];
-										//attach the researchers
-//console.log(proposal["proposal"]["nsf_id"]);										
-										var researchers = _.filter(data["data"],function(item) {
-//console.log(proposal["proposal"]["nsf_id"]);											
-											return $.inArray(proposal["proposal"]["nsf_id"].toString(),item["prop"])!=-1;
-										});
-//console.log(researchers);										
-										//extract the researcher ids
-										var researcher_ids = [];
-										_.each(researchers, function(researcher) {
-											researcher_ids.push(researcher["nsf_id"]);
-										});
-//console.log(researcher_ids);										
-										tmp["researchers"] = researcher_ids;
-										return tmp;
-									});
-//console.log(loaded_proposals);									
-									//now we have the loaded proposals with researchers and topics! PHEW!!
-									//ok, now associate them back with their appropriate PANELS! NOT Reviewers. We could do that but there might be dups then + it would take up extra storage and we're only storing as entire objects right now, so until we have/need to do things differently (doing the more granular storage here and letting the display parse/display as necessary) and since we only currently care about displaying them as a collection and not individually for each reviewer. If that changes in the future, change this below
-									//For each of the panels, using the list of reviewers as pis, find the matching proposals in the list of loaded proposals
-									//store data
-									_.each(self.nsf_ids, function(nsf_id) {
-										//for the panels for this proposal
-										var proposal_panels = _.filter(panels,function(panel) {
-											return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
-										});
-//console.log(proposal_panels);										
-										//now find the corresponding proposals
-										var proposal_panel_reviewers = [];
-										_.each(proposal_panels, function(panel) {
-											var tmp = {};
-											tmp['panel_id'] = panel["panel_id"];											
-											var loaded_reviewer_proposals = [];
-											_.each(panel["revr"], function(reviewer) {
-//console.log(reviewer);												
-												loaded_reviewer_proposals = loaded_reviewer_proposals.concat(_.filter(loaded_proposals, function(loaded_proposal) {
-													return  $.inArray(reviewer.toString(),loaded_proposal["researchers"])!=-1;
-												}));
-												//YES! FINALLY! We have our list of proposals by reviewers who were assigned to this panel!
-											});
-											tmp['reviewerproposals'] = loaded_reviewer_proposals;
-											proposal_panel_reviewers.push(tmp);
-										});
-										loaded_data[nsf_id] = proposal_panel_reviewers;
-									});
-//console.log(loaded_data);									
-									//ALL DONE! run callback function
-									self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
-								},
-								error: function() {
-									self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
-								}
+		if (reviewer_id) {
+//console.log(reviewer_id);		
+			//now get the proposal info and topics for the reviewers who are pis
+			var url = apiurl+'user?id='+reviewer_id+'&page=prop'+'&jsoncallback=?';
+			var datatype = 'JSONP';			
+			$.ajax({
+				url: url,
+				dataType: datatype,
+				success: function(data) {
+					if (data["count"]>0) {
+						//we get a list of all the proposal ids, go through and extract them
+						//we need them to get topics
+						var prop_ids = [];
+						if (data["data"]["nsf"]["propose"] && data["data"]["nsf"]["propose"]["count"]>0) {
+							_.each(data["data"]["nsf"]["propose"]["data"],function(prop) {
+								prop_ids.push(prop["nsf_id"]);
 							});
-						},
-						error: function() {
-							self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 						}
-					});
+						if (data["data"]["nsf"]["decline"] && data["data"]["nsf"]["decline"]["count"]>0) {
+							_.each(data["data"]["nsf"]["decline"]["data"],function(prop) {
+								prop_ids.push(prop["nsf_id"]);
+							});
+						}
+						if (data["data"]["nsf"]["award"] && data["data"]["nsf"]["award"]["count"]>0) {
+							_.each(data["data"]["nsf"]["award"]["data"],function(prop) {
+								prop_ids.push(prop["nsf_id"]);
+							});
+						}
+//console.log(_.uniq(prop_ids).length);										
+//console.log(_.uniq(prop_ids).join(','));					
+						//get the topics for each proposal
+						//now get the proposal info and topics for the reviewers who are pis
+						var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
+						var datatype = 'JSONP';			
+						$.ajax({
+							url: url,
+							dataType: datatype,
+							success: function(data) {
+								var proposals = data["data"];											
+//console.log(proposals.length);									
+								var loaded_proposals = _.map(proposals,function(proposal) {
+									var tmp = {};
+									tmp["nsf_id"] = proposal["proposal"]["nsf_id"];
+									tmp["topics"] = proposal["topic"]["id"];
+									return tmp;
+								});
+//console.log(loaded_proposals);	
+								//fire call back
+								self.saveReviewerProposals(reviewer_id,loaded_proposals);
+							}
+						});
+					} else {
+						self.saveReviewerProposals(reviewer_id,[]);
+					}
+				},
+				error: function() {
+					self.saveReviewerProposals(reviewer_id,[]);
 				}
-			},
-			error: function() {
-				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
-			}
-		});
+			});
+		} else {
+			var component = 'reviewerproposals';
+//console.log(self.loaded_reviewer_proposals);			
+			//all done
+			var loaded_data = {};
+			//store data
+			_.each(this.nsf_ids, function(nsf_id) {
+				//for the panels for this proposal
+				var proposal_panels = _.filter(self.panel_reviewers_as_pis,function(panel) {
+					return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
+				});
+//console.log(proposal_panels);										
+				//now find the corresponding proposals
+				var proposal_panel_reviewers = [];
+				_.each(proposal_panels, function(panel) {
+//console.log(panel);											
+					var tmp = {};
+					tmp['panel_id'] = panel["panel_id"];											
+					var loaded_reviewer_proposals = [];
+					_.each(panel["revr"], function(reviewer) {
+//console.log(reviewer);	
+						if (self.loaded_reviewer_proposals[reviewer])
+							loaded_reviewer_proposals = loaded_reviewer_proposals.concat(self.loaded_reviewer_proposals[reviewer]);
+						//YES! FINALLY! We have our list of proposals by reviewers who were assigned to this panel!
+					});
+//console.log(loaded_reviewer_proposals);	
+					//strip out duplicates
+					loaded_reviewer_proposals = _.uniq(loaded_reviewer_proposals,false, function (item) { return item.nsf_id; });
+//console.log(loaded_reviewer_proposals);	
+					tmp['reviewerproposals'] = loaded_reviewer_proposals;
+					proposal_panel_reviewers.push(tmp);
+				});
+				loaded_data[nsf_id] = proposal_panel_reviewers;
+			});
+//console.log(loaded_data);									
+			//ALL DONE! run callback function
+			self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
+		}
+	},
+	saveReviewerProposals: function(reviewer_id,loaded_proposals) {
+		this.loaded_reviewer_proposals[reviewer_id] = loaded_proposals;
+		this.load_index++;
+		this.loadReviewerProposals();
 	},
 	updateLoadStatus: function(component,status,data,message) {
 		if (!this.loadedcomponents[component]) this.loadedcomponents[component] = {};

@@ -1,11 +1,21 @@
-<h1>Program Dashboard</h1>
-<p>Find me in app/views/programs/index.html.erb</p>
+<div class="page-header">
+	<h1>Program Dashboard</h1>
+</div>
+
+<div class="tabbable">
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#dashboard" data-toggle="tab">Program Dashboard</a></li>
+	</ul>
+	<div class="tab-pane active" id="dashboard">
+	</div>
+</div>
 
 <script type="text/Javascript">
 App.views = {
-	'IndexProgram': { el:$("#main") },
+	'IndexProgram': { el:$("#dashboard") },
 };
 </script>
+<<<<<<< HEAD
 
 <script id="pgeTableTemplate" type="text/html">
 	<table class="table table-striped">
@@ -29,3 +39,5 @@ App.views = {
 		<div><h4>Exporting Division Data</h4></div>
 	</div>
 </div>
+=======
+>>>>>>> 08bfbb91f11b3d6456fc6ef64965c06885521702

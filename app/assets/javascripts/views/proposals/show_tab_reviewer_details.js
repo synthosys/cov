@@ -12,48 +12,19 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 
 		data.panelselect = this.panels_select;
 
-		//extract assignments for this proposal
-		var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
-			return (item.prop_id==prop_id);
-		});
-		//console.log(prop_reviewers);		
 		//assigned
-		var tmp = _.filter(prop_reviewers, function(item) {
-			return (item.status!='R');
+		var assigned_reviewers = _.filter(reviewers, function(reviewer) {
+			return (reviewer.status=='R');
 		});
-		//we have a list!
-		var assigned_reviewer_ids = _.pluck(tmp,"revr");
-		//console.log(assigned_reviewer_ids);				
-		//make list of assigned users by checking against the assigned
-		var assigned_reviewers = [];
-		if (assigned_reviewer_ids.length>0) {
-			assigned_reviewers = _.filter(reviewers, function(reviewer) {
-				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)!=-1
-			});
-		}
 
-		//console.log(assigned_reviewers);		
+//console.log(assigned_reviewers);		
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
-		var tmp = reviewers;
-		if (assigned_reviewer_ids.length>0) {
-			tmp = _.filter(reviewers, function(reviewer) {
-				return $.inArray(reviewer.nsf_id, assigned_reviewer_ids)==-1
-			});
-		}		
-		//console.log(tmp);		
-		//attach status
-		var other_reviewers = _.map(tmp, function(reviewer) {
-			var tmp = reviewer;
-			tmp.coi = false;
-			//find this reviewer in the status table
-			var status_record = _.find(prop_reviewers, function(item) {
-				return (item.revr==reviewer.nsf_id && item.status=='C');
-			})
-			if (status_record) tmp.coi = true;
-			return tmp;
-		})
+		var other_reviewers = _.filter(reviewers, function(reviewer) {
+			return (reviewer.status!='R');
+		});
+		
 		//console.log(other_reviewers);		
 		data.reviewers_other = this.renderReviewerList(other_reviewers);
 		//console.log(data);
@@ -64,13 +35,15 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		//researchers
 		var rendered = '';
 		if (reviewers.length > 0) {
-			var reviewers_template = _.template('<tr><td><h4><a href="#reviewer_listitem" id="{{nsf_id}}">{{name}}</a></h4><p>{{inst}}<br />{{dept}}</p></td><td class="icon"><i class="{{pi}}"></i></td></tr>');
+			var reviewers_template = _.template('<tr><td><h4><a href="#reviewer_listitem" id="{{nsf_id}}">{{name}}</a>{{status}}</h4><p>{{inst}}<br />{{dept}}</p></td><td class="icon"><i class="{{pi}}"></i></td></tr>');
 			var reviewers_compiled = [];
 			_.each(reviewers,function(reviewer) {
+//console.log(reviewer);				
 				var tmp = {};
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
-				if (tmp.status) tmp.name += '<i class="icon-remove"></i> (COI)';
+				tmp.status = '';
+				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign"></i> (COI)</span>';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok':'icon-remove';
@@ -183,11 +156,13 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 								});
 							}
 						});
+					} else {
+						renderto.html('<div class="alert">No awarded proposals for this reviewer.</div>');						
 					}
 				}
 			});		
 		} else {
-			renderto.html('<div class="alert">This reviewer is not known as a PI to NSF.</div>');
+			renderto.html('<div class="alert">This reviewer is not known to have submitted Proposals to NSF as a PI/Co-PI.</div>');
 		}
 	},
 	renderAwards: function(proposals,renderto) {
@@ -208,10 +183,15 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				data.title = details.title;
 
 				if (details.status.name=='award') {
-					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+details.awarded.dollar+'</td></tr>';
+					var funding = details.awarded.dollar;
+					if (funding && parseInt(funding)>0) var award_amount = '$'+App.addCommas((funding/1000).toFixed(0))+'K';
+					else var award_amount = '';			
+					data.status = '<tr><td class="lbl"><strong>Awarded</td><td>'+award_amount+'</td></tr>';
 					data.status += '<tr><td class="lbl"><strong>Award Date</td><td>'+details.awarded.date+'</td></tr>';
+					data.links = '<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+details.nsf_id+'" target="_blank">Open in nsf.gov</a>';			
 				} else {
-					data.status = '<tr><td colspan="2">('+details.status.name+')</td></tr>';
+					data.status = '<tr><td class="lbl"><strong>Status</td><td><td>('+details.status.name+')</td></tr>';
+					data.links = 'N/A';
 				}
 				data.pge = details.pge.code;
 				data.division = details.org.name;
@@ -238,17 +218,17 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				//topics
 				var topics = proposal.topics;
 				//yuck, not very dry at the moment but will refactor later, just trying to get this all in right now
-				data.t1 = topics[0];
-				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'';
+				data.t1 = topics[0]?'t'+topics[0]:'';
+				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'(not assigned)';
 				data.t1_words = topics[0]?self.legend_topics[topics[0]]["words"]:'';
-				data.t2 = topics[1];
-				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'';
+				data.t2 = topics[1]?'t'+topics[1]:'';
+				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'(not assigned)';
 				data.t2_words = topics[1]?self.legend_topics[topics[1]]["words"]:'';
-				data.t3 = topics[2];
-				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'';
+				data.t3 = topics[2]?'t'+topics[2]:'';
+				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'(not assigned)';
 				data.t3_words = topics[2]?self.legend_topics[topics[2]]["words"]:'';
-				data.t4 = topics[3];
-				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'';
+				data.t4 = topics[3]?'t'+topics[3]:'';
+				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'(not assigned)';
 				data.t4_words = topics[3]?self.legend_topics[topics[3]]["words"]:'';		
 
 				proposals_compiled.push(proposals_template(data));

@@ -23,10 +23,24 @@ App.Views.ShowProposal = Backbone.View.extend({
 					_.each(data, function(item) {
 						self.legend_topics[item["topic"]] = {"words":item["words"],"label":item["label"]};
 					});
-					//prepare data
-					self.prepareData();
-					//then render
-					self.render();
+					//load the assignment status
+					//check if the list of assignments is already loaded, if not, load it
+					if (typeof(App.PanelReviewerStatus)==='undefined') {
+						require(['text!panelreviewerstatus.js'], function(js) {
+//console.log(js);				
+							App.PanelReviewerStatus = $.parseJSON(js);
+//console.log(App.PanelReviewerStatus);				
+							//prepare data
+							self.prepareData();
+							//then render
+							self.render();							
+						});			
+					} else {
+						//prepare data
+						self.prepareData();
+						//then render
+						self.render();
+					}					
 				});
 			}
 		});
@@ -111,7 +125,29 @@ App.Views.ShowProposal = Backbone.View.extend({
 				});
 //console.log(panel_reviewers);				
 				tmp.reviewers = [];
-				if (panel_reviewers.length>0) tmp.reviewers = panel_reviewers[0].reviewers;
+				if (panel_reviewers.length>0) {
+					var extracted_reviewers = panel_reviewers[0].reviewers;
+					//attach status (assigned, not assigned, coi)
+					//extract assignments for this proposal
+					var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
+						return (item.prop_id==self.model.get('nsf_id'));
+					});	
+//console.log(prop_reviewers);					
+					for (var i=0;i<extracted_reviewers.length;i++) {
+//console.log(extracted_reviewers[i]);						
+//console.log(extracted_reviewers[i].nsf_id);						
+//console.log(extracted_reviewers[i]['revr']);
+						extracted_reviewers[i].status = ''; //initialize
+						var reviewer_status = _.find(prop_reviewers, function(prop_reviewer) {
+							if (extracted_reviewers[i]['revr']) return $.inArray(prop_reviewer.revr,extracted_reviewers[i]['revr'])!=-1;	
+							else return prop_reviewer.revr==extracted_reviewers[i].nsf_id;
+						});
+//console.log(reviewer_status.status);						
+						if (reviewer_status) extracted_reviewers[i].status = reviewer_status.status;
+					}
+//console.log(extracted_reviewers);				
+					tmp.reviewers = extracted_reviewers;				
+				}
 				//now gather topic data
 				var t1s = {};
 				var t2s = {};
@@ -217,6 +253,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 					self.showPanelDetailsView = new App.Views.ShowPanelDetails({html: html});
 					self.showPanelDetailsView.panels_count = self.panels.length;
 					self.showPanelDetailsView.legend_topics = self.legend_topics;
+					self.showPanelDetailsView.legend_flags = self.legend_flags;
 					self.renderPanel(panel,paneltopics);
 				});
 			} else {
@@ -237,7 +274,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//gender graphs
 		this.showPanelDetailsView.renderReviewerGenderGraph(reviewers,'reviewers_gender_graph');
 		//institution classification
-		$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers,this.legend_flags));
+		//$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers));
 		//render reviewer map
 		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocation(reviewers,'reviewers_location_map'));		
 	},
@@ -287,22 +324,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 	renderReviewerDetails: function(reviewers) {
 		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
 		this.showReviewerDetailsView.panels_select = this.getPanelsSelect();
-		//check if the list of assignments is already loaded, if not, load it
-		if (typeof(App.PanelReviewerStatus)==='undefined') {
-			var self = this;
-			require(['text!panelreviewerstatus.js'], function(js) {
-//console.log(js);				
-				App.PanelReviewerStatus = $.parseJSON(js);
-//console.log(App.PanelReviewerStatus);				
-				var html = self.showReviewerDetailsView.render(self.details.nsf_id, reviewers);
-console.log(html);		
-				$('#tab_reviewer_details', self.el).html(html);
-			});			
-		} else {
-			var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
-console.log(html);		
-			$('#tab_reviewer_details', this.el).html(html);		
-		}
+		var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
+//console.log(html);		
+		$('#tab_reviewer_details', this.el).html(html);		
 	},
 	showReviewerDetail: function(e) {
 		e.preventDefault();

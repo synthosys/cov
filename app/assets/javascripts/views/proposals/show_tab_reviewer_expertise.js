@@ -40,10 +40,10 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		var data = {};
 		data.proposal_topics_count = _.size(topics);
 		if (_.size(topics)==0) {
-			data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
+			data.topics_common = '<tr><td colspan="2"><div class="alert">No overlapping Research Topics</div></td></tr>';
 			data.topics_common_count = 0;
 			data.topics_common_ids = '';
-			data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
+			data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">None. All of this Proposal\'s Research Topics match Reviewers\' Expertise!</div></td></tr>';
 			data.topics_proposalonly_count = 0;
 			data.topics_proposalonly_ids = '';
 			data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
@@ -56,7 +56,7 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			}*/
 			//changed above as per Jan - compare all proposal topics against relevant reviewer topics
 			var proposaltopics = this.topics;
-console.log(proposaltopics);			
+//console.log(proposaltopics);			
 			//now figure out common ones etc.
 			//extract the reviewer proposal topic ids
 			var paneltopicids = [];
@@ -79,7 +79,11 @@ console.log(proposaltopics);
 				data.topics_common = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_common_count = common_topicids.length;
-			data.topics_common_ids = common_topicids.join(',');
+			data.topics_common_ids = '';
+			_.each(common_topicids, function(topicid) {
+				if (data.topics_common_ids.length>0) data.topics_common_ids += ',';
+				data.topics_common_ids += 't'+topicid; 
+			});
 			//proposal only
 			var proposalonly_topicids = _.difference(proposaltopics,common_topicids); //THIS NEEDS TO BE PUT INTO A PANEL TOPIC OBJEC STRUCTURE SO IT CAN BE RENDERED BY THE FUNCTION
 			if (proposalonly_topicids.length>0) {
@@ -93,7 +97,11 @@ console.log(proposaltopics);
 				data.topics_proposalonly = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_proposalonly_count = proposalonly_topicids.length;
-			data.topics_proposalonly_ids = proposalonly_topicids.join(',');
+			data.topics_proposalonly_ids = '';
+			_.each(proposalonly_topicids, function(topicid) {
+				if (data.topics_proposalonly_ids.length>0) data.topics_proposalonly_ids += ',';
+				data.topics_proposalonly_ids += 't'+topicid; 
+			});
 			//reviewers only
 			var reviewers_topicids = _.difference(paneltopicids,common_topicids);
 			if (reviewers_topicids.length>0) {
@@ -109,7 +117,11 @@ console.log(proposaltopics);
 				data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
 			}
 			data.topics_reviewers_count = reviewers_topicids.length;
-			data.topics_reviewers_ids = reviewers_topicids.join(',');
+			data.topics_reviewers_ids = '';
+			_.each(reviewers_topicids, function(topicid) {
+				if (data.topics_reviewers_ids.length>0) data.topics_reviewers_ids += ',';
+				data.topics_reviewers_ids += 't'+topicid; 
+			});
 		}
 		
 		return data;			
@@ -117,7 +129,7 @@ console.log(proposaltopics);
 	renderPanelTopicListItems: function(topics,icon) {
 		var topics_compiled = [];	
 		if (_.size(topics) > 0) {
-			var template = _.template('<tr><td>{{icon}}<strong>{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
+			var template = _.template('<tr><td>{{icon}}<strong>t{{t}} : {{label}}</strong> {{words}}</td><td>{{count}}</td></tr>');
 			var self = this;			
 
 			// sort this data by reverse count
