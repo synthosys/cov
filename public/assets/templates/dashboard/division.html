@@ -3,13 +3,13 @@
 		<form class="form-inline">
 		<div class="control-group">
 		<label class="control-label"><strong>Show:</strong></label>
-		<select id="filter_data" class="span1">
+		<select id="filter_data" class="span3">
 			<option value="programs_funding">Programs - Funding</option>
-			<option value="programs_growth_count">Programs - Growth Awards (#)</option>
-			<option value="programs_growth_dollar">Programs - Growth Awards ($)</option>
+			<option value="programs_growth.count">Programs - Growth Awarded</option>
+			<option value="programs_growth.funding">Programs - Growth Awards ($)</option>
 			<option value="topics_funding">Topics - Funding</option>
-			<option value="topics_growth_count">Topics - Growth Awards (#)</option>
-			<option value="topics_growth_dollar">Topics - Growth Awards ($)</option>
+			<option value="topics_growth.count">Topics - Growth Awarded</option>
+			<option value="topics_growth.funding">Topics - Growth Awards ($)</option>
 		</select>
 		<label class="control-label"><strong>From:</strong></label>
 		<select id="filter_year_from" class="span1">
@@ -32,10 +32,12 @@
 		</select>
 		</div><!-- /control-group -->
 		</form>
-	</div> <!-- span7 -->
-	<div class="span5">
 		<div id="loader"></div>
 		<table class="table table-striped table-bordered table-condensed" id="division_table">
 		</table>
+	</div> <!-- span7 -->
+	<div class="span5">
+		<div id="graph_loader"></div>
+		<div id="division_graph"></div>		
 	</div> <!-- span5 -->
 </div> <!-- row -->

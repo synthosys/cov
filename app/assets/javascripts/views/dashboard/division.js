@@ -1,6 +1,6 @@
 App.Views.dashboardDivision = Backbone.View.extend({
 	events: {
-		"change select#filter_data": "loadData",
+		"change select#filter_data": "showData",
 		"change select#filter_year_from": "loadData",
 		"change select#filter_year_to": "loadData"
 	},
@@ -9,7 +9,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		require(['text!templates/dashboard/division.html'], function(html) {
 			var template = _.template(html);
 			var html = template({}); //save it off
-			$(self.el).html(html);
+			self.el.html(html);
 			self.render();
 		})		
 	},
@@ -24,19 +24,77 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		$("select#filter_year_to", this.el).val(year[1]?year[1]:endYear);
 		this.loadData();		
 	},
-	loadData: function() {
+	showData: function() {
+		//simply switch a view, no need to reload data
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
-			//use programs collection
-			this.collection = new App.Collections.Programs;
-			var startYear = $('select#filter_year_from', this.el).val();
-			var endYear = $('select#filter_year_to', this.el).val();
-			this.collection.params = { org:getDivision(), year:startYear+'-'+endYear };
-			this.collection.on('loadcomplete', this.renderPrograms, this);	
-			this.collection.fetch();		
-		}		
+			//use programs collection, if already loaded, reuse it
+			if (!this.programsCollection) this.loadData(); //proceed with load
+			else this.renderPrograms(); //just render
+		} else if ($('select#filter_data', this.el).val().match(/^topics/)) {
+			//use topics collection, if already loaded, reuse it
+			if (!this.topicsCollection) this.loadData(); //proceed with load
+			else this.renderTopics(); //just render
+		}
+	},
+	loadData: function() {
+		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
+			alert('Pick an appropriate date range');
+			return;
+		}
+		var startYear = $('select#filter_year_from', this.el).val();
+		var endYear = $('select#filter_year_to', this.el).val();
+		//based on what type of data we are trying to show
+		if ($('select#filter_data', this.el).val().match(/^programs/)) {
+			//use programs collection, if already loaded, reuse it
+			if (!this.programsCollection) this.programsCollection = new App.Collections.Programs;
+			this.programsCollection.params = { org:getDivision(), year:startYear+'-'+endYear };
+			this.programsCollection.on('loadcomplete', this.renderPrograms, this);	
+			this.programsCollection.fetch();		
+		} else if ($('select#filter_data', this.el).val().match(/^topics/)) {
+			//use topics collection, if already loaded, reuse it
+			if (!this.topicsCollection) this.topicsCollection = new App.Collections.Topics;
+			this.topicsCollection.params = { org:getDivision(), year:startYear+'-'+endYear };
+			this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
+			this.topicsCollection.fetch();		
+		}	
 	},
 	renderPrograms: function() {
-console.log(this.collection.toJSON());		
+		var renderTable_ID = 'division_table';
+		var renderGraph_ID = 'division_graph';
+		//growth or funding? this is in the id of the selected value
+		if ($('select#filter_data', this.el).val().split('_').pop().match(/^growth/)) {
+			//load the appropriate view, if already loaded, reuse it
+			if (!this.programsGrowthView) this.programsGrowthView = new App.Views.programsGrowth({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});
+			//set the param we are trying to request
+			this.programsGrowthView.options.datatype = $('select#filter_data', this.el).val().split('_').pop().split('.').pop();
+			this.programsGrowthView.options.data = this.programsCollection.toJSON();
+			this.programsGrowthView.render();			
+		} else {
+			//funding default
+			//load the appropriate view, if already loaded, reuse it
+			if (!this.programsFundingView) this.programsFundingView = new App.Views.programsFunding({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});			
+			this.programsFundingView.options.data = this.programsCollection.toJSON();
+			this.programsFundingView.render();			
+		}
+	},
+	renderTopics: function() {
+		var renderTable_ID = 'division_table';
+		var renderGraph_ID = 'division_graph';
+		//growth or funding? this is in the id of the selected value
+		if ($('select#filter_data', this.el).val().split('_').pop().match(/^growth/)) {
+			//load the appropriate view, if already loaded, reuse it
+			if (!this.topicsGrowthView) this.topicsGrowthView = new App.Views.topicsGrowth({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});
+			//set the param we are trying to request
+			this.topicsGrowthView.options.datatype = $('select#filter_data', this.el).val().split('_').pop().split('.').pop();
+			this.topicsGrowthView.options.data = this.topicsCollection.toJSON();
+			this.topicsGrowthView.render();			
+		} else {
+			//funding default
+			//load the appropriate view, if already loaded, reuse it
+			if (!this.topicsFundingView) this.topicsFundingView = new App.Views.topicsFunding({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});			
+			this.topicsFundingView.options.data = this.topicsCollection.toJSON();
+			this.topicsFundingView.render();			
+		}
 	}
 });

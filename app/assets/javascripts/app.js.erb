@@ -253,5 +253,19 @@ var App = {
 			}
 		});
 		return object;
+	},
+	isDataTable: function( sInstance )
+	{
+	    var settings = $.fn.dataTableSettings;
+//console.log(settings);	
+	    for ( var i=0, iLen=settings.length ; i<iLen ; i++ )
+	    {
+	        //if ( settings[i].nTable == nTable )
+			if ( settings[i].sInstance == sInstance )
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
 	}
 };
