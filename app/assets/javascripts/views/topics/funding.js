@@ -1,4 +1,4 @@
-App.Views.programsFunding = Backbone.View.extend({
+App.Views.topicsFunding = Backbone.View.extend({
 	events: {
 		//"change div[class=dataTables_length] select": 'refreshGraph',
 		"click table thead tr th": 'refreshGraph'
@@ -39,12 +39,12 @@ App.Views.programsFunding = Backbone.View.extend({
 		//columns
 		var columns = [
 			{
-				"sTitle": "Programs",
+				"sTitle": "Topics",
 				"sWidth": "300px",
 				"fnRender": function( oObj ) {
-					return "p"+oObj.aData.pge+' - '+oObj.aData.label;
+					return "t"+oObj.aData.t+': '+oObj.aData.label+' - '+oObj.aData.words;
 				},
-				"mDataProp": "pge"
+				"mDataProp": "t"
 			},
 			{
 				"sTitle": "Awarded",
@@ -111,9 +111,9 @@ App.Views.programsFunding = Backbone.View.extend({
 		//now prepare chart data
 		var chartData = [];
 		if (dataAttribute=='fundingrate') {
-			//assemble a data array that looks like [[pge, value],[pge, value]]
+			//assemble a data array that looks like [[topicid, value],[topicid, value]]
 			_.each(data, function(row) {
-				chartData.push([row.pge, row.fundingrate]);
+				chartData.push([row.t, row.fundingrate]);
 			});
 		} else {
 			//make a list of unique years
@@ -127,11 +127,11 @@ App.Views.programsFunding = Backbone.View.extend({
 				}
 			});
 			years = _.sortBy(years, function(year) { return year; });
-			//assemble a data array that looks like [[pge, year_1_value, year2_value],[pge, year_1_value, year2_value]]
+			//assemble a data array that looks like [[topicid, year_1_value, year2_value],[topicid, year_1_value, year2_value]]
 			_.each(data, function(row) {
 	//console.log(row.years);			
 				var item = [];
-				item.push('p'+row.pge);
+				item.push('t'+row.t);
 				_.each(years, function(year) {
 					if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
 					else item.push(0);
@@ -140,12 +140,12 @@ App.Views.programsFunding = Backbone.View.extend({
 			});			
 		}
 		//now take only the top x
-		//chartData = _.first(chartData,numItems);
+		chartData = _.first(chartData,numItems);
 		
 //console.log(chartData);		
 		//now we're ready to display the chart!
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'PGE');
+        data.addColumn('string', 'Topic');
 		if (dataAttribute=='fundingrate') {
 			data.addColumn('number', 'Funding Rate');
 		} else {
@@ -160,7 +160,7 @@ App.Views.programsFunding = Backbone.View.extend({
 		var option = {
 		  height: chartData.length*30,
 		  isStacked: true,
-		  vAxis: {title: 'PGE' },
+		  vAxis: {title: 'Topic' },
 		  title: title,
 		  legend: { position: 'top' }
 		}

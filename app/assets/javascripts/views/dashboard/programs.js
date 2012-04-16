@@ -5,7 +5,7 @@ App.Views.dashboardPrograms = Backbone.View.extend({
 	initialize: function() {
 		//use programs collection
 		this.collection = new App.Collections.Programs;
-		this.collection.params = { org:getDivision(), year:getStartYear()+'-'+getEndYear(), summ:'pge' };
+		this.collection.params = { org:getDivision(), year:getStartYear()+'-'+getEndYear() };
 		this.collection.on('loadcomplete', this.render, this);
 		
 		var self = this;

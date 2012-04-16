@@ -27,19 +27,5 @@
 </script>
 
 <script type="text/Javascript">
-App.views = {
-	'Dashboard': { el:$("#main") }
-};
-
-function getDivision(){
-	return '<%= current_user.division %>';
-}
-
-function getStartYear(){
-	return '<%= GLOBAL["dashboard_start_year"] %>';
-}
-
-function getEndYear(){
-	return '<%= GLOBAL["dashboard_end_year"] %>';
-}
+App.views['Dashboard'] = { el:$("#main") };
 </script>

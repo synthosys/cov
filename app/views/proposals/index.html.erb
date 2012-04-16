@@ -22,9 +22,7 @@
 	</td>
 	</script>
 	<script type="text/Javascript">
-	App.views = {
-		'ListProposal': { el:$("#proposals_table"), division:'<%= current_user.division %>', allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 400 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true } }") else "{}" end %> }
-	};
+	App.views['ListProposal'] = { el:$("#proposals_table"), division:'<%= current_user.division %>', allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 400 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true } }") else "{}" end %> };
 	</script>
 <% else %>
 

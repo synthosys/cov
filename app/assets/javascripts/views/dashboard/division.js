@@ -54,9 +54,8 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		} else if ($('select#filter_data', this.el).val().match(/^topics/)) {
 			//use topics collection, if already loaded, reuse it
 			if (!this.topicsCollection) this.topicsCollection = new App.Collections.Topics;
-			this.topicsCollection.params = { org:getDivision(), year:startYear+'-'+endYear };
 			this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
-			this.topicsCollection.fetch();		
+			this.topicsCollection.load({ org:getDivision(), year:startYear+'-'+endYear });		
 		}	
 	},
 	renderPrograms: function() {

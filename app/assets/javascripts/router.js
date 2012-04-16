@@ -16,21 +16,15 @@ var AppRouter = Backbone.Router.extend({
 		this.load();		
 	},
 	programsTopics: function(pge,params) {
-		App.views = {
-			'dashboardProgramsTopics': { el:$("#tab_programs"), pge:pge, params: this.processParams(params) },
-		};
+		App.views['dashboardProgramsTopics'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
 		this.load();
 	},
 	programsAwards: function(pge,params) {
-		App.views = {
-			'dashboardProgramsAwards': { el:$("#tab_programs"), pge:pge, params: this.processParams(params) },
-		};
+		App.views['dashboardProgramsAwards'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
 		this.load();
 	},
 	programsDetails: function(nsf_id,params) {
-		App.views = {
-			'dashboardProgramsAwardsDetails': { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) },
-		};
+		App.views['dashboardProgramsAwardsDetails'] = { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) };
 		this.load();
 	},
 	division: function() {

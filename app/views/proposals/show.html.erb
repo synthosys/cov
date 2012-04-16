@@ -75,8 +75,6 @@ end
 </div><!-- /tabbable -->
 
 <script type="text/Javascript">
-App.views = {
-	'ShowProposal': { el:$("#main"), id: <%= @proposal.id %> },
-};
+App.views['ShowProposal'] = { el:$("#main"), id: <%= @proposal.id %> };
 </script>
 
