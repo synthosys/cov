@@ -70,6 +70,7 @@
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
                 %li= link_to "Programs", dashboard_index_path(:anchor => "programs")
+                %li= link_to "Research Topics", topics_index_path(:anchor => "topics")
             - else
               %li= link_to "Home", pages_home_path
           %ul.nav.pull-right
