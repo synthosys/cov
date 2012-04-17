@@ -51,7 +51,6 @@ App.Views.dashboardProgramsAwards = Backbone.View.extend({
 	renderList: function(data) {
 		$('div#loader', this.el).html('');
 		
-//console.log(data);		
 		var aaData = _.map(data.models, function(v) { 
 			return [
 				v["attributes"]["proposal"]["nsf_id"],
@@ -62,7 +61,6 @@ App.Views.dashboardProgramsAwards = Backbone.View.extend({
 				v["attributes"]["proposal"]["title"],
 			]; 
 		});
-//console.log(aaData);
 
 		var oTable = $("#awards_table", this.el).dataTable({
 			//TableTools - copy, csv, print, pdf
@@ -121,6 +119,5 @@ App.Views.dashboardProgramsAwards = Backbone.View.extend({
 				"sSearch": "Keyword Filter:"
 			}
 		});
-//console.log($(this.el).html());
 	}
 });

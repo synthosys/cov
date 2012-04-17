@@ -4,25 +4,8 @@
 	</div>
 	<table class="table table-striped table-bordered table-condensed" id="proposals_table">
 	</table>
-	<script type="text/template" id="template_proposals_listitem">
-	<td>
-		<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a> - 
-		{{title}}
-	</td>
-	<td>{{users}}</td>
-	<td>
-		<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i> Show</a><br />
-		<% if can? :manage, :assignDivisionCan %>
-			<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i> Edit</a><br />
-			<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
-			<a href="#" id="proposals_remove_{{id}}"><i class="icon-remove"></i> Remove</a>			
-		<% else %>
-			<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i> Remove</a>
-		<% end %>
-	</td>
-	</script>
 	<script type="text/Javascript">
-	App.views['ListProposal'] = { el:$("#proposals_table"), division:'<%= current_user.division %>', allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 400 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true } }") else "{}" end %> };
+	App.views['ListProposal'] = { el:$("#proposals_table"), division:'<%= current_user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 400 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true } }") else "{}" end %> };
 	</script>
 <% else %>
 
@@ -55,7 +38,10 @@ panels = ActiveSupport::JSON.decode(proposal.panels)
 				<td><%= details['status']['date'] %></td>
 				<td><%= details['status']['name']=="award"?"#{number_to_currency(details['awarded']['dollar']/1000,:precision=>0)}K": "(declined)"; %></td>
 				<td>
-					<%= time_ago_in_words proposal.associations[0].lastviewed unless proposal.associations[0].lastviewed.nil? %>
+					<% my_a = proposal.associations.select{|a| a.user_id == current_user.id} %>
+					<% if my_a %>
+					<%= "#{time_ago_in_words my_a[0].lastviewed} ago" unless my_a[0].lastviewed.nil? %>
+					<% end %>
 				</td>
 				<td>
 					<% panels.each do |panel| %>

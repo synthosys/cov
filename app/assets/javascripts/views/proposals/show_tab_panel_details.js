@@ -1,13 +1,10 @@
 App.Views.ShowPanelDetails = Backbone.View.extend({
 	initialize: function() {
-//console.log(this.options);
 		$(this.el).html(this.options.html);
 	},
 	render: function(compiledpanel,topics) {
-//console.log(html);		
 		//compile template
 		var compiled = _.template($("#template_panel_details", this.el).html());
-//console.log(compiled);
 
 		var data = {};
 		data.nsf_id = compiledpanel.panel.nsf_id;
@@ -58,7 +55,6 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
 				tmp.inst = reviewer.inst.name;
 				tmp.inst += reviewer.inst.dept?'<br />Dept.: '+reviewer.inst.dept:'';
-//console.log(reviewer.inst.flag);
 				var classification = '';
 				/*if (reviewer.inst.flag) {
 					_.each(reviewer.inst.flag, function(flag) {
@@ -116,8 +112,8 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				tmp.t = t[0];
 				tmp.icon = '';
 				if (icon) tmp.icon = '<i class="icon-'+icon+'"></i>';
-				tmp.words = self.legend_topics[t[0]]["words"];
-				tmp.label = self.legend_topics[t[0]]["label"];
+				tmp.words = App.legend_topics[t[0]]["words"];
+				tmp.label = App.legend_topics[t[0]]["label"];
 				tmp.count = t[1];
 				topics_compiled.push(template(tmp));
 			});
@@ -135,7 +131,6 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
         data.addColumn('number', 'Female');
         data.addRows([['',males.length, females.length]]);
 
-//console.log($(renderto, this.el).get(0));
         var chart = new google.visualization.ColumnChart(document.getElementById(renderto));
 		var option = {
 		  width: 200,
@@ -144,7 +139,6 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
         chart.draw(data,option);		
 	},
 	renderReviewerInstitutionClassification: function(data) {
-//console.log(data);		
 		//group by classification
 		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["flag"]) return row["inst"]["flag"]; });
 
@@ -178,10 +172,8 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 		else return '';
 	},
 	renderReviewerLocationMap: function(data,map_renderto) {
-//console.log(data);
 		//group by state
 		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["state"]) return row["inst"]["state"]; });
-	//console.log(grouped);			
 		//now put it together
 		var collated = [];
 		for (var key in grouped) {
@@ -190,16 +182,12 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 			//add up the totals
 			if (count>0 && App.states[key]) collated.push([App.states[key],count]);
 		}
-	//console.log(collated);			
-	//console.log('drawing chart');
 		var data = new google.visualization.DataTable();
 		data.addRows(collated.length);
 		data.addColumn('string', 'State');
 		data.addColumn('number', 'Researchers');
 		//data.addRows(collated);
 		_.each(collated, function(value,key) {
-	//console.log(key)
-	//console.log(value);		
 			data.setValue(key,0,value[0]);
 			data.setValue(key,1,value[1]);
 		});
@@ -248,12 +236,10 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 						reviewers[i]['inst']['address'] = '';
 						if (org && org['address']) reviewers[i]['inst']['address'] = org['address'];
 					}
-//console.log(reviewers);
 					//cool, now group by country
 					var grouped = _.groupBy(reviewers,function(row) {
 						if (typeof(row["inst"]["address"]["country"])!="undefined") return row["inst"]["address"]["country"]; 
 					});
-//console.log(grouped);			
 					//now put it together
 					var collated = [];
 					for (var key in grouped) {
@@ -265,7 +251,6 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 					collated = _.sortBy(collated,function(row) { return row[1]; }).reverse();
 					var list = [];
 					_.each(collated, function(value,key) {
-//console.log(value[0]);						
 						if (value[0]!='undefined') {
 							list.push('<img src="'+baseURI+'/assets/blank.gif" class="flag flag-'+value[0].toLowerCase()+'" /> '+value[0]+' ('+value[1]+')');							
 						}

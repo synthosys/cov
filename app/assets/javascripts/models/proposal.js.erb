@@ -1,16 +1,22 @@
 var Proposal = Backbone.Model.extend({
 	urlRoot: baseURI+"/proposals",
-	extractData: function() {
-		//return json version of the data
-		var proposal = this.toJSON();
-//console.log(proposal);		
-		this.details_parsed = $.parseJSON(proposal.details);
-		this.researchers_parsed = $.parseJSON(proposal.researchers);
-		this.topics_parsed = $.parseJSON(proposal.topics);
-		this.panels_parsed = $.parseJSON(proposal.panels);
-		this.reviewers_parsed = $.parseJSON(proposal.reviewers);
-		this.reviewerproposals_parsed = $.parseJSON(proposal.reviewerproposals);	
-//console.log(this.attributes);		
+	initialize: function() {
+		this.extract(this.toJSON());
+	},
+	parse: function(response) {
+//console.log(response);		
+		this.extract(response);
+		return response;
+	},
+	extract: function(proposal) {
+		if (proposal) {
+			this.details_parsed = $.parseJSON(proposal.details);
+			this.researchers_parsed = $.parseJSON(proposal.researchers);
+			this.topics_parsed = $.parseJSON(proposal.topics);
+			this.panels_parsed = $.parseJSON(proposal.panels);
+			this.reviewers_parsed = $.parseJSON(proposal.reviewers);
+			this.reviewerproposals_parsed = $.parseJSON(proposal.reviewerproposals);				
+		}
 	},
 	//getters for the more embedded attributes
 	title: function() {
@@ -29,20 +35,18 @@ var Proposal = Backbone.Model.extend({
 			else return '';
 		} else return "(declined)";
 	},
-	lastviewed: function() {
+/*	lastviewed: function() {
 		var associations = this.associations();
 		if (associations.length>0 && associations[0].lastviewed) return $.timeago(associations[0].lastviewed);
 		else return '';
-	},
+	}, */
 	panels_raw: function() {
 		return this.panels_count()>0 ? this.panels_parsed : [];
 	},
 	assigned_users: function() {
-//console.log(this.users);		
 		return this.get('users') ? this.get('users') : [];		
 	},
 	associations: function() {
-//console.log(this.associations);		
 		return this.get('associations') ? this.get('associations') : [];		
 	},
 	researchers_count: function() {
@@ -59,53 +63,5 @@ var Proposal = Backbone.Model.extend({
 	},
 	reviewer_proposals_count: function() {
 		return this.reviewerproposals_parsed ? this.reviewerproposals_parsed.length : 0;
-	},
-	prepareData: function(allowedit,user_id) {
-		//returns as an array, datatable ready
-		this.extractData();
-		var nsf_id = this.get('nsf_id');
-		var division = this.get('division');
-		var title = '<a href="'+baseURI+'/proposals/'+this.id+'">'+nsf_id+'</a> - '+this.title();
-		var date = this.status_date();
-		if (this.status()=="award") var amount = this.amount(); else var amount = "(declined)";			
-		var tmp = [];
-		var panels = this.panels_raw();
-		_.each(panels, function(panel) {
-			tmp.push(panel["nsf_id"]+' - '+panel["name"]+' ('+panel["officer"]+')');
-		});
-		var panels = tmp.join('<br />');		
-		var assigned = [];
-		var users = this.assigned_users();
-//console.log(this.attributes);		
-//console.log(users);	
-		var self = this;
-		_.each(users, function(user) {
-			assigned.push('<i class="icon-user"></i> <a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a> (<a href="#" id="proposals_unassign_'+self.id+'-'+user.id+'">Remove</a>)');
-		});
-		assigned = assigned.join('<br />');
-		//associations - last viewed
-		var lastviewed = [];
-		var associations = this.associations();
-		associations = _.sortBy(associations, function(association){ association.lastviewed; });
-//console.log(associations);				
-		_.each(associations, function(association) {
-//console.log(association.lastviewed);					
-			if (association.lastviewed) lastviewed.push(association.lastviewed);
-		});
-		lastviewed = _.last(lastviewed)?_.last(lastviewed):''; //.join('<br />');
-//console.log(col6);					
-		var actions = '';
-		actions += '<a href="'+baseURI+'/proposals/'+this.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
-//console.log(html);							
-		if (allowedit) {
-			actions += '<a href="'+baseURI+'/proposals/'+this.id+'/edit"><i class="icon-pencil"></i>Edit</a>';
-			actions += '<a href="#" id="proposals_remove_'+this.id+'"><i class="icon-remove"></i>Remove</a>';
-			actions += '<a href="#" id="proposals_refresh_'+this.id+'"><i class="icon-refresh"></i>Refresh</a>';
-		} else if (user_id) {
-			actions += '<a href="#" id="proposals_unassign_'+this.id+'-'+user_id+'"><i class="icon-remove"></i>Remove</a>';
-		}
-		//title, date, amount, panels, assigned users, lastviewed, actions
-		//return [col1, col2, col3, col4, col5, col6, col7]; //datatable ready
-		return { "id": this.id, "nsf_id": nsf_id, "division": division, "title": title, "date": date, "amount": amount, "panels": panels, "assigned": assigned, "lastviewed": lastviewed, "actions": actions };
 	}
 });

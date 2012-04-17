@@ -11,7 +11,6 @@ App.Views.programsFunding = Backbone.View.extend({
 		var renderTableTo = $('#'+this.options.tableid, this.el);
 		var oTable = renderTableTo.dataTable();
 		var settings = oTable.fnSettings();
-//console.log(settings);
 		//let's see what we're sorting by
 		var sorts = settings.aaSorting;
 		if (sorts.length>0) {
@@ -25,7 +24,6 @@ App.Views.programsFunding = Backbone.View.extend({
 		}
 		//number of items
 		numItems = settings['_iDisplayLength'];
-//console.log(dataAttribute+' '+sortBy+' '+sortOrder+' '+numItems+' '+title);		
 		//render
 		this.renderGraph(dataAttribute,sortBy,sortOrder,numItems,title);
 	},
@@ -106,7 +104,6 @@ App.Views.programsFunding = Backbone.View.extend({
 		data = _.sortBy(data, function(row) {
 			return (sortOrder=='desc')?-self.findAttribute(sortBy,row):self.findAttribute(sortBy,row);
 		});
-//console.log(data);		
 
 		//now prepare chart data
 		var chartData = [];
@@ -129,7 +126,6 @@ App.Views.programsFunding = Backbone.View.extend({
 			years = _.sortBy(years, function(year) { return year; });
 			//assemble a data array that looks like [[pge, year_1_value, year2_value],[pge, year_1_value, year2_value]]
 			_.each(data, function(row) {
-	//console.log(row.years);			
 				var item = [];
 				item.push('p'+row.pge);
 				_.each(years, function(year) {
@@ -142,7 +138,6 @@ App.Views.programsFunding = Backbone.View.extend({
 		//now take only the top x
 		//chartData = _.first(chartData,numItems);
 		
-//console.log(chartData);		
 		//now we're ready to display the chart!
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'PGE');
@@ -155,7 +150,6 @@ App.Views.programsFunding = Backbone.View.extend({
 		}
         data.addRows(chartData);
 
-//console.log($(renderto, this.el).get(0));
         var chart = new google.visualization.BarChart(document.getElementById(this.options.graphid));
 		var option = {
 		  height: chartData.length*30,

@@ -113,16 +113,20 @@
     };
     App.init();
   });
+  </script>
 
+%script(type="text/javascript")
   function getDivision(){
-   return '#{current_user.division}';
+  - if user_signed_in?
+    return '#{current_user.division}';
+  - else
+    return '';
   }
 
   function getStartYear(){
-   return '#{GLOBAL["dashboard_start_year"]}';
+  return '#{GLOBAL["dashboard_start_year"]}';
   }
 
   function getEndYear(){
-   return '#{GLOBAL["dashboard_end_year"]}';
+  return '#{GLOBAL["dashboard_end_year"]}';
   }
-  </script>

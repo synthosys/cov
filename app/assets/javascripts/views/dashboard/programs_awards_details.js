@@ -18,7 +18,6 @@ App.Views.dashboardProgramsAwardsDetails = Backbone.View.extend({
 	gotoAwards: function(e) {
 		e.preventDefault();
 
-//console.log(this.options.params);
 		var pge = this.options.params['pge'];
 		var year = this.options.params['year'];
 		App.app_router.navigate('programs/awards/'+pge+'/?year='+year, {trigger: true});
@@ -29,7 +28,6 @@ App.Views.dashboardProgramsAwardsDetails = Backbone.View.extend({
 		$('div#details_loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading details");
 		$('div#researchers_loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading researchers");
 		$.getJSON(apiurl+'prop?id=' + this.options.nsf_id + '&jsoncallback=?', function(data) {
-//console.log(data["data"]);
 			var template = _.template('<h4>Award ID: {{nsf_id}}</h4><div><p><strong>Title: </strong>{{title}}</p><p><strong>Abstract Text:</strong>{{abstract}}</p><p><strong>NSF Division: </strong>{{org.full}} (<strong>{{org.name}}</strong>)</p></div>');
 			var html = template(data["data"][0]);
 			$("#award_details", self.el).html(html);

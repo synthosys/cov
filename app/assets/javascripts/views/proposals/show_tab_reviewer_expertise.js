@@ -1,14 +1,10 @@
 App.Views.ShowReviewerExpertise = Backbone.View.extend({
 	initialize: function() {
-//console.log(this.options);
 		$(this.el).html(this.options.html);
-//console.log($(this.el));
 	},
 	render: function(compiledpanel,topics,topicrelevance) {
-//console.log('rendering');		
 		//compile template
 		var compiled = _.template($("#template_reviewer_expertise", this.el).html());
-//console.log(compiled);
 
 		var data = {};
 		
@@ -21,13 +17,10 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		data.topics = this.renderReviewerExpertiseTopicsList(topics);
 		data.venn = this.renderReviewerExpertiseTopicsVenn(topics);
 
-//console.log(data);		
 		return compiled(data);
 	},
 	renderReviewerExpertiseTopicsList: function(data) {
 		//list
-//console.log($("#template_reviewer_expertise_topics", el).html());		
-
 		var compiled = _.template($("#template_reviewer_expertise_topics", this.el).html());
 		return compiled(data);
 	},
@@ -37,11 +30,9 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 		return compiled(data);		
 	},
 	getReviewerExpertiseTopics: function(topicrelevance,topics) {
-//console.log(topics);		
 		var data = {};
 		data.proposal_topics_count = _.size(topics);
 		var proposaltopics = this.topics;
-//console.log(proposaltopics);			
 		//all topics in this proposal as well, we need to show it in the venn
 		data.topics_proposal_count = proposaltopics.length;
 		data.topics_proposal_ids = '';			
@@ -68,7 +59,6 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 			_.each(topics,function(topic,t) {
 				paneltopicids.push(t);
 			});
-//console.log(paneltopicids);			
 			//common
 			var common_topicids = _.intersection(paneltopicids,proposaltopics);
 			common_topicids = _.reject(common_topicids, function(t) { return (t=="0"); });
@@ -119,7 +109,6 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 					topics_reviewers[topicid]['count'] = 0;
 					if (topics[topicid]) topics_reviewers[topicid]['count'] = topics[topicid]['count'];
 				});
-	//console.log(topics_reviewers);			
 				data.topics_reviewers = this.renderPanelTopicListItems(topics_reviewers,null).join("\n");
 			} else {
 				data.topics_reviewers = '<tr><td colspan="2"><div class="alert">No topics</div></td></tr>';
@@ -150,8 +139,8 @@ App.Views.ShowReviewerExpertise = Backbone.View.extend({
 				tmp.t = t[0];
 				tmp.icon = '';
 				if (icon) tmp.icon = '<i class="icon-'+icon+'"></i>';
-				tmp.words = self.legend_topics[t[0]]["words"];
-				tmp.label = self.legend_topics[t[0]]["label"];
+				tmp.words = App.legend_topics[t[0]]["words"];
+				tmp.label = App.legend_topics[t[0]]["label"];
 				tmp.count = t[1];
 				topics_compiled.push(template(tmp));
 			});

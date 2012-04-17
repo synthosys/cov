@@ -1,11 +1,9 @@
 App.Collections.Topics = Backbone.Collection.extend({
 	model: Topic,
 	url: function() { 
-//console.log(this.params);		
 		var params = _.map(this.params, function(param,key) {
 			return key+'='+param;
 		});
-//console.log(params);		
 		return apiurl+'topic?'+params.join('&')+'&jsoncallback=?'; 
 	},
 	parse: function(data) {
@@ -19,21 +17,15 @@ App.Collections.Topics = Backbone.Collection.extend({
 		years = _.uniq(years);
 		
 		//prepare data
-//console.log(topicrelevance);		
 		//group by t
 		var grouped = _.groupBy(rawdata,function(row) { return row[topicrelevance]; });
-//console.log(grouped);	
-	//console.log(legend_topics);
 		//now assemble
 		var collated = [];
 		for (var t in grouped) {
-	//console.log(grouped[t]);	
 			if (t!='undefined') {
-//console.log(t);
 				var topicid = t;
 				//now reduce
 				var tmp = _.reduce(grouped[t],function(memo,row) {
-	//console.log(topicid);			
 					//words and labels
 					if (!App.legend_topics[topicid]["label"]) var label = 'Not Electronically Readable';
 					else var label = App.legend_topics[topicid]["label"];
@@ -82,7 +74,6 @@ App.Collections.Topics = Backbone.Collection.extend({
 				collated.push(tmp);				
 			}
 		}
-//console.log(collated);
 		return collated;
 	},
 	load: function(params) {
@@ -112,11 +103,9 @@ App.Collections.Topics = Backbone.Collection.extend({
 	gatherData: function(topicrelevance) {
 		//the collection with the loaded data gets passed in
 		var data = this.toJSON();
-//console.log(data);
 
 		var topicids = _.pluck(data,'t');
 		this.loaded_topicids = this.loaded_topicids.concat(topicids);
-//console.log(this.loaded_topicids);		
 		//make a list of unique years
 		var years = [];
 		_.each(data, function(row) {
@@ -130,21 +119,16 @@ App.Collections.Topics = Backbone.Collection.extend({
 		this.loaded_years = this.loaded_years.concat(years);
 		this.topicsbyrelevance['t'+topicrelevance.toString()] = data;
 		this.currentlyloading++;
-//console.log(this.currentlyloading);		
 		if (this.currentlyloading<=4) {
 			this.loadData(this.currentlyloading);
 		} else {
-//console.log(this.topicsbyrelevance);		
 			var self = this;
-//console.log(_.uniq(this.loaded_topicids));			
 			//using the unique list of retrieved topic ids
 			_.each(_.uniq(this.loaded_topicids), function (topicid) {
 				var tmp = {t:topicid, label:null, words:null};				
 				//for each relevance
 				_.each([1,2,3,4], function(topicrelevance) {
 					topicrelevance = 't'+topicrelevance.toString();
-//console.log(topicrelevance);					
-//console.log(self.topicsbyrelevance[topicrelevance]);					
 					var topic = _.find(self.topicsbyrelevance[topicrelevance], function(topic) { return topic.t==topicid });
 					if (!tmp.label && !tmp.words && topic) {
 						tmp.label = topic.label;
@@ -154,7 +138,6 @@ App.Collections.Topics = Backbone.Collection.extend({
 				});
 				self.loaded_topics.push(tmp);
 			});
-//console.log(this.loaded_topics);			
 			for (var i=0;i<this.loaded_topics.length;i++) {
 				var row = this.loaded_topics[i];
 				//collate by year

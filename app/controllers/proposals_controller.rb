@@ -7,7 +7,11 @@ class ProposalsController < ApplicationController
   def index
     if can? :create, User
       # like accessible_by -- show only proposals we have access to 
-      @proposal = Proposal.all(:include => [:associations]).select { |prop| can? :update, prop }
+      if params[:nsf_id]
+        @proposal = Proposal.where(:nsf_id => params[:nsf_id]).all(:include => [:users, :associations]).select { |prop| can? :update, prop }
+      else 
+        @proposal = Proposal.all(:include => [:users, :associations]).select { |prop| can? :update, prop }
+      end
     else
       # This one is weird... improve it
       @proposal = Proposal.all :include => [:users, :associations], :conditions => ["users.id = ?", current_user]
@@ -96,7 +100,8 @@ class ProposalsController < ApplicationController
 
     respond_to do |format|
       if @proposal.update_attributes(params[:proposal])
-        format.html { redirect_to @proposal, notice: 'Proposal was successfully updated.' }
+        #format.html { redirect_to @proposal, notice: 'Proposal was successfully updated.' }
+        format.html { redirect_to :action => :index }
         format.json { head :no_content } #don't send back :ok, it borks the front-end as it includes a single space which makes the json reply invalid and throws an error
       else
         format.html { render action: "edit" }

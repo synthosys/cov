@@ -26,27 +26,6 @@
 <table class="table table-striped table-bordered table-condensed" id="proposals_table">
 </table>
 
-<script type="text/template" id="template_proposals_listitem">
-<td>
-	<a href="{{baseURI}}/proposals/{{id}}">{{nsf_id}}</a> - 
-	{{title}}
-</td>
-<td>{{date}}</td>
-<td>{{amount}}</td>
-<td>{{lastviewed}}</td>
-<td>{{panels}}</td>
-<td class="proposal-actions">
-	<a href="{{baseURI}}/proposals/{{id}}"><i class="icon-zoom-in"></i>Show</a><br />
-	<% if can? :manage, :assignDivisionCan %>
-		<a href="{{baseURI}}/proposals/{{id}}/edit"><i class="icon-pencil"></i>Edit</a><br />
-	<% end %>
-	<a href="#" id="proposals_unassign_{{id}}"><i class="icon-remove"></i>Remove</a>
-	<% if can? :manage, :assignDivisionCan %>
-		<a href="#" id="proposals_refresh_{{id}}"><i class="icon-refresh"></i> Refresh</a><br />
-	<% end %>
-</td>
-</script>
-
 <script type="text/Javascript">
-App.views['ShowUser'] = { el:$("#main"), user_id:'<%= @user.id %>', division:'<%= @user.division %>', useDataTables: true, columns: { "title": { "sWidth": "300", "bSortable": false }, "date" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "amount" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "panels" : { "sWidth": "200", "bSearchable": true, "bVisible": true, "bSortable": false }, "assigned" : { "bSearchable": false, "bVisible": false } }, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> };
+App.views['ShowUser'] = { el:$("#main"), user_id:'<%= @user.id %>', division:'<%= @user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, columns: { "title": { "sWidth": "300", "bSortable": false }, "date" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "amount" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "panels" : { "sWidth": "200", "bSearchable": true, "bVisible": true, "bSortable": false }, "assigned" : { "bSearchable": false, "bVisible": false } }, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> };
 </script>

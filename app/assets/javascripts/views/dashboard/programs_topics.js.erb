@@ -43,7 +43,6 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			alert('Pick an appropriate date range');
 			return;
 		}
-//console.log('loading...');
 		
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
 
@@ -57,7 +56,6 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		$('div#loader', this.el).html('');
 		
 		//prepare for datatable data - conv to array
-//console.log(this.collection.loaded_topics);
 		var self = this;
 		var data = _.map(this.collection.loaded_topics, function(row) {
 			var topicid = row.t;
@@ -72,14 +70,12 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 					//read the topic weight input
 					var el = $('input#'+topicrelevance, self.el);
 					var weight = (el&&el.val())?el.val():'0';
-//console.log(weight);					
 					topic_weightedprevalence += (tmp*weight);					
 				}
 			});
 			//return it
 			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress};
 		});
-//console.log(data);		
 
 		//columns
 		var self = this;
@@ -138,7 +134,6 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			});
 		}
 		
-//console.log('drawing');
 		$('#topics_table', this.el).dataTable({
 			"bDestroy": true,
 			"bJQueryUI": true,
@@ -148,10 +143,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
 		});
-//console.log($(this.el).html());
 	},
 	formatFunding: function(funding) {
-	//console.log(funding);
 		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(2)+'M';
 		else return '';
 	}

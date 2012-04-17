@@ -13,7 +13,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			var renderTableTo = $('#'+this.options.tableid, this.el);
 			var oTable = renderTableTo.dataTable();
 			var settings = oTable.fnSettings();
-	//console.log(settings);
 			//let's see what we're sorting by
 			var sorts = settings.aaSorting;
 			if (sorts.length>0) {
@@ -24,7 +23,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			}
 			//number of items
 			numItems = settings['_iDisplayLength'];
-//console.log(sortBy+' '+sortOrder+' '+numItems+' '+title);		
 			//render
 			this.renderGraph(sortBy,sortOrder,numItems,title);			
 		}
@@ -37,7 +35,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		//data
 		//set computed values
 		data = this.prepareData(this.options.data);
-//console.log(data);		
 		//columns
 		var columns = [
 			{
@@ -82,7 +79,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			});
 			sorting = [3, 'desc'];
 		}
-//console.log(columns);		
 		//data table
 		if (App.isDataTable(this.options.tableid)) {
 			var oTable = renderTableTo.dataTable();
@@ -112,7 +108,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		data = _.sortBy(data, function(row) {
 			return (sortOrder=='desc')?-self.findAttribute(sortBy,row):self.findAttribute(sortBy,row);
 		});
-//console.log(data);		
 
 		//now prepare chart data
 		var chartData = [];
@@ -123,14 +118,12 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		//now take only the top x
 		chartData = _.first(chartData,numItems);
 		
-//console.log(chartData);		
 		//now we're ready to display the chart!
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Topic');
 		data.addColumn('number', 'Growth');
         data.addRows(chartData);
 
-//console.log($(renderto, this.el).get(0));
         var chart = new google.visualization.BarChart(document.getElementById(this.options.graphid));
 		var option = {
 		  height: chartData.length*30,
