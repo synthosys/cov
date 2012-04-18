@@ -5,32 +5,27 @@ App.Views.ListProposal = Backbone.View.extend({
 		"click a[id^=proposals_unassign]": "unassignProposal"
 	},
 	initialize: function() {
-		_.bindAll(this, 'addOne', 'addAll');
+		_.bindAll(this, 'addOne', 'render');
 		
 		this.collection = new App.Collections.Proposals();
 		this.collection.bind('add', this.addOne);
-		//this.collection.bind('refresh', this.addAll);
-		this.collection.bind('reset', this.addAll);
-		this.collection.bind('all', this.render);	
+		this.collection.bind('reset', this.render);
 		
-		this.getProposals();
+		//initialize with bootstrapped data
+		this.collection.reset(this.options.proposals);
 	},
 	addOne: function(proposal) {
-//		var proposal = new App.Views.ListItemProposal({model: proposal})
-//		$(this.el).append(proposal.render().el);
 		//add to the datatable
-		$(this.el).dataTable().fnAddData( proposal.prepareData(this.options.allowEdit,this.options.user_id) );
+		$(this.el).dataTable().fnAddData( this.prepareData(proposal,this.options.allowEdit,this.options.user_id) );
 	},
-	addAll: function() {
+	render: function() {
 		$('tbody', $(this.el)).empty();
 		//we're using data tables!
 		var aaData = [];
-//console.log(this.collection.models);			
 		var self = this;
 		_.each(this.collection.models,function(proposal) {
-			aaData.push(proposal.prepareData(self.options.allowEdit,self.options.user_id));
+			aaData.push(self.prepareData(proposal,self.options.allowEdit,self.options.user_id));
 		});
-//console.log(aaData);			
 		//prepare columns to be displayed
 		//this is the default list proposals page view
 		//any other view that wants to use can pass in the custom column params
@@ -90,6 +85,16 @@ App.Views.ListProposal = Backbone.View.extend({
 				"bUseRendered": false,
 				"mDataProp": "lastviewed"
 			},
+			{
+				"sTitle": "Last Updated",
+				"fnRender": function( oObj ) {
+					if (oObj.aData.lastupdated) return $.timeago(oObj.aData.lastupdated);
+					else return '';
+				},
+				"bUseRendered": false,
+				"bVisible": false,
+				"mDataProp": "lastupdated"
+			},
 			{ 
 				"sTitle": "Actions",
 				"sClass": "proposal-actions",
@@ -110,7 +115,6 @@ App.Views.ListProposal = Backbone.View.extend({
 				}
 			}
 		}
-//console.log(aoColumns);			
 		$(this.el).dataTable({
 			"bDestroy":true,
 			"bJQueryUI": true,
@@ -124,29 +128,19 @@ App.Views.ListProposal = Backbone.View.extend({
 	addProposal: function(proposal) {
 		this.collection.add(proposal);
 	},
-	getProposals: function() {
-		//make sure you get using json
-		if (this.options.user_id) var url = this.collection.url+'/user/'+this.options.user_id+'.json';	
-		else var url = this.collection.url+'.json';	
-		this.collection.fetch({url: url});		
-	},
 	updateProposal: function(proposal) {
 		//do we need to update the collection? is it updated automatically when the model is saved? not sure about this
 		//update the row in the datatable
 		var oTable = $(this.el).dataTable();
 		var index = oTable.fnFindCellRowIndexes(proposal.id, "id");
-//console.log(proposal.prepareData(this.options.allowEdit,this.options.user_id));		
-		if (index!=-1) oTable.fnUpdate( proposal.prepareData(this.options.allowEdit,this.options.user_id), index[0], 0 ); // Row
+		if (index!=-1) oTable.fnUpdate( this.prepareData(proposal,this.options.allowEdit,this.options.user_id), index[0], 0 ); // Row
 	},
 	clearProposal: function(proposal) {
-//console.log(proposal);		
-		//remove from collection - is this removed automatically when the model is destroyed? not sure
-		//update - not is not! you have to remove it
+		//remove from collection
 		this.collection.remove(proposal);		
 		//remove from datatable
 		var oTable = $(this.el).dataTable();
 		var index = oTable.fnFindCellRowIndexes(proposal.id, "id");
-//console.log(index);		
 		if (index!=-1) oTable.fnDeleteRow( index[0] ); // Row		
 	},
 	removeProposal: function(e) {
@@ -157,7 +151,6 @@ App.Views.ListProposal = Backbone.View.extend({
 		var id = $(e.currentTarget).attr('id').split('_').pop();
 		//load proposal
 		var proposal = this.collection.get(id); //new Proposal({ id: id });
-//console.log(proposal);		
 		var self = this;
 		proposal.destroy({
 			success: function(model, response) {
@@ -176,13 +169,14 @@ App.Views.ListProposal = Backbone.View.extend({
 
 		$(e.currentTarget).after('<div id="loadstatus_'+id+'"><div class="alert" id="text_'+id+'"></div></div>');
 		var load_elem = $('div#loadstatus_'+id);
-//console.log(load_elem);		
 		$("div#text_"+id, load_elem).html('Refreshing...');
 		
 		//refresh proposal data
-		var loadProposalView = new App.Views.LoadProposal({ el:load_elem, prop_id:id }); //already a jquery object
+		if (!this.loadProposalView) this.loadProposalView = new App.Views.LoadProposal;
+		this.loadProposalView.options.el = load_elem;
+		this.loadProposalView.options.prop_id = id;
 
-/* loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+/* this.loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
 		return; */ //uncomment this to run in test mode
 				
 	    // Check to see if we have access to nsfstarmetrics server 
@@ -194,10 +188,9 @@ App.Views.ListProposal = Backbone.View.extend({
 		      dataType: 'JSONP',
 		      timeout: 500,
 		      success: function(data) {
-		        //console.log(data);
 		        proposalaccessallowed = true;
 		        apiurl = "http://128.150.10.70/py/api/";
-				loadProposalView.loadProposalData([proposal.get("nsf_id")],self.options.division,self,'respondToRefresh');
+				self.loadProposalView.loadProposalData([proposal.get("nsf_id")],self.options.division,self,'respondToRefresh');
 		      },
 		      error: function(x,t,m) {
 				alert('You must be connected to the NSF network to refresh proposal data');
@@ -205,11 +198,11 @@ App.Views.ListProposal = Backbone.View.extend({
 		      }
 			});
 		} else {
-				if (!proposalaccessallowed) {
-					alert('You must be connected to the NSF network to refresh proposal data');
-					$(load_elem).remove();
-				}
-				else loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
+			if (!proposalaccessallowed) {
+				alert('You must be connected to the NSF network to refresh proposal data');
+				$(load_elem).remove();
+			}
+			else this.loadProposalView.loadProposalData([proposal.get("nsf_id")],this.options.division,this,'respondToRefresh');
 		}		
 	},
 	respondToRefresh: function(status,loaded_data) {
@@ -217,13 +210,8 @@ App.Views.ListProposal = Backbone.View.extend({
 			//save and update collection
 			var self = this;
 			_.each(loaded_data, function(proposal_data,nsf_id) {
-//console.log(proposal_data);								
-//console.log(nsf_id);				
 				var foundproposals = self.collection.filterbyid([nsf_id.toString()]);
-//console.log(foundproposals);				
 				var proposal = foundproposals.first();
-//console.log(proposal);				
-//console.log(tmp);	
 				var load_elem = 'div#loadstatus_'+proposal.id;				
 				proposal.save({ 
 					proposal: {
@@ -262,41 +250,83 @@ App.Views.ListProposal = Backbone.View.extend({
 		var id = tmp.split('-')[0];
 		var user_id = tmp.split('-')[1];
 		
+		//this applies to when we're looking at proposals for a particular user but we do it generally
+		//instead of using what we already have, we have to retrieve it again because Rails
+		//isn't giving me back all the users who were assigned, only the one that we're looking at
+		//this will break the unassignment process so first we have to get the proposal in its current state
+		//this seems pointless, need to look to see how to avoid this
 		//load proposal
 		var proposal = new Proposal({ id: id });
 		var self = this;
 		proposal.fetch({
 			success: function(model,response) {
-//console.log(model);	
 				//change assignments, simply remove the current user
 				var assigned_users = model.get("users");
-//console.log(assigned_users);		
 				//get current assignments
 				var assigned_user_ids = _.map(assigned_users, function(user) {
 					return user.id.toString();
 				});
-//console.log(self.options.user_id);				
-//console.log(assigned_user_ids);				
 				var new_user_ids = [];
 				//remove current user id from this list
-				//if (self.options.user_id) var new_user_ids = _.without(assigned_user_ids, [self.options.user_id]);
 				if (user_id) var new_user_ids = _.without(assigned_user_ids, [user_id]);
-//console.log(new_user_ids);				
 				//post update to server
 				model.save({ proposal: { user_ids: new_user_ids} },{
-					success: function() {
+					success: function(response) {
+//console.log(response);						
 						if (self.options.user_id) self.clearProposal(proposal);
 						else {
-							//get the updated value
-							proposal.fetch({
-								success: function(model,response) {
-									self.updateProposal(model);
-								}
-							});
+							//update the users in the model
+							var tmp = _.filter(assigned_users, function(user) {
+								return $.inArray(user.id.toString(), new_user_ids) != -1;
+							})
+							model.set("users", tmp);
+							self.updateProposal(model);
 						}
 					}
-				});				
+				});
 			}
 		});
+	},
+	prepareData: function(proposal,allowedit,user_id) {
+		//returns as an array, datatable ready
+		var nsf_id = proposal.get('nsf_id');
+		var division = proposal.get('division');
+		var title = '<a href="'+baseURI+'/proposals/'+proposal.id+'">'+nsf_id+'</a> - '+proposal.title();
+		var date = proposal.status_date();
+		if (proposal.status()=="award") var amount = proposal.amount(); else var amount = "(declined)";			
+		var tmp = [];
+		var panels = proposal.panels_raw();
+		_.each(panels, function(panel) {
+			tmp.push(panel["nsf_id"]+' - '+panel["name"]+' ('+panel["officer"]+')');
+		});
+		var panels = tmp.join('<br />');		
+		var assigned = [];
+		var users = proposal.assigned_users();
+		_.each(users, function(user) {
+			assigned.push('<i class="icon-user"></i> <a href="'+baseURI+'/users/'+user.id+'">'+user.name+'</a> (<a href="#" id="proposals_unassign_'+proposal.id+'-'+user.id+'">Remove</a>)');
+		});
+		assigned = assigned.join('<br />');
+		//associations - last viewed
+		var lastviewed = [];
+		var associations = proposal.associations();
+		associations = _.sortBy(associations, function(association){ association.lastviewed; });
+		_.each(associations, function(association) {
+			if (association.lastviewed) lastviewed.push(association.lastviewed);
+		});
+		lastviewed = _.last(lastviewed)?_.last(lastviewed):''; //.join('<br />');
+		var actions = '';
+		actions += '<a href="'+baseURI+'/proposals/'+proposal.id+'"><i class="icon-zoom-in"></i>Show</a><br />';
+		if (allowedit) {
+			actions += '<a href="'+baseURI+'/proposals/'+proposal.id+'/edit"><i class="icon-pencil"></i>Edit</a>';
+			if (user_id) actions += '<a href="#" id="proposals_unassign_'+proposal.id+'-'+user_id+'"><i class="icon-remove"></i>Remove</a>';
+			else actions += '<a href="#" id="proposals_remove_'+proposal.id+'"><i class="icon-remove"></i>Remove</a>';
+			actions += '<a href="#" id="proposals_refresh_'+proposal.id+'"><i class="icon-refresh"></i>Refresh</a>';
+		} else if (user_id) {
+			actions += '<a href="#" id="proposals_unassign_'+proposal.id+'-'+user_id+'"><i class="icon-remove"></i>Remove</a>';
+		}
+		var lastupdated = proposal.get("updated_at");
+		//title, date, amount, panels, assigned users, lastviewed, actions
+		//return [col1, col2, col3, col4, col5, col6, col7]; //datatable ready
+		return { "id": proposal.id, "nsf_id": nsf_id, "division": division, "title": title, "date": date, "amount": amount, "panels": panels, "assigned": assigned, "lastviewed": lastviewed, "lastupdated": lastupdated, "actions": actions };
 	}
 });

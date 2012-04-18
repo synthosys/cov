@@ -34,11 +34,13 @@ class Ability
         @found
       end
       if user.role? "auditor+"
-        can :manage, Program
+        can :manage, Dashboard
+        can :manage, Research
       end
     elsif user.role? :internal
       can :update, User, :id => user.id 
-      can :manage, Program
+      can :manage, Dashboard
+      can :manage, Research
     elsif User.all.length == 0
       can :create, User
     end 

@@ -23,9 +23,11 @@
 //= require ./models/user.js
 //= require ./models/proposal.js
 //= require ./models/topic.js
-//= require ./models/award.js
+//= require ./models/division.js
+//= require ./models/program.js
 //= require ./collections/users.js
 //= require ./collections/proposals.js
 //= require ./collections/topics.js
-//= require ./collections/awards.js
+//= require ./collections/divisions.js
+//= require ./collections/programs.js
 //= require_tree .

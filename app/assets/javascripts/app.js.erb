@@ -54,7 +54,156 @@ var App = {
 	  'WI': 'Wisconsin',
 	  'WY': 'Wyoming'
 	},
+	divisions: {
+	"OCI":"Office of Cyberinfrastructure",
+	"OGC":"Office of the General Counsel",
+	"OIA":"Office of Integrative Activities",
+	"OISE":"Office of International Science and Engineering",
+	"ODI":"Office of Diversity and Inclusion (ODI)",
+	"OLPA":"Office of Legislative & Public Affairs",
+	"ANT":"Antarctic Sciences",
+	"ARC":"Arctic Sciences",
+	"AIL":"Antarctic Infrastructure and Logistics",
+	"PEHS":"Office of Polar Environment, Health and Safety",
+	"A/D":"Front Office",
+	"NSB":"Office of the Assistant Director",
+	"OIG":"Office of the Assistant Director",
+	"MCB":"Division of Molecular & Cellular Biosciences",
+	"DBI":"Division of Biological Infrastructure",
+	"IOS":"Division of Integrative Organismal Systems",
+	"DEB":"Division of Environmental Biology",
+	"EF":"Emerging Frontiers Office",
+	"CCF":"Division of Computing and Communication Foundations",
+	"CNS":"Division of Computer and Network Systems",
+	"IIS":"Division of Information and Intelligent Systems",
+	"DRL":"Division of Research on Learning in Formal and Informal Settings",
+	"DGE":"Division of Graduate Education",
+	"HRD":"Division of Human Resource Development",
+	"DUE":"Division of Undergraduate Education",
+	"CBET":"Division of Chemical, Bioengineering, Environmental, and Transport Systems",
+	"CMMI":"Division of Civil, Mechanical & Manufacturing Innovation",
+	"ECCS":"Division of Electrical, Communications & Cyber Systems",
+	"EEC":"Division of Engineering Education & Centers",
+	"EFRI":"Office of Emerging Frontiers in Research & Innovation",
+	"IIP":"Division of Industrial Innovation & Partnerships",
+	"ENG":"Office of the Assistant Director",
+	"AGS":"Division of Atmospheric and Geospace Sciences",
+	"EAR":"Division of Earth Sciences",
+	"OCE":"Division of Ocean Sciences",
+	"GEO":"Office of the Assistant Director",
+	"AST":"Division of Astronomical Sciences",
+	"CHE":"Division of Chemistry",
+	"DMR":"Division of Materials Research",
+	"DMS":"Division of Mathematical Sciences",
+	"PHY":"Division of Physics",
+	"MPS":"Office of the Assistant Director",
+	"SES":"Division of Social and Economic Sciences",
+	"BCS":"Division of Behavioral and Cognitive Sciences",
+	"NCSE":"National Center for Science and Engineering Statistics",
+	"SMA":"SBE Office of Multidisciplinary Activities",
+	"SBE":"Office of the Assistant Director",
+	"BD":"Budget Division",
+	"DACS":"Division of Acquisition and Cooperative Support",
+	"DFM":"Division of Financial Management",
+	"DGA":"Division of Grants & Agreements",
+	"DIAS":"Division of Institution and Award Support",
+	"HRM":"Division of Human Resource Management",
+	"DIS":"Division of Information Systems",
+	"DAS":"Division of Administrative Services",
+	"EPSCoR":"Office of Experimental Program To Stimulate Competitive Research",
+	"EPS":"Office of Experimental Program to Stimulate Competitive Research"
+	},
+	directorates: {
+		"Office of the Director": [
+			"OCI",
+			"OGC",
+			"OISE",
+			"ODI", 
+			"OLPA",
+			"OIA",
+			{ 
+				"Office of Polar Programs": [
+					"ANT",
+					"ARC",
+					"AIL",
+					"PEHS",
+					"A/D"
+				]
+			}
+		],
+		"Office of Information & Resource Management": [
+			"EPSCoR"
+		],
+		"National Science Board": [
+			"NSB"
+		],
+		"Office of the Inspector General": [
+			"OIG"
+		],
+		"Directorate for Biological Sciences": [
+			"MCB",
+			"DBI",	
+			"IOS",	
+			"DEB",	
+			"EF"	
+		],
+		"Directorate for Computer & Information Science & Engineering": [
+			"CCF",
+			"CNS",	
+			"IIS"	
+		],
+		"Directorate for Education & Human Resources": [
+			"DRL",
+			"DGE",
+			"HRD",
+			"DUE"
+		],
+		"Directorate for Engineering": [
+			"CBET",
+			"CMMI",
+			"ECCS",	
+			"EEC",	
+			"EFRI",	
+			"IIP",
+			"ENG"	
+		],
+		"Directorate for Geosciences": [
+			"AGS",
+			"EAR",
+			"OCE",
+			"GEO"
+		],
+		"Directorate for Mathematical & Physical Sciences": [
+			"AST",
+			"CHE",
+			"DMR",
+			"DMS",
+			"PHY",
+			"MPS"
+		],
+		"Directorate for Social, Behavioral & Economic Sciences": [
+			"SES",
+			"BCS",	
+			"NCSE",	
+			"SMA",
+			"SBE"
+		],
+		"Office of Budget, Finance, and Award Management": [
+			"BD",
+			"DACS",
+			"DFM",
+			"DGA",
+			"DIAS"
+		],
+		"Office of Information & Resource Management": [
+			"HRM",
+			"DIS",	
+			"DAS",	
+			"EPS"
+		],
+	},
 	legend_topics: {},	
+	views: {},
     init: function() {
 		//have the navbar auto-re-adjust
 		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
@@ -77,8 +226,22 @@ var App = {
 			});
 		    self.app_router = new AppRouter;
 		    Backbone.history.start();
+			//load any bootstrapped views
+			self.load();
 		});
     },
+	load: function() {
+		//load the requested view
+		//if (App.viewparams) params = App.viewparams;
+		if (App.views && _.size(App.views)>0) {
+			_.each(App.views, function(params,view) {
+				if (App.Views[view]) {
+					var viewobj = App.Views[view];
+					new viewobj(params);						
+				}
+			});
+		};
+	},
 	//adding commas to a number to format it
 	addCommas: function(nStr)
 	{
@@ -105,5 +268,26 @@ var App = {
 			}
 		});
 		return object;
+	},
+	isDataTable: function( sInstance )
+	{
+	    var settings = $.fn.dataTableSettings;
+	    for ( var i=0, iLen=settings.length ; i<iLen ; i++ )
+	    {
+	        //if ( settings[i].nTable == nTable )
+			if ( settings[i].sInstance == sInstance )
+	        {
+	            return true;
+	        }
+	    }
+	    return false;
+	},
+	renderYearSelect: function (current) {
+		var html = '';
+		for (var i=getStartYear();i<=getCurrentYear();i++) {
+			var selected = (i.toString()==current.toString())?' selected':'';
+			html += '<option value="'+i.toString()+'"'+selected+'>'+i.toString()+'</option>';
+		}
+		return html;
 	}
 };

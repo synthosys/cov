@@ -1,0 +1,39 @@
+<div class="row">
+	<div class="span9">
+		<h3>Topic: t{{topicid}} - {{label}}</h3>
+		<p>{{words}}</p>
+		<div class="row">
+		<div class="span9 table-header-controls">
+		<form class="form-horizontal pull-right">
+		<div class="control-group">
+		<label class="control-label"><strong>Proposals from*:</strong></label>
+		<div class="controls">
+			<select id="filter_year_from" class="span1">
+			</select>
+			to
+			<select id="filter_year_to" class="span1">
+			</select>
+			</div><!-- /controls -->
+		</div><!-- /control-group -->
+		</form>
+		</div><!-- /span9-->
+		</div><!-- /row -->
+		<div id="loader"></div>
+		<table class="table table-striped table-bordered table-condensed" id="divisions_table">
+		</table>
+	</div><!-- span9 -->
+	<div class="span3">
+		<div class="cf" style="margin-bottom: 15px;">
+		<button class="btn btn-primary pull-right" id="view_topics"><i class="icon-chevron-left icon-white"></i> Back to Topics</button>
+		</div>
+		<div class="cf" style="margin-top: 33px; clear:both;">
+		<h4>Summary {{startyear}}-{{endyear}}</h4>
+		<h5>NSF (all directorates/divisions)</h5>
+		<div id="summary_all"></div>
+		<h5>{{division}}</h5>
+		<div id="summary_current"></div>
+
+	</div><!-- inline-style -->
+
+	</div><!-- span3 -->
+</div><!-- row -->

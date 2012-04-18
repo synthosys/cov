@@ -1,13 +1,10 @@
 App.Views.ShowReviewerDetails = Backbone.View.extend({
 	initialize: function() {
-//console.log(this.options);
 		$(this.el).html(this.options.html);
 	},
 	render: function(prop_id,reviewers) {
 		//compile template
 		var compiled = _.template($("#template_reviewer_details", this.el).html());
-		//console.log(compiled);
-		//console.log(reviewers);
 		var data = {};
 
 		data.panelselect = this.panels_select;
@@ -17,7 +14,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			return (reviewer.status=='R');
 		});
 
-//console.log(assigned_reviewers);		
 		data.reviewers_assigned = this.renderReviewerList(assigned_reviewers);
 		
 		//other - all but assigned
@@ -25,9 +21,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			return (reviewer.status!='R');
 		});
 		
-		//console.log(other_reviewers);		
 		data.reviewers_other = this.renderReviewerList(other_reviewers);
-		//console.log(data);
 		
 		return compiled(data);
 	},
@@ -38,7 +32,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			var reviewers_template = _.template('<tr><td><h4><a href="#reviewer_listitem" id="{{nsf_id}}">{{name}}</a>{{status}}</h4><p>{{inst}}<br />{{dept}}</p></td><td class="icon"><i class="{{pi}}"></i></td></tr>');
 			var reviewers_compiled = [];
 			_.each(reviewers,function(reviewer) {
-//console.log(reviewer);				
 				var tmp = {};
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
@@ -56,7 +49,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		return rendered;	
 	},
 	renderReviewerDetail: function(reviewer) {
-//console.log(reviewer);		
 		var compiled = _.template($("#template_reviewer_detail", this.el).html());
 
 		var data = {};
@@ -70,7 +62,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			var legend = _.find(this.legend_classes, function(item) {
 				return item['class']==reviewer.inst['class'];
 			});
-//console.log(legend);			
 			if (legend) {
 				data.classification = legend['label'];
 			}
@@ -83,7 +74,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 		return compiled(data);
 	},
 	renderReviewerAwards: function(reviewer,renderto) {
-//console.log(reviewer);		
 		renderto.html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading proposals");
 		$(".alert-info").slideUp();
 		//if this reviewer is a pi
@@ -134,27 +124,19 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 											url: url,
 											dataType: datatype,
 											success: function(data) {
-			//console.log(proposals);									
-//console.log(topics);													
 												var loaded_proposals = _.map(proposals,function(proposal) {
 													var tmp = {};
 													tmp["details"] = proposal;
 													//attach the topics
-//console.log(proposal);													
 													var proposaltopics = _.find(topics,function(item) {
-//console.log(item);														
 														return proposal.nsf_id==item.proposal.nsf_id;
 													});
-//console.log(proposaltopics);													
 													tmp["topics"] = proposaltopics["topic"]["id"];
 													//attach the researchers
-//console.log(proposal["proposal"]["nsf_id"]);										
 													var researchers = _.filter(data["data"],function(item) {
-//console.log(proposal["proposal"]["nsf_id"]);											
 														return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
 													});
 
-//console.log(researchers);										
 													tmp["researchers"] = researchers;
 													return tmp;
 												});
@@ -214,17 +196,17 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				var topics = proposal.topics;
 				//yuck, not very dry at the moment but will refactor later, just trying to get this all in right now
 				data.t1 = topics[0]?'t'+topics[0]:'';
-				data.t1_label = topics[0]?self.legend_topics[topics[0]]["label"]:'(not assigned)';
-				data.t1_words = topics[0]?self.legend_topics[topics[0]]["words"]:'';
+				data.t1_label = topics[0]?App.legend_topics[topics[0]]["label"]:'(not assigned)';
+				data.t1_words = topics[0]?App.legend_topics[topics[0]]["words"]:'';
 				data.t2 = topics[1]?'t'+topics[1]:'';
-				data.t2_label = topics[1]?self.legend_topics[topics[1]]["label"]:'(not assigned)';
-				data.t2_words = topics[1]?self.legend_topics[topics[1]]["words"]:'';
+				data.t2_label = topics[1]?App.legend_topics[topics[1]]["label"]:'(not assigned)';
+				data.t2_words = topics[1]?App.legend_topics[topics[1]]["words"]:'';
 				data.t3 = topics[2]?'t'+topics[2]:'';
-				data.t3_label = topics[2]?self.legend_topics[topics[2]]["label"]:'(not assigned)';
-				data.t3_words = topics[2]?self.legend_topics[topics[2]]["words"]:'';
+				data.t3_label = topics[2]?App.legend_topics[topics[2]]["label"]:'(not assigned)';
+				data.t3_words = topics[2]?App.legend_topics[topics[2]]["words"]:'';
 				data.t4 = topics[3]?'t'+topics[3]:'';
-				data.t4_label = topics[3]?self.legend_topics[topics[3]]["label"]:'(not assigned)';
-				data.t4_words = topics[3]?self.legend_topics[topics[3]]["words"]:'';		
+				data.t4_label = topics[3]?App.legend_topics[topics[3]]["label"]:'(not assigned)';
+				data.t4_words = topics[3]?App.legend_topics[topics[3]]["words"]:'';		
 
 				proposals_compiled.push(proposals_template(data));
 			});
@@ -254,7 +236,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 					_.each(proposal.researchers, function(researcher) {
 						orgs.push(researcher['inst']['nsf_id']);
 					});
-	//console.log(reviewers);								
 					//so now, get the inst classifications
 					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
 					var datatype = 'JSONP';			
@@ -277,7 +258,6 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 							var researchers_template = _.template('<tr><td>{{nsf_id}}</td><td>{{name}}</td><td>{{inst}}</td></tr>');
 							var researchers_compiled = [];
 							_.each(proposal.researchers,function(researcher) {
-//console.log(researcher);								
 								var tmp = {};
 								tmp.nsf_id = researcher.nsf_id;
 								tmp.name = researcher.name;
@@ -294,12 +274,9 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 									});
 								}*/	 //replacing with class information
 								if (researcher.inst['class']) {
-//console.log(researcher.inst['class']);									
-//console.log(self.legend_classes);									
 									var legend = _.find(self.legend_classes, function(item) {
 										return item['class']==researcher.inst['class'];
 									})
-//console.log(legend);									
 									if (legend) {
 										classification = legend['label'];
 									}

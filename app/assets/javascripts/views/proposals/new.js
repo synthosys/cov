@@ -16,7 +16,6 @@ App.Views.NewProposal = Backbone.View.extend({
 	      dataType: 'JSONP',
 	      timeout: 500,
 	      success: function(data) {
-	        //console.log(data);
 	        proposalaccessallowed = true;
 	        apiurl = "http://128.150.10.70/py/api/";
 			require(['text!templates/proposals/new.html'], function(html) {
@@ -63,13 +62,13 @@ App.Views.NewProposal = Backbone.View.extend({
 		var nsf_ids = [$.trim($("#proposal_nsf_id").val().split(',')[0]).replace(/\D/g,'')]; //don't accept more than one, for now
 		var self = this;
 		//load all proposals, we need the list to figure out what to update and what to load
-		var allloadedproposals = new App.Collections.Proposals();
-		allloadedproposals.fetch({
-			success: function() {
+		if (!this.allloadedproposals) this.allloadedproposals = new App.Collections.Proposals;
+		this.allloadedproposals.fetch({
+			data: $.param({nsf_id:nsf_ids}),
+			success: function(collection,response) {
 				//first exclude any proposals that are already in the list
 				//filter entire proposal collection by supplied nsf_ids
-				var loadedproposals = allloadedproposals.filterbyid(nsf_ids);
-//console.log(loadedproposals);
+				var loadedproposals = collection; //.filterbyid(nsf_ids);
 				//second exclude any proposals that are already loaded in the database but are not assigned to this user
 				var loaded_nsf_ids = [];
 				loadedproposals.each(function(proposal) {
@@ -82,11 +81,9 @@ App.Views.NewProposal = Backbone.View.extend({
 					
 					//if division does not match!
 					var details = $.parseJSON(proposal.get("details"));
-					//if (details["org"] && details["org"]["name"] && details["org"]["name"]==self.options.division) {
 					if (division==self.options.division) { //Rails will only return division props for user, unless you are super user, so we have to do this check here
 						if ($("#user_id").val()) {
 							var users = proposal.get("users");
-				//console.log(users);					
 							//is this user on the list?
 							var found = _.find(users,function(user) {
 								return user["id"] == user_id;
@@ -94,7 +91,6 @@ App.Views.NewProposal = Backbone.View.extend({
 
 							if (!found) {
 								//all we will do is assign these
-				//console.log(proposal);					
 								//get current assignments
 								var current = _.map(users, function(user) {
 									return user.id.toString();
@@ -102,7 +98,8 @@ App.Views.NewProposal = Backbone.View.extend({
 								current.push(user_id);
 
 								proposal.save({ proposal: { user_ids: current} },{
-									success: function(data) {
+									success: function(response) {
+//console.log(response);										
 										//run the callback
 										if (self.options.view && self.options.respondto_update) self.options.view[self.options.respondto_update](proposal);
 
@@ -111,7 +108,7 @@ App.Views.NewProposal = Backbone.View.extend({
 										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
 										$("ul#load_proposals li#load_proposals_"+nsf_id+" span").html('Already loaded, assigned.');
 									},
-									error: function(data) {
+									error: function(response) {
 										//update status
 										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
 										$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
@@ -134,10 +131,7 @@ App.Views.NewProposal = Backbone.View.extend({
 				});
 				//now we have a list of what we need to go get
 				//this is the difference of what we wanted vs. what is already loaded
-//console.log(tmp);				
 				var load_nsf_ids = _.without(nsf_ids, loaded_nsf_ids);
-//console.log('load');				
-//console.log(load_nsf_ids);	
 				if (load_nsf_ids.length>0) {
 					//save the list
 					self.load_nsf_ids = load_nsf_ids;
@@ -151,10 +145,11 @@ App.Views.NewProposal = Backbone.View.extend({
 					$("div#load_complete").html('<p><strong>All Done!</strong> Review your individual proposal load status above and re-submit anything that couldn\'t be loaded.');
 					$("div#load_complete").addClass("alert-success");					
 				}			
+			},
+			error: function(collection,response) {
+console.log(response);				
 			}
 		});
-		
-
 	},
 	loadProposals: function() {
 		var nsf_id = this.load_nsf_ids[this.load_index];
@@ -170,18 +165,14 @@ App.Views.NewProposal = Backbone.View.extend({
 		}
 	},
 	respondToAssign: function(status,loaded_data,message) {
-//console.log(status);		
-//console.log(loaded_data);
 		var load_nsf_id = this.load_nsf_ids[this.load_index];
 		this.load_index++; //prepare to load the next one
 		if (status=='ok') {
 			var user_id = $("#user_id").val();
 			//save and add to collection
-//			self.createLoadedProposals(self,response["data"],user_id);
 			var self = this;
 			_.each(loaded_data, function(proposal_data,nsf_id) {
 				var proposal = new Proposal();
-	//console.log(tmp);								
 				proposal.save({ 
 					proposal: { 
 						'nsf_id': nsf_id,
@@ -195,7 +186,7 @@ App.Views.NewProposal = Backbone.View.extend({
 						'user_ids': [user_id] 
 						} 
 					}, {
-					success: function(data) {
+					success: function(response) {
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-ok");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
@@ -204,7 +195,7 @@ App.Views.NewProposal = Backbone.View.extend({
 			           //run the callback
 						if (self.options.view && self.options.respondto_create) self.options.view[self.options.respondto_create](proposal);
 					},
-					error: function(data) {
+					error: function(response) {
 						//update status
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").addClass("icon-exclamation-sign");
 						$("ul#load_proposals li#load_proposals_"+nsf_id+" i").removeClass("icon-refresh");
@@ -214,15 +205,9 @@ App.Views.NewProposal = Backbone.View.extend({
 			});		
 		} else {
 			//update status
-/*			if (_.size(loaded_data)==0){
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html(message);
-			} else { */
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
-				$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html(message);
-//			}
+			$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").addClass("icon-exclamation-sign");
+			$("ul#load_proposals li#load_proposals_"+load_nsf_id+" i").removeClass("icon-refresh");
+			$("ul#load_proposals li#load_proposals_"+load_nsf_id+" span").html(message);
 		}
 		this.loadProposals();									 		
 	}

@@ -1,0 +1,147 @@
+App.Views.dashboardProgramsTopics = Backbone.View.extend({
+	events: {
+		"click button#view_awards": "gotoProposals",
+		"submit form#topic_weights": "render",
+		"change select#filter_year_from": "load",
+		"change select#filter_year_to": "load"
+	},
+	initialize: function() {
+		_.bindAll(this, 'render'); //you must do this to trap bound events
+		
+		//use the topics collection, it has a special function that will load all topic relevances!
+		this.collection = new App.Collections.Topics;
+		this.collection.on('loadcomplete', this.render, this);
+
+		var self = this;
+		require(['text!templates/dashboard/programs_topics.html'], function(html) {
+			var template = _.template(html);
+			//we make this query so many times, think about how to improve it
+			// lookup using pge legend in the data api
+			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+self.options.pge+"&jsoncallback=?", function(data){
+				var html = template({pge:self.options.pge,label:data?data[0].label:''}); //save it off
+				self.el.html(html);
+				//set year selection
+				var startYear = getStartYear();
+				var endYear = getEndYear();
+				var year = self.options.params['year']?self.options.params['year'].split('-'):[startYear,endYear];
+				$("select#filter_year_from", self.el).html(App.renderYearSelect(year[0]?year[0]:startYear));
+				$("select#filter_year_to", self.el).html(App.renderYearSelect(year[1]?year[1]:endYear));
+				//load
+				self.load();
+            });
+		});
+	},
+	gotoProposals: function(e) {
+		e.preventDefault();
+
+		App.app_router.navigate('programs/proposals/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+	},
+	load: function(e) {
+		if (e) e.preventDefault();
+		
+		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
+			alert('Pick an appropriate date range');
+			return;
+		}
+		
+		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
+
+		//load	
+		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
+		year += '-';
+		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
+		this.collection.load({org:getDivision()+','+this.options.pge,year:year});
+	},
+	render: function() {
+		$('div#loader', this.el).html('');
+		
+		//prepare for datatable data - conv to array
+		var self = this;
+		var data = _.map(this.collection.loaded_topics, function(row) {
+			var topicid = row.t;
+			//the suppres attribute is used to suppress t0 topics for now
+			var suppress = (topicid=='0')?'1':'0';
+			//figure out the weights and relevances here
+			var topic_weightedprevalence = 0;
+			_.each([1,2,3,4], function(topicrelevance) {
+				topicrelevance = 't'+topicrelevance.toString();
+				if (row[topicrelevance]) {
+					var tmp = row[topicrelevance]['count']['award']+row[topicrelevance]['count']['decline']+row[topicrelevance]['count']['other'];
+					//read the topic weight input
+					var el = $('input#'+topicrelevance, self.el);
+					var weight = (el&&el.val())?el.val():'0';
+					topic_weightedprevalence += (tmp*weight);					
+				}
+			});
+			//return it
+			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress};
+		});
+
+		//columns
+		var self = this;
+		var columns = [
+			{
+				"bVisible": false,
+				"mDataProp": "suppress"
+			},
+			{
+				"sTitle": "Prevalence (Weighted)",
+				"fnRender": function( oObj ) {
+					return oObj.aData.weighted.toFixed(0);
+				},
+				"mDataProp": "weighted"
+			},
+			{
+				"fnRender": function ( oObj ) {
+					var html = '<strong>t'+oObj.aData.topicid+': '+oObj.aData.label+'</strong>';
+					if (oObj.aData.words) html += ' - '+oObj.aData.words;
+					return html;
+				},
+				"sTitle": "Topic",
+				"mDataProp": "label"
+			},
+			{
+				"sTitle": "Awarded",
+				"bVisible": true,
+				"mDataProp": "count.award"
+			},
+			{
+				"fnRender": function ( oObj ) {
+					return self.collection.formatFunding(oObj.aData.funding.award);
+				},
+				"bUseRendered": false,
+				"bVisible": true,
+				"sTitle": "Awarded Amt.",
+				"mDataProp": "funding.award"
+			}
+		];
+		if (proposalaccessallowed) {
+			columns.push({
+				"sTitle": "Declined",
+				"mDataProp": "count.decline"
+			});
+			columns.push({
+				"sTitle": "Other",
+				"mDataProp": "count.other"
+			});
+			columns.push({
+				"fnRender": function ( oObj ) {
+					return self.collection.formatFunding(oObj.aData.funding.request);
+				},
+				"bUseRendered": false,
+				"sTitle": "Requested Amt.",
+				"mDataProp": "funding.request"
+			});
+		}
+		
+		$('#topics_table', this.el).dataTable({
+			"bDestroy": true,
+			"bJQueryUI": true,
+			"sPaginationType": "full_numbers",
+			"iDisplayLength": 50,
+			"aaData": data,
+			"aoColumns": columns,
+			"aaSorting": [[0, 'asc'],[3, 'desc']]
+		});
+	}
+});

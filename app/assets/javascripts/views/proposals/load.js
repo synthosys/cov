@@ -1,9 +1,5 @@
 App.Views.LoadProposal = Backbone.View.extend({
 	processLoadProgress: function(component,status,data,message) {
-//console.log(this);
-//console.log(component);
-//console.log(status);
-//console.log(data);		
 		this.updateLoadStatus(component,status,data,message);
 		//now check if all loaded
 		if (this.isDataLoaded()) {
@@ -14,7 +10,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 			var loaded_data = {};
 			if (_.size(this.loadedcomponents["proposals"]["data"])>0) {
 				var loadedcomponents = this.loadedcomponents;
-//console.log(loadedcomponents);				
 				_.each(this.nsf_ids, function(nsf_id) {
 					loaded_data[nsf_id] = {};
 					loaded_data[nsf_id]["details"] = (loadedcomponents["proposals"]["data"][nsf_id]) ? loadedcomponents["proposals"]["data"][nsf_id] : {};
@@ -25,19 +20,14 @@ App.Views.LoadProposal = Backbone.View.extend({
 					loaded_data[nsf_id]["reviewerproposals"] = (loadedcomponents["reviewerproposals"]["data"][nsf_id]) ? loadedcomponents["reviewerproposals"]["data"][nsf_id] : [];
 				});				
 			}
-//console.log(this.getLoadStatus());				
-//console.log(loaded_data);		
-//console.log(this.getLoadStatusMessage());		
 			view[respondto](this.getLoadStatus(),loaded_data,this.getLoadStatusMessage());
 		}
 	},
 	loadProposalData: function(nsf_ids, division, view, respondto) {
-//console.log(view);		
 		this.nsf_ids = (typeof nsf_ids == "string") ? [nsf_ids] : nsf_ids;
 		//this.nsf_ids = nsf_ids;
 		this.view = view;
 		this.respondto = respondto;
-//console.log(this);		
 		//prep reciever
 		this.loadedcomponents = {};
 		$(this.el).show();
@@ -75,8 +65,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 					self.processLoadProgress('reviewers', 'error', {}, '');
 					self.processLoadProgress('reviewerproposals', 'error', {}, '');
 				} else {
-//console.log(division);					
-//console.log(data["data"][0]["org"]["name"]);
 					//we are always passing in proposals to be loaded one at a time now so we can check against division
 					if (division && data["data"][0]["org"]["name"]!=division) {
 						//return with error
@@ -105,7 +93,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 				}
 			},
 			error: function() {
-//console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 				//set the others here too so we return
 				self.processLoadProgress('researchers', 'error', {}, '');
@@ -141,7 +128,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 					_.each(panels, function(panel) {
 						panel_propids = panel_propids.concat(panel["prop"]);
 					});
-//console.log(_.uniq(panel_propids).join(','));					
 					var url = apiurl+'prop?id='+_.uniq(panel_propids).join(',')+'&jsoncallback=?';
 					var datatype = 'JSONP';			
 					$.ajax({
@@ -155,8 +141,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 	//							_.each(panel["prop"], function(prop_ids) {
 									//get and store the counts
 									_.each(data["data"], function(prop) {
-	//console.log('propids');									
-	//console.log(prop_ids);									
 										//find them all out
 										if ($.inArray(prop,panel["prop"]) && prop["status"]["name"]=="award") {
 											panel_totalawards++;
@@ -172,8 +156,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 							_.each(self.nsf_ids, function(nsf_id) {
 								//find them all out
 								loaded_data[nsf_id] = _.filter(loaded_panels,function(panel) {
-	//console.log('panel prop');									
-	//console.log(panel["prop"]);									
 									return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
 								});
 							});
@@ -192,7 +174,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 				}
 			},
 			error: function() {
-//console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 				//set the others here too so we return
 				self.processLoadProgress('reviewers', 'error', {}, '');
@@ -221,7 +202,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );
 			},
 			error: function() {
-//console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
@@ -242,14 +222,12 @@ App.Views.LoadProposal = Backbone.View.extend({
 					var topics = _.filter(data["data"],function(item) {
 						return item["proposal"]["nsf_id"]==nsf_id;
 					});
-//console.log(topics[0]["topic"]);											
 					if (topics.length>0) loaded_data[nsf_id] = topics[0]["topic"]["id"];
 				});
 				//ALL DONE! run callback function
 				self.processLoadProgress(component, 'ok', loaded_data, 'Done' );
 			},
 			error: function() {
-//console.log('error panels');										
 				self.processLoadProgress(component, 'error', loaded_data, 'Could not retrieve' );
 			}
 		});									
@@ -265,7 +243,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 		_.each(panels, function(panel) {
 			reviewer_ids = reviewer_ids.concat(panel["revr"]);
 		});
-//console.log(_.uniq(reviewer_ids).join(','));		
 		//now go get them
 		var url = apiurl+'user?rid='+_.uniq(reviewer_ids).join(',')+'&jsoncallback=?';
 		var datatype = 'JSONP';			
@@ -295,7 +272,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 						//_.each(reviewers, function(reviewer) {
 						//	orgs.push(reviewer['inst']['nsf_id']);
 						//});
-//console.log(reviewers);								
 						//so now, get the inst classifications
 						//we're not doing this here anymore, this is public data, retrieve upon show instead of storing in the db needlessly
 						/*var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
@@ -312,7 +288,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 									reviewers[i]['inst']['flag'] = '';
 									if (org) reviewers[i]['inst']['flag'] = org['flag'];
 								}
-//console.log(reviewers);								
 								tmp['reviewers'] = reviewers;
 								proposal_panel_reviewers.push(tmp);
 							}
@@ -340,9 +315,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 					tmp['revr'] = reviewers_as_pis;
 					self.panel_reviewers_as_pis.push(tmp);
 				});		
-//console.log(panel_reviewers_as_pis);
 				var reviewer_ids = [];
-		//console.log(panels);		
 				_.each(self.panel_reviewers_as_pis, function(panel) {
 					reviewer_ids = reviewer_ids.concat(panel["revr"]);
 				});
@@ -365,7 +338,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var reviewer_id = this.reviewer_as_pi_ids[this.load_index];
 		var self = this;
 		if (reviewer_id) {
-//console.log(reviewer_id);		
 			//now get the proposal info and topics for the reviewers who are pis
 			var url = apiurl+'user?id='+reviewer_id+'&page=prop'+'&jsoncallback=?';
 			var datatype = 'JSONP';			
@@ -392,8 +364,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 								prop_ids.push(prop["nsf_id"]);
 							});
 						}
-//console.log(_.uniq(prop_ids).length);										
-//console.log(_.uniq(prop_ids).join(','));					
 						//get the topics for each proposal
 						//now get the proposal info and topics for the reviewers who are pis
 						var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
@@ -403,14 +373,12 @@ App.Views.LoadProposal = Backbone.View.extend({
 							dataType: datatype,
 							success: function(data) {
 								var proposals = data["data"];											
-//console.log(proposals.length);									
 								var loaded_proposals = _.map(proposals,function(proposal) {
 									var tmp = {};
 									tmp["nsf_id"] = proposal["proposal"]["nsf_id"];
 									tmp["topics"] = proposal["topic"]["id"];
 									return tmp;
 								});
-//console.log(loaded_proposals);	
 								//fire call back
 								self.saveReviewerProposals(reviewer_id,loaded_proposals);
 							}
@@ -425,7 +393,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 			});
 		} else {
 			var component = 'reviewerproposals';
-//console.log(self.loaded_reviewer_proposals);			
 			//all done
 			var loaded_data = {};
 			//store data
@@ -434,30 +401,24 @@ App.Views.LoadProposal = Backbone.View.extend({
 				var proposal_panels = _.filter(self.panel_reviewers_as_pis,function(panel) {
 					return $.inArray(nsf_id.toString(),panel["prop"])!=-1;
 				});
-//console.log(proposal_panels);										
 				//now find the corresponding proposals
 				var proposal_panel_reviewers = [];
 				_.each(proposal_panels, function(panel) {
-//console.log(panel);											
 					var tmp = {};
 					tmp['panel_id'] = panel["panel_id"];											
 					var loaded_reviewer_proposals = [];
 					_.each(panel["revr"], function(reviewer) {
-//console.log(reviewer);	
 						if (self.loaded_reviewer_proposals[reviewer])
 							loaded_reviewer_proposals = loaded_reviewer_proposals.concat(self.loaded_reviewer_proposals[reviewer]);
 						//YES! FINALLY! We have our list of proposals by reviewers who were assigned to this panel!
 					});
-//console.log(loaded_reviewer_proposals);	
 					//strip out duplicates
 					loaded_reviewer_proposals = _.uniq(loaded_reviewer_proposals,false, function (item) { return item.nsf_id; });
-//console.log(loaded_reviewer_proposals);	
 					tmp['reviewerproposals'] = loaded_reviewer_proposals;
 					proposal_panel_reviewers.push(tmp);
 				});
 				loaded_data[nsf_id] = proposal_panel_reviewers;
 			});
-//console.log(loaded_data);									
 			//ALL DONE! run callback function
 			self.processLoadProgress(component, 'ok', loaded_data, 'Done' );									
 		}
@@ -473,9 +434,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		this.loadedcomponents[component]['data'] = data;
 		this.loadedcomponents[component]['message'] = message;
 		var elem_id = "component_"+component+(this.options.prop_id?'_'+this.options.prop_id:'');
-//console.log(elem_id);		
 		var elem = $("#"+elem_id, this.el);
-//console.log(this.el);		
 		if (status=='reset') {
 			$("i", elem).removeClass('icon-ok');
 			$("i", elem).removeClass('icon-exclamation-sign');
@@ -528,7 +487,6 @@ App.Views.LoadProposal = Backbone.View.extend({
 		
 	},
 	getLoadStatusMessage: function() {
-//console.log(this.loadedcomponents);		
 		if (this.loadedcomponents["proposals"]["status"]=='error') return this.loadedcomponents["proposals"]["message"];
 		else if (this.loadedcomponents["panels"]["status"]=='error') return this.loadedcomponents["panels"]["message"];
 		else if (this.loadedcomponents["topics"]["status"]=='error') return this.loadedcomponents["topics"]["message"];

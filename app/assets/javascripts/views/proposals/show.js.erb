@@ -13,39 +13,23 @@ App.Views.ShowProposal = Backbone.View.extend({
 		_.bindAll(this, 'render');
 
 		var self = this;
-		this.model = new Proposal({id: this.id + ".json"});
+		this.model = new Proposal(this.options.proposal);
 		$('div#reviewdata', this.el).hide();
-		this.model.fetch({
-			success: function() {
-				//self.legend_flags = {};
-				self.legend_classes = {};
-				//load topic legend
-				self.legend_topics = {};
-				$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {
-					_.each(data, function(item) {
-						self.legend_topics[item["topic"]] = {"words":item["words"],"label":item["label"]};
-					});
-					//load the assignment status
-					//check if the list of assignments is already loaded, if not, load it
-					if (typeof(App.PanelReviewerStatus)==='undefined') {
-						require(['text!panelreviewerstatus.js'], function(js) {
-//console.log(js);				
-							App.PanelReviewerStatus = $.parseJSON(js);
-//console.log(App.PanelReviewerStatus);				
-							//prepare data
-							self.prepareData();
-							//then render
-							self.render();							
-						});			
-					} else {
-						//prepare data
-						self.prepareData();
-						//then render
-						self.render();
-					}					
-				});
-			}
-		});
+		//check if the list of assignments is already loaded, if not, load it
+		if (typeof(App.PanelReviewerStatus)==='undefined') {
+			require(['text!panelreviewerstatus.js'], function(js) {
+				App.PanelReviewerStatus = $.parseJSON(js);
+				//prepare data
+				self.prepareData();
+				//then render
+				self.render();							
+			});			
+		} else {
+			//prepare data
+			self.prepareData();
+			//then render
+			self.render();
+		}					
 	},
 	showComment: function(e) {
 		alert("Hello")
@@ -62,7 +46,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 		$("#tab_reviewer_details", this.el).html('');
 		
 		//depending on where we are (which parent tab), either load the panel details or the reviewer expertise
-//console.log(id);		
 		if (id=='paneldetails') {
 			this.showPanel();
 		} else if (id=='reviewerexpertise') {
@@ -72,11 +55,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 		}
 	},
 	changeTopicRelevance: function(e) {
-//console.log('changing relevance');		
 		//set it
 		this.topicrelevance = $(e.currentTarget).val();
-		//$("#select[id^=topicrelevance_]", this.el).val(this.topicrelevance);
-//console.log(this.topicrelevance);
 		
 		//clear the tabs
 		$("#tab_panel_details_topics", this.el).html('');
@@ -92,14 +72,11 @@ App.Views.ShowProposal = Backbone.View.extend({
 		if ($.trim($('#tab_reviewer_expertise', this.el).html())) {
 			//get all the topics
 			var reviewertopics = this.showReviewerExpertiseView.getReviewerExpertiseTopics(this.topicrelevance,paneltopics);
-//console.log(reviewertopics);			
 			$("#tab_reviewer_expertise_topics").html(this.showReviewerExpertiseView.renderReviewerExpertiseTopicsList(reviewertopics));
 			$("#tab_reviewer_expertise_topics_venn").html(this.showReviewerExpertiseView.renderReviewerExpertiseTopicsVenn(reviewertopics));
 		} //already loaded, overwrite
 	},
 	prepareData: function() {
-		//first, jsonify the stuff we got back so we can play with it
-		this.model.extractData();
 		var self = this;
 		//save the data in this view
 		//details
@@ -111,7 +88,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//panels and stuff
 		var panels = this.model.panels_parsed;
 		var reviewers = this.model.reviewers_parsed;
-//console.log(reviewers);		
 		var reviewerproposals = this.model.reviewerproposals_parsed;
 		this.panels = [];
 		//now, let's build a list of complete panels
@@ -125,7 +101,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 				var panel_reviewers = _.filter(reviewers,function(reviewer) {
 					return reviewer.panel_id==panel.nsf_id;
 				});
-//console.log(panel_reviewers);				
 				tmp.reviewers = [];
 				if (panel_reviewers.length>0) {
 					var extracted_reviewers = panel_reviewers[0].reviewers;
@@ -134,20 +109,14 @@ App.Views.ShowProposal = Backbone.View.extend({
 					var prop_reviewers = _.filter(App.PanelReviewerStatus, function(item) {
 						return (item.prop_id==self.model.get('nsf_id'));
 					});	
-//console.log(prop_reviewers);					
 					for (var i=0;i<extracted_reviewers.length;i++) {
-//console.log(extracted_reviewers[i]);						
-//console.log(extracted_reviewers[i].nsf_id);						
-//console.log(extracted_reviewers[i]['revr']);
 						extracted_reviewers[i].status = ''; //initialize
 						var reviewer_status = _.find(prop_reviewers, function(prop_reviewer) {
 							if (extracted_reviewers[i]['revr']) return $.inArray(prop_reviewer.revr,extracted_reviewers[i]['revr'])!=-1;	
 							else return prop_reviewer.revr==extracted_reviewers[i].nsf_id;
 						});
-//console.log(reviewer_status.status);						
 						if (reviewer_status) extracted_reviewers[i].status = reviewer_status.status;
 					}
-//console.log(extracted_reviewers);				
 					tmp.reviewers = extracted_reviewers;				
 				}
 				//now gather topic data
@@ -159,7 +128,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 				var panel_proposals = _.filter(reviewerproposals,function(reviewerproposal) {
 					return reviewerproposal.panel_id==panel.nsf_id;
 				});
-	//console.log(panel_proposals);				
 				//parse the data - dry this out later
 				_.each(panel_proposals, function(panel_proposal) {
 					_.each(panel_proposal.reviewerproposals, function(reviewerproposal) {
@@ -194,14 +162,8 @@ App.Views.ShowProposal = Backbone.View.extend({
 						}	
 					});
 				});
-	//console.log(t1s);					
-	//console.log(t2s);					
-	//console.log(t3s);					
-	//console.log(t4s);					
 				tmp.topics = [t1s, t2s, t3s, t4s];
-	//console.log(topics);				
 				tmp.topics_count = _.keys(t1s).length+_.keys(t2s).length+_.keys(t3s).length+_.keys(t4s).length;
-	//console.log(tmp);				
 				self.panels.push(tmp);
 				//set defaults for topic relevance
 				self.topicrelevance = '4'; //As per Jan, default to all topics, not primary
@@ -229,7 +191,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	loadPanelData: function(index) {
 		var panel = this.panels[index];
-//console.log(panel);				
 		//if panel reviewer org info is not loaded, load it first
 		if (panel) {
 			if (typeof panel.orgloaded == "undefined" || !panel.orgloaded) {
@@ -244,7 +205,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 					_.each(reviewers, function(reviewer) {
 						orgs.push(reviewer['inst']['nsf_id']);
 					});
-//console.log(reviewers);		
 					var self = this;
 					//so now, get the inst classifications
 					var url = apiurl+'org?id='+_.uniq(orgs).join(',')+'&jsoncallback=?';
@@ -267,7 +227,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 							}
 							panel.orgloaded = true;
 							panel.reviewers = reviewers;
-//console.log(reviewers);						
 							self.preparePanelData(index,panel);							
 						},
 						error: function() {
@@ -306,7 +265,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 		}
 	},
 	showDetails: function() {
-//console.log(self);
 		if (this.showProposalDetailsView==undefined) {
 			var self = this;
 			require(['text!templates/proposals/show_tab_proposal_details.html'], function(html) {
@@ -324,11 +282,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 		$('div#reviewdata', this.el).show();
 		if ($.trim($('#tab_proposal_details', this.el).html())) return; //already loaded
 		var html = this.showProposalDetailsView.render();
-//console.log(html);		
 		$('#tab_proposal_details', this.el).html(html);
 	},
 	showPanel: function() {
-//console.log(this.selectedpanel);		
 		if (this.selectedpanel!=null) {
 			var panel = this.loadSelectedPanel(this.selectedpanel);
 			var paneltopics = this.getPanelTopics(this.topicrelevance,panel.topics);				
@@ -354,7 +310,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 		this.showPanelDetailsView.panels_select = this.getPanelsSelect('panelselect_paneldetails','7');
 		this.showPanelDetailsView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showPanelDetailsView.render(panel,paneltopics);
-//console.log(html);			
 		$('#tab_panel_details', this.el).html(html);
 		//show graphs
 		var reviewers = panel.reviewers;
@@ -390,7 +345,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 		this.showReviewerExpertiseView.panels_select = this.getPanelsSelect('panelselect_reviewerexpertise','6');
 		this.showReviewerExpertiseView.topicrelevance_select = this.getTopicRelevance();
 		var html = this.showReviewerExpertiseView.render(panel,paneltopics,topicrelevance);
-//console.log(html);		
 		$('#tab_reviewer_expertise', this.el).html(html);		
 	},
 	showReviewerDetails: function() {
@@ -415,17 +369,14 @@ App.Views.ShowProposal = Backbone.View.extend({
 		if ($.trim($('#tab_reviewer_details', this.el).html())) return; //already loaded
 		this.showReviewerDetailsView.panels_select = this.getPanelsSelect('panelselect_reviewerdetails','4');
 		var html = this.showReviewerDetailsView.render(this.details.nsf_id, reviewers);
-//console.log(html);		
 		$('#tab_reviewer_details', this.el).html(html);		
 	},
 	showReviewerDetail: function(e) {
 		e.preventDefault();
 
 		var nsf_id = $(e.currentTarget).attr('id');
-//console.log(nsf_id);		
 
 		var panel = this.loadSelectedPanel(this.selectedpanel);
-//console.log(panel.reviewers);		
 		var reviewer = _.find(panel.reviewers, function(reviewer) {
 			return reviewer["nsf_id"]==nsf_id;
 		});
@@ -441,14 +392,11 @@ App.Views.ShowProposal = Backbone.View.extend({
 		else {
 			panels_select = '<select id="'+id+'" class="span'+span+'">';
 			_.each(this.panels, function(panel) {
-	//console.log(self.selectedpanel);		
-	//console.log(panel);			
 				var selected = '';
 				if (panel.panel.nsf_id==self.selectedpanel.toString()) selected = ' selected ';
 				panels_select += '<option value="'+panel.panel.nsf_id+'"'+selected+'>'+panel.panel.nsf_id+' - '+panel.panel.name+' ('+panel.panel.officer+')</option>';
 			});			
 			panels_select += '</select>';
-//console.log(panels_select);			
 		}
 		return panels_select;
 	},
@@ -467,7 +415,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 				});
 			}
 		}
-//console.log(gatheredtopics);			
 		return gatheredtopics;
 	},
 	getTopicRelevance: function() {
@@ -482,7 +429,6 @@ App.Views.ShowProposal = Backbone.View.extend({
 	},
 	loadSelectedPanel: function(selectedpanel) {
 		if (this.panels.length>0) {
-//console.log(this.panels);			
 			return _.find(this.panels,function(panel) {
 				return panel.panel.nsf_id == selectedpanel;
 			});
