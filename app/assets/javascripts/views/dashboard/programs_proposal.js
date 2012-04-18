@@ -19,9 +19,7 @@ App.Views.dashboardProgramsProposal = Backbone.View.extend({
 	gotoProposals: function(e) {
 		e.preventDefault();
 
-		var pge = this.options.params['pge'];
-		var year = this.options.params['year'];
-		App.app_router.navigate('programs/proposals/'+pge+'/?year='+year, {trigger: true});
+		window.history.back();
 	},
    	render: function() {
 		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id});

@@ -20,10 +20,19 @@
 
 <script type="text/template" id="template_division_summary">
 <h3>Totals ({{startyear}} - {{endyear}})</h3>
-{{= if (awards) { }}<p><strong>Awards: </strong><span id="awards">{{awards}}</span></p>{{= } }}
-{{= if (researchers) { }}<p><strong>Researchers: </strong><span id="researchers">{{researchers}}</span></p>{{= } }}
-{{= if (declines) { }}<p><strong>Declines: </strong><span id="institutions">{{declines}}</span></p>{{= } }}
-{{= if (institutions) { }}<p><strong>Institutions: </strong><span id="institutions">{{institutions}}</span></p>{{= } }}
+<div class="row">
+	<div class="span2">
+	{{= if (awards) { }}<strong>Awards: </strong><span id="awards">{{awards}}</span><br />{{= } }}
+	{{= if (declines) { }}<strong>Declines: </strong><span id="institutions">{{declines}}</span>{{= } }}	
+	</p>
+	</div>
+	<div class="span2">
+	<p>
+	{{= if (researchers) { }}<strong>Researchers: </strong><span id="researchers">{{researchers}}</span><br />{{= } }}
+	{{= if (institutions) { }}<strong>Institutions: </strong><span id="institutions">{{institutions}}</span>{{= } }}	
+	</p>
+	</div>
+</div>
 </script>
 
 <script type="text/Javascript">

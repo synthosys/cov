@@ -1,5 +1,6 @@
 App.Views.researchTopicsDivisions = Backbone.View.extend({
 	events: {
+		"click button#view_topics": "gotoTopics",
 		"click a[class=link_to_proposals]": "gotoProposals",
 		"change select#filter_year_from": "loadList",
 		"change select#filter_year_to": "loadList"
@@ -35,6 +36,11 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			self.loadList();
 		})
     },
+	gotoTopics: function(e) {
+		e.preventDefault();
+
+		window.history.back();
+	},
 	gotoProposals: function(e) {
 		e.preventDefault();
 		

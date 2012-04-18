@@ -7,21 +7,18 @@ App.Views.dashboardDivision = Backbone.View.extend({
 	initialize: function() {
 		var self = this;
 		require(['text!templates/dashboard/division.html'], function(html) {
-			var template = _.template(html);
-			var html = template({}); //save it off
 			self.el.html(html);
+			//set year selection
+			var startYear = getStartYear();
+			var endYear = getEndYear();
+			$("select#filter_year_from", self.el).html(App.renderYearSelect(getStartYear()));
+			$("select#filter_year_to", self.el).html(App.renderYearSelect(getEndYear()));
 			self.render();
 		})		
 	},
 	render: function() {
 		//set what type of data we're showing
 		$("select#filter_data", this.el).val(this.options.params && this.options.params['data']?this.options.params['data']:'programs_funding');
-		//set year selection
-		var startYear = getStartYear();
-		var endYear = getEndYear();
-		var year = this.options.params && this.options.params['year']?this.options.params['year'].split('-'):[startYear,endYear];
-		$("select#filter_year_from", this.el).val(year[0]?year[0]:startYear);
-		$("select#filter_year_to", this.el).val(year[1]?year[1]:endYear);
 		this.loadData();		
 	},
 	showData: function() {

@@ -16,8 +16,7 @@ App.Views.researchTopicsProposals = Backbone.View.extend({
 	gotoDivisions: function(e) {
 		e.preventDefault();
 
-		var year = this.options.params['year'];	
-		App.app_router.navigate('topics/divisions/'+this.options.topicid+'/?year='+year, {trigger: true});
+		window.history.back();
 	},
 	render: function() {
 		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), topicid:this.options.topicid, org:this.options.params['org'], year: this.options.params['year'], route:'topics/proposal'});

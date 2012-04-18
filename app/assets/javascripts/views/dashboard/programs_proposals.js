@@ -20,10 +20,9 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	gotoTopics: function(e) {
 		e.preventDefault();
 
-		var year = this.options.params['year'];	
-		App.app_router.navigate('programs/topics/'+this.options.pge+'/?year='+year, {trigger: true});
+		window.history.back();
 	},
 	render: function() {
-		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), pge:this.options.pge, year: this.options.params['year'], route:'programs/proposal'});
+		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), org: getDivision(), pge:this.options.pge, year: this.options.params['year'], route:'programs/proposal'});
 	}
 });

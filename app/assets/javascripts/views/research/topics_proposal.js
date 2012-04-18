@@ -12,10 +12,7 @@ App.Views.researchTopicsProposal = Backbone.View.extend({
 	gotoProposals: function(e) {
 		e.preventDefault();
 
-		var topicid = this.options.params['topicid'];
-		var org = this.options.params['org'];
-		var year = this.options.params['year'];
-		App.app_router.navigate('topics/proposals/'+topicid+'/?org='+org+'&year='+year, {trigger: true});
+		window.history.back();
 	},
    	render: function() {
 		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id});

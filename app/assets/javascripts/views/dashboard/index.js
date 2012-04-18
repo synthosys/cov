@@ -20,7 +20,7 @@ App.Views.Dashboard = Backbone.View.extend({
 	gotoGeography: function(e) {
 		e.preventDefault();
 		
-		App.app_router.navigate('geography', {trigger: true});		
+		App.app_router.navigate('geography/states/', {trigger: true});		
 	},
 	render: function() {
 		//clear any existing active tabs
@@ -50,7 +50,9 @@ App.Views.Dashboard = Backbone.View.extend({
 	},
 	renderSummary: function(division,startyear,endyear) {
 		var template = _.template($("#template_division_summary", this.el).html());
-		var data = { 'startyear': startyear, 'endyear': endyear, 'awards':'Loading...', 'declines': '', 'institutions': 'Loading...', 'researchers': 'Loading...' };
+		var loader = "<img src='" + baseURI + "/assets/ajax-load.gif" + "'/>";
+		var data = { 'startyear': startyear, 'endyear': endyear, 'awards':loader, 'declines': '', 'institutions': loader, 'researchers': loader };
+		if (proposalaccessallowed) data.declines = loader;
 		var compiled = template(data);
 		$("#division_summary", this.el).html(compiled);
 
@@ -62,9 +64,10 @@ App.Views.Dashboard = Backbone.View.extend({
 			_.each(data["data"], function(item) {
 				if (item.status=='award') {
 					$("#division_summary #awards", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["awarded_dollar"]/1000000).toFixed(0))+'M');
+				} else if (item.status=='decline') {
+					$("#division_summary #declines", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["requested_dollar"]/1000000).toFixed(0))+'M');
 				}
 			});
-			$('#division_summary #institutions', this.el).html(data["count"]);
 		});
 
 		//get count of institutions

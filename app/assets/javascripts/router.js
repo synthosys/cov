@@ -7,7 +7,8 @@ var AppRouter = Backbone.Router.extend({
 		'programs/proposals/:pge/*params': 'programsProposals',
 		'programs/proposal/:nsf_id/*params': 'programsProposal',
 		'division': 'division',
-		'geography': 'geography',
+		'geography/states/*params': 'geography',
+		'geography/institutions/:state/*params': 'geographyInstitutions',
 		
 		'proposals/:nsf_id': 'proposalsProposal',
 		
@@ -22,52 +23,43 @@ var AppRouter = Backbone.Router.extend({
 	},
 	//dashboard routes already bootstrap a dashboard view, so attach additional views
 	programs: function() {
-		App.views['dashboardPrograms'] = { el:$("#tab_programs") };
-		this.load();		
+		this.load('dashboardPrograms',{ el:$("#tab_programs") });		
 	},
 	programsTopics: function(pge,params) {
-		App.views['dashboardProgramsTopics'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
-		this.load();
+		this.load('dashboardProgramsTopics',{ el:$("#tab_programs"), pge:pge, params: this.processParams(params) });
 	},
 	programsProposals: function(pge,params) {
-		App.views['dashboardProgramsProposals'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
-		this.load();
+		this.load('dashboardProgramsProposals',{ el:$("#tab_programs"), pge:pge, params: this.processParams(params) });
 	},
 	programsProposal: function(nsf_id,params) {
-		App.views['dashboardProgramsProposal'] = { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) };
-		this.load();
+		this.load('dashboardProgramsProposal',{ el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) });
 	},
 	division: function() {
-		App.views['dashboardDivision'] = { el:$("#tab_division") };
-		this.load();		
+		this.load('dashboardDivision',{ el:$("#tab_division") });		
 	},
-	geography: function() {
-		App.views['dashboardGeography'] = { el:$("#tab_geography") };
-		this.load();		
+	geography: function(params) {
+		this.load('dashboardGeography',{ el:$("#tab_geography"), params: this.processParams(params) });		
+	},
+	geographyInstitutions: function(state,params) {
+		this.load('dashboardGeographyInstitutions',{ el:$("#tab_geography"), state:state, params: this.processParams(params) });		
 	},
 	topics: function() {
-		App.views['researchTopics'] = { el:$("#research") };
-		this.load();		
+		this.load('researchTopics',{ el:$("#research") });		
 	},
 	topicsDivisions: function(topicid,params) {
-		App.views['researchTopicsDivisions'] = { el:$("#research"), topicid:topicid, params: this.processParams(params) };
-		this.load();
+		this.load('researchTopicsDivisions',{ el:$("#research"), topicid:topicid, params: this.processParams(params) });
 	},
 	topicsProposals: function(topicid,params) {
-		App.views['researchTopicsProposals'] = { el:$("#research"), topicid:topicid, params: this.processParams(params) };
-		this.load();
+		this.load('researchTopicsProposals',{ el:$("#research"), topicid:topicid, params: this.processParams(params) });
 	},
 	topicsProposal: function(nsf_id,params) {
-		App.views['researchTopicsProposal'] = { el:$("#research"), nsf_id:nsf_id, params: this.processParams(params) };
-		this.load();
+		this.load('researchTopicsProposal',{ el:$("#research"), nsf_id:nsf_id, params: this.processParams(params) });
 	},
 	proposalsProposal: function(nsf_id) {
-		App.views['proposalsProposal'] = { el:$("#main"), nsf_id:nsf_id };
-		this.load();
+		this.load('proposalsProposal',{ el:$("#main"), nsf_id:nsf_id });
 	},
 	defaultAction: function(actions){
-		//do nothing, just load any existing bootstrapped views
-		this.load();
+		//do nothing
 	},
 	processParams: function(params) {
 		//strip out ? from beginning of string
@@ -83,16 +75,10 @@ var AppRouter = Backbone.Router.extend({
 
 		return paramsAsHash;
 	},
-	load: function() {
-		//load the requested view
-		if (App.viewparams) params = App.viewparams;
-		if (App.views && _.size(App.views)>0) {
-			_.each(App.views, function(params,view) {
-				if (App.Views[view]) {
-					var view = App.Views[view];
-					new view(params);
-				}
-			});
-		};
+	load: function(view,params) {
+		if (App.Views[view]) {
+			var viewobj = App.Views[view];
+			new viewobj(params);						
+		}
 	}
 });

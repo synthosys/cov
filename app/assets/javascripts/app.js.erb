@@ -226,8 +226,22 @@ var App = {
 			});
 		    self.app_router = new AppRouter;
 		    Backbone.history.start();
+			//load any bootstrapped views
+			self.load();
 		});
     },
+	load: function() {
+		//load the requested view
+		//if (App.viewparams) params = App.viewparams;
+		if (App.views && _.size(App.views)>0) {
+			_.each(App.views, function(params,view) {
+				if (App.Views[view]) {
+					var viewobj = App.Views[view];
+					new viewobj(params);						
+				}
+			});
+		};
+	},
 	//adding commas to a number to format it
 	addCommas: function(nStr)
 	{

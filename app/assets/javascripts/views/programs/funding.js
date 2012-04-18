@@ -73,11 +73,12 @@ App.Views.programsFunding = Backbone.View.extend({
 			});
 		}
 		//data table
-		if (App.isDataTable(this.options.tableid)) {
+		/* if (App.isDataTable(this.options.tableid)) {
+console.log('clearing table');			
 			var oTable = renderTableTo.dataTable();
 			oTable.fnDestroy();
 			oTable.empty();
-		}
+		} */
 		renderTableTo.dataTable({
 			"bDestroy":true,
 			"bJQueryUI": true,

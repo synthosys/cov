@@ -2,8 +2,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	events: {
 		"click button#view_awards": "gotoProposals",
 		"submit form#topic_weights": "render",
-		"change select#filter_year_from": "loadList",
-		"change select#filter_year_to": "loadList"
+		"change select#filter_year_from": "load",
+		"change select#filter_year_to": "load"
 	},
 	initialize: function() {
 		_.bindAll(this, 'render'); //you must do this to trap bound events
@@ -27,7 +27,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				$("select#filter_year_from", self.el).html(App.renderYearSelect(year[0]?year[0]:startYear));
 				$("select#filter_year_to", self.el).html(App.renderYearSelect(year[1]?year[1]:endYear));
 				//load
-				self.loadList();
+				self.load();
             });
 		});
 	},
@@ -36,7 +36,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 
 		App.app_router.navigate('programs/proposals/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
 	},
-	loadList: function(e) {
+	load: function(e) {
 		if (e) e.preventDefault();
 		
 		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
