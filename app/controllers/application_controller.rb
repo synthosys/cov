@@ -37,7 +37,7 @@ class ApplicationController < ActionController::Base
     stored_location_for(resource) ||
       if resource.is_a?(User) 
           if resource.role?(:internal)
-            programs_path
+            dashboard_index_path(:anchor => 'programs')
           else
             proposals_path #  users_path
           end          
