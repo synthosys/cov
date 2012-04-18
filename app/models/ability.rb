@@ -60,7 +60,7 @@ class Ability
       elsif user.role? :internal
         can :read
         can :manage, Dashboard
-        can :manage, Topic
+        can :manage, Research
         cannot :manage, User
         cannot :manage, Proposal        
         can :update, User, :id => user.id

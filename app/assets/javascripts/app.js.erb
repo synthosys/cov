@@ -267,5 +267,13 @@ var App = {
 	        }
 	    }
 	    return false;
+	},
+	renderYearSelect: function (current) {
+		var html = '';
+		for (var i=getStartYear();i<=getCurrentYear();i++) {
+			var selected = (i.toString()==current.toString())?' selected':'';
+			html += '<option value="'+i.toString()+'"'+selected+'>'+i.toString()+'</option>';
+		}
+		return html;
 	}
 };

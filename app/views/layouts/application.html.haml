@@ -62,6 +62,7 @@
                   %ul.dropdown-menu                  
                     - if can? :manage, :internalUserCan
                       %li= link_to "Internal Access", dashboard_index_path(:anchor => "programs")
+                      %li= link_to "Research Topics", research_index_path(:anchor => "topics")
                     %li= link_to "Loaded Proposals", proposals_path
                     %li.divider
                     %li= link_to "All Users", users_path
@@ -70,7 +71,7 @@
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
                 %li= link_to "Programs", dashboard_index_path(:anchor => "programs")
-                %li= link_to "Research Topics", topics_index_path(:anchor => "topics")
+                %li= link_to "Research Topics", research_index_path(:anchor => "topics")
             - else
               %li= link_to "Home", pages_home_path
           %ul.nav.pull-right
@@ -124,9 +125,13 @@
   }
 
   function getStartYear(){
-  return '#{GLOBAL["dashboard_start_year"]}';
+  return '#{GLOBAL["app_start_year"]}';
   }
 
   function getEndYear(){
-  return '#{GLOBAL["dashboard_end_year"]}';
+  return '#{GLOBAL["app_end_year"]}';
+  }
+
+  function getCurrentYear(){
+  return '#{GLOBAL["app_current_year"]}';
   }

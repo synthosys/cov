@@ -59,11 +59,11 @@ App.Views.topicsFunding = Backbone.View.extend({
 		];
 		//if access to private data allowed
 		if (proposalaccessallowed) {
-			aoColumns.push({
+			columns.push({
 				"sTitle": "Declines",
 				"mDataProp": "count.decline"
 			});
-			aoColumns.push({
+			columns.push({
 				"sTitle": "Funding Rate",
 				"fnRender": function (oObj) {
 					return oObj.aData.fundingrate+'%';

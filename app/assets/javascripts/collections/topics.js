@@ -7,74 +7,78 @@ App.Collections.Topics = Backbone.Collection.extend({
 		return apiurl+'topic?'+params.join('&')+'&jsoncallback=?'; 
 	},
 	parse: function(data) {
-		var topicrelevance = this.currentlyloading?this.currentlyloading.toString():'1';
-		topicrelevance = "t"+topicrelevance;
+		//if a page is requested from the topic object, we don't have to process it, we simply return it
+		if (this.params.page) return data["data"];
+		else {
+			var topicrelevance = this.currentlyloading?this.currentlyloading.toString():'1';
+			topicrelevance = "t"+topicrelevance;
 
-		var rawdata = data["data"];
-		
-		//make a list of the years
-		var years = _.pluck(rawdata,"year");
-		years = _.uniq(years);
-		
-		//prepare data
-		//group by t
-		var grouped = _.groupBy(rawdata,function(row) { return row[topicrelevance]; });
-		//now assemble
-		var collated = [];
-		for (var t in grouped) {
-			if (t!='undefined') {
-				var topicid = t;
-				//now reduce
-				var tmp = _.reduce(grouped[t],function(memo,row) {
-					//words and labels
-					if (!App.legend_topics[topicid]["label"]) var label = 'Not Electronically Readable';
-					else var label = App.legend_topics[topicid]["label"];
-					if (!App.legend_topics[topicid]["words"]) var words = '';
-					else var words = App.legend_topics[topicid]["words"];
-					//counts and funding
-					var count_awarded = 0;
-					var count_declined = 0;
-					var count_other = 0;
-					var funding_awarded = 0;
-					var funding_requested = 0;
-					if (row["status"]=="award") {
-						funding_awarded = row["awarded_dollar"];
-						count_awarded = row["count"];
-					} else if (row["status"]=="decline") {
-						count_declined = row["count"];
-					} else {
-						count_other = row["count"];
-					}
-					if (row["request_dollar"]) funding_requested = row["request_dollar"];
-					return {t:memo["t"],label:label,words:words,count:{award:memo.count.award+count_awarded,decline:memo.count.decline+count_declined,other:memo.count.other+count_other},funding:{award:memo.funding.award+funding_awarded,request:memo.funding.request+funding_requested}};
-				},{t:topicid,label:null,words:null,count:{award:0,decline:0,other:0},funding:{award:0,request:0}});
+			var rawdata = data["data"];
 
-				var topic_by_year = {};
-				_.each(years, function(year) {
-					var filtered = _.filter(grouped[t], function(item) { return item.year==year; });	
-					topic_by_year[year] = _.reduce(filtered, function(memo,row) {
-						var awarded_count = 0, declined_count = 0, other_count = 0;
-						var awarded_dollar = 0, requested_dollar = 0;
-						if (row.status=='award') {
-							awarded_count = row["count"];
-							awarded_dollar = row["awarded_dollar"];
-						}
-						else if (row.status=='decline') {
-							declined_count = row["count"];
-							requested_dollar = row["requested_dollar"];
+			//make a list of the years
+			var years = _.pluck(rawdata,"year");
+			years = _.uniq(years);
+
+			//prepare data
+			//group by t
+			var grouped = _.groupBy(rawdata,function(row) { return row[topicrelevance]; });
+			//now assemble
+			var collated = [];
+			for (var t in grouped) {
+				if (t!='undefined') {
+					var topicid = t;
+					//now reduce
+					var tmp = _.reduce(grouped[t],function(memo,row) {
+						//words and labels
+						if (!App.legend_topics[topicid]["label"]) var label = 'Not Electronically Readable';
+						else var label = App.legend_topics[topicid]["label"];
+						if (!App.legend_topics[topicid]["words"]) var words = '';
+						else var words = App.legend_topics[topicid]["words"];
+						//counts and funding
+						var count_awarded = 0;
+						var count_declined = 0;
+						var count_other = 0;
+						var funding_awarded = 0;
+						var funding_requested = 0;
+						if (row["status"]=="award") {
+							funding_awarded = row["awarded_dollar"];
+							count_awarded = row["count"];
+						} else if (row["status"]=="decline") {
+							count_declined = row["count"];
 						} else {
-							other_count = row["count"];
+							count_other = row["count"];
 						}
-						return {count:{award:memo.count.award+awarded_count, decline:memo.count.decline+declined_count,other:memo.count.other+other_count}, funding:{award:memo.funding.award+awarded_dollar,request:memo.funding.request+requested_dollar}};
-					},{count:{award:0,decline:0,other:0},funding:{award:0,request:0}});			
-				});
-				tmp.years = topic_by_year;
+						if (row["request_dollar"]) funding_requested = row["request_dollar"];
+						return {t:memo["t"],label:label,words:words,count:{award:memo.count.award+count_awarded,decline:memo.count.decline+count_declined,other:memo.count.other+count_other},funding:{award:memo.funding.award+funding_awarded,request:memo.funding.request+funding_requested}};
+					},{t:topicid,label:null,words:null,count:{award:0,decline:0,other:0},funding:{award:0,request:0}});
 
-				//save it
-				collated.push(tmp);				
+					var topic_by_year = {};
+					_.each(years, function(year) {
+						var filtered = _.filter(grouped[t], function(item) { return item.year==year; });	
+						topic_by_year[year] = _.reduce(filtered, function(memo,row) {
+							var awarded_count = 0, declined_count = 0, other_count = 0;
+							var awarded_dollar = 0, requested_dollar = 0;
+							if (row.status=='award') {
+								awarded_count = row["count"];
+								awarded_dollar = row["awarded_dollar"];
+							}
+							else if (row.status=='decline') {
+								declined_count = row["count"];
+								requested_dollar = row["requested_dollar"];
+							} else {
+								other_count = row["count"];
+							}
+							return {count:{award:memo.count.award+awarded_count, decline:memo.count.decline+declined_count,other:memo.count.other+other_count}, funding:{award:memo.funding.award+awarded_dollar,request:memo.funding.request+requested_dollar}};
+						},{count:{award:0,decline:0,other:0},funding:{award:0,request:0}});			
+					});
+					tmp.years = topic_by_year;
+
+					//save it
+					collated.push(tmp);				
+				}
 			}
+			return collated;			
 		}
-		return collated;
 	},
 	load: function(params) {
 		this.params = params;
@@ -179,5 +183,9 @@ App.Collections.Topics = Backbone.Collection.extend({
 			//trigger load complete event
 			this.trigger('loadcomplete');			
 		}
+	},
+	formatFunding: function(funding) {
+		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(2)+'M';
+		else return '';
 	}
 });

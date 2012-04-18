@@ -1,3 +1,4 @@
 #dashboard start year
-dashboard_start_year: 2007
-dashboard_end_year: 2009
+app_start_year: 2007
+app_end_year: 2009
+app_current_year: 2012

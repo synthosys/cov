@@ -1,12 +1,22 @@
 var AppRouter = Backbone.Router.extend({
 	routes: {
 		// Define some URL routes
+		//Dashboard
 		'programs': 'programs',
 		'programs/topics/:pge/*params': 'programsTopics',
-		'programs/awards/:pge/*params': 'programsAwards',
-		'programs/details/:nsf_id/*params': 'programsDetails',
+		'programs/proposals/:pge/*params': 'programsProposals',
+		'programs/proposal/:nsf_id/*params': 'programsProposal',
 		'division': 'division',
-
+		'geography': 'geography',
+		
+		'proposals/:nsf_id': 'proposalsProposal',
+		
+		//Research Topics
+		'topics': 'topics',
+		'topics/divisions/:topicid/*params': 'topicsDivisions',
+		'topics/proposals/:topicid/*params': 'topicsProposals',
+		'topics/proposal/:nsf_id/*params': 'topicsProposal',
+		
 		// Default
 		'*actions': 'defaultAction' //using splats
 	},
@@ -19,17 +29,41 @@ var AppRouter = Backbone.Router.extend({
 		App.views['dashboardProgramsTopics'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
 		this.load();
 	},
-	programsAwards: function(pge,params) {
-		App.views['dashboardProgramsAwards'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
+	programsProposals: function(pge,params) {
+		App.views['dashboardProgramsProposals'] = { el:$("#tab_programs"), pge:pge, params: this.processParams(params) };
 		this.load();
 	},
-	programsDetails: function(nsf_id,params) {
-		App.views['dashboardProgramsAwardsDetails'] = { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) };
+	programsProposal: function(nsf_id,params) {
+		App.views['dashboardProgramsProposal'] = { el:$("#tab_programs"), nsf_id:nsf_id, params: this.processParams(params) };
 		this.load();
 	},
 	division: function() {
 		App.views['dashboardDivision'] = { el:$("#tab_division") };
 		this.load();		
+	},
+	geography: function() {
+		App.views['dashboardGeography'] = { el:$("#tab_geography") };
+		this.load();		
+	},
+	topics: function() {
+		App.views['researchTopics'] = { el:$("#research") };
+		this.load();		
+	},
+	topicsDivisions: function(topicid,params) {
+		App.views['researchTopicsDivisions'] = { el:$("#research"), topicid:topicid, params: this.processParams(params) };
+		this.load();
+	},
+	topicsProposals: function(topicid,params) {
+		App.views['researchTopicsProposals'] = { el:$("#research"), topicid:topicid, params: this.processParams(params) };
+		this.load();
+	},
+	topicsProposal: function(nsf_id,params) {
+		App.views['researchTopicsProposal'] = { el:$("#research"), nsf_id:nsf_id, params: this.processParams(params) };
+		this.load();
+	},
+	proposalsProposal: function(nsf_id) {
+		App.views['proposalsProposal'] = { el:$("#main"), nsf_id:nsf_id };
+		this.load();
 	},
 	defaultAction: function(actions){
 		//do nothing, just load any existing bootstrapped views
