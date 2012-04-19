@@ -80,8 +80,8 @@
               - elsif can? :read, Proposal
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
-                %li= link_to "Programs", dashboard_index_path(:anchor => "programs")
-                %li= link_to "Research Topics", research_index_path(:anchor => "topics")
+                %li{:class => controller_name == "dashboard" ? 'active': ''}= link_to"Program Dashboard", dashboard_index_path(:anchor => "programs")
+                %li{:class => controller_name == "research" ? 'active': ''}= link_to "Research Topics", research_index_path(:anchor => "topics")
             - else
               %li= link_to "Home", pages_home_path
           %ul.nav.pull-right
@@ -144,4 +144,8 @@
 
   function getCurrentYear(){
   return '#{GLOBAL["app_current_year"]}';
+  }
+
+  function isPrivateDataAccessAllowed(){
+  return #{ can? :nsf, :privateCan };
   }

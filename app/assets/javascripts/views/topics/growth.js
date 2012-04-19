@@ -97,6 +97,9 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		
 		//render the graph
 		if (years.length>1) this.renderGraph('growth.'+datatype,'desc',25,'Awarded'+((datatype=='funding')?' ($)':' (#)')); else $('#'+this.options.graphid, this.el).html('');
+
+		//backbone convention to allow chaining
+		return this;
 	},
 	renderGraph: function(sortBy,sortOrder,numItems,title) {
 		var datatype = this.options.datatype;

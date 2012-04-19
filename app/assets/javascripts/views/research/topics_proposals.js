@@ -20,5 +20,8 @@ App.Views.researchTopicsProposals = Backbone.View.extend({
 	},
 	render: function() {
 		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), topicid:this.options.topicid, org:this.options.params['org'], year: this.options.params['year'], route:'topics/proposal'});
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

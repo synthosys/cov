@@ -138,7 +138,7 @@ App.Views.NewProposal = Backbone.View.extend({
 					//record the current index
 					self.load_index = 0;
 					//begin load
-					self.loadProposalView = new App.Views.LoadProposal({ el:$("div#loadstatus") });
+					self.loadProposalView = new App.Views.LoadProposal({ el:"div#loadstatus" });
 					self.loadProposals();
 				} else {
 					self.enableGo();

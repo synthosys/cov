@@ -73,12 +73,11 @@ App.Views.programsFunding = Backbone.View.extend({
 			});
 		}
 		//data table
-		/* if (App.isDataTable(this.options.tableid)) {
-console.log('clearing table');			
+		if (App.isDataTable(this.options.tableid)) {
 			var oTable = renderTableTo.dataTable();
 			oTable.fnDestroy();
 			oTable.empty();
-		} */
+		}
 		renderTableTo.dataTable({
 			"bDestroy":true,
 			"bJQueryUI": true,
@@ -91,6 +90,9 @@ console.log('clearing table');
 		
 		//render the graph
 		this.renderGraph('count.award','count.award','desc',25,'Awarded');
+
+		//backbone convention to allow chaining
+		return this;
 	},
 	renderGraph: function(dataAttribute,sortBy,sortOrder,numItems,title) {
 		//if funding rate

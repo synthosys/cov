@@ -24,6 +24,8 @@ App.Views.dashboardPrograms = Backbone.View.extend({
 		App.app_router.navigate('programs/topics/'+id+'/', {trigger: true});
 	},
    	render: function() {
+		$("#pge_table", this.el).empty();
+		
        	// get a list of pges
 		for (var i = 0; i < this.collection.models.length; i=i+2) {
 			var html = '<tr>';
@@ -35,5 +37,8 @@ App.Views.dashboardPrograms = Backbone.View.extend({
 			$("#pge_table", this.el).append(html);
 		}
 		$('div#loader', this.el).html('');				
+
+		//backbone convention to allow chaining
+		return this;
    	}
 });

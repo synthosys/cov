@@ -25,6 +25,9 @@ App.Views.proposalsProposal = Backbone.View.extend({
 			});
 			$('div#researchers_loader', this.el).html('');
 		});
+
+		//backbone convention to allow chaining
+		return this;
    	}
 });
 

@@ -41,6 +41,7 @@ class Ability
       can :update, User, :id => user.id 
       can :manage, Dashboard
       can :manage, Research
+      can :nsf, :privateCan
     elsif User.all.length == 0
       can :create, User
     end 

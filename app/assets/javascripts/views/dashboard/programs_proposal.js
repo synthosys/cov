@@ -23,6 +23,9 @@ App.Views.dashboardProgramsProposal = Backbone.View.extend({
 	},
    	render: function() {
 		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id});
+
+		//backbone convention to allow chaining
+		return this;
    	}
 });
 

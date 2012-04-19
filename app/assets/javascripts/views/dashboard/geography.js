@@ -10,7 +10,7 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		
 		var self = this;
 		require(['text!templates/dashboard/geography.html'], function(html) {
-			self.el.html(html);
+			$(self.el).html(html);
 			//set year selection
 			var startYear = getStartYear();
 			var endYear = getEndYear();
@@ -119,5 +119,8 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		});
 
 		$('div#loader', this.el).html('');		
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

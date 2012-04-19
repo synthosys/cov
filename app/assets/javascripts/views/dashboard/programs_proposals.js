@@ -24,5 +24,8 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	},
 	render: function() {
 		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), org: getDivision(), pge:this.options.pge, year: this.options.params['year'], route:'programs/proposal'});
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

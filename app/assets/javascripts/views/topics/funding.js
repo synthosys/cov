@@ -90,6 +90,9 @@ App.Views.topicsFunding = Backbone.View.extend({
 		
 		//render the graph
 		this.renderGraph('count.award','count.award','desc',25,'Awarded');
+
+		//backbone convention to allow chaining
+		return this;
 	},
 	renderGraph: function(dataAttribute,sortBy,sortOrder,numItems,title) {
 		//if funding rate

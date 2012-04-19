@@ -106,5 +106,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sSearch": "Keyword Filter:"
 			}
 		});
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

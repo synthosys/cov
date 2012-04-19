@@ -155,5 +155,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
 		});
 		
+		//backbone convention to allow chaining
+		return this;
    	}
 });

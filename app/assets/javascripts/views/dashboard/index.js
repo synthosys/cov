@@ -47,6 +47,9 @@ App.Views.Dashboard = Backbone.View.extend({
 		$("#division", this.el).html(App.divisions[division]?App.divisions[division]:division);
 		//show the division summary
 		this.renderSummary(division,getStartYear(),getEndYear());
+
+		//backbone convention to allow chaining
+		return this;		
 	},
 	renderSummary: function(division,startyear,endyear) {
 		var template = _.template($("#template_division_summary", this.el).html());

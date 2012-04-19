@@ -19,7 +19,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			// lookup using pge legend in the data api
 			$.getJSON(apiurl+"prop?legend=nsf_pge&q="+self.options.pge+"&jsoncallback=?", function(data){
 				var html = template({pge:self.options.pge,label:data?data[0].label:''}); //save it off
-				self.el.html(html);
+				$(self.el).html(html);
 				//set year selection
 				var startYear = getStartYear();
 				var endYear = getEndYear();
@@ -143,5 +143,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
 		});
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

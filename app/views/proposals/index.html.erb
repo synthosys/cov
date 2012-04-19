@@ -5,7 +5,7 @@
 	<table class="table table-striped table-bordered table-condensed" id="proposals_table">
 	</table>
 	<script type="text/Javascript">
-	App.views['ListProposal'] = { el:$("#proposals_table"), division:'<%= current_user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 300 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true }, \"lastupdated\" : { \"bVisible\": true } }") else "{}" end %> };
+	App.views['ListProposal'] = { el:"#proposals_table", division:'<%= current_user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %>, columns: <%= if can? :manage, :assignDivisionCan then raw("{ \"title\" : { \"sWidth\": 300 }, \"division\" : { \"bVisible\": true, \"bSearchable\": true }, \"lastupdated\" : { \"bVisible\": true } }") else "{}" end %> };
 	</script>
 <% else %>
 

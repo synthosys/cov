@@ -71,5 +71,8 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 		});
 
 		$('div#loader', this.el).html('');		
+
+		//backbone convention to allow chaining
+		return this;
 	}
 });

@@ -263,6 +263,9 @@ App.Views.ShowProposal = Backbone.View.extend({
 		} else {
 			this.showDetails();		
 		}
+
+		//backbone convention to allow chaining
+		return this;
 	},
 	showDetails: function() {
 		if (this.showProposalDetailsView==undefined) {

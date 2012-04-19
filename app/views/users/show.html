@@ -27,5 +27,5 @@
 </table>
 
 <script type="text/Javascript">
-App.views['ShowUser'] = { el:$("#main"), user_id:'<%= @user.id %>', division:'<%= @user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, columns: { "title": { "sWidth": "300", "bSortable": false }, "date" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "amount" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "panels" : { "sWidth": "200", "bSearchable": true, "bVisible": true, "bSortable": false }, "assigned" : { "bSearchable": false, "bVisible": false } }, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> };
+App.views['ShowUser'] = { el:"#main", user_id:'<%= @user.id %>', division:'<%= @user.division %>', proposals: <%= raw(@proposal.to_json(:include => [:users, :associations])) %>, columns: { "title": { "sWidth": "300", "bSortable": false }, "date" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "amount" : { "bSearchable": true, "bVisible": true, "bSortable": false }, "panels" : { "sWidth": "200", "bSearchable": true, "bVisible": true, "bSortable": false }, "assigned" : { "bSearchable": false, "bVisible": false } }, allowEdit: <%= if can? :manage, :assignDivisionCan then true else false end %> };
 </script>

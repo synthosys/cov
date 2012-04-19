@@ -7,7 +7,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 	initialize: function() {
 		var self = this;
 		require(['text!templates/dashboard/division.html'], function(html) {
-			self.el.html(html);
+			$(self.el).html(html);
 			//set year selection
 			var startYear = getStartYear();
 			var endYear = getEndYear();
@@ -20,6 +20,9 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		//set what type of data we're showing
 		$("select#filter_data", this.el).val(this.options.params && this.options.params['data']?this.options.params['data']:'programs_funding');
 		this.loadData();		
+		
+		//backbone convention to allow chaining
+		return this;
 	},
 	showData: function() {
 		//simply switch a view, no need to reload data

@@ -39,7 +39,6 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 	gotoTopics: function(e) {
 		e.preventDefault();
 
-console.log('going back');
 		window.history.back();
 	},
 	gotoProposals: function(e) {
@@ -227,5 +226,8 @@ console.log('going back');
 		}
 		summary_current_html += '</p>';
 		$('#summary_current', this.el).html(summary_current_html);
+
+		//backbone convention to allow chaining
+		return this;
    	}
 });

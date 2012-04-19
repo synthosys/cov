@@ -124,6 +124,9 @@ App.Views.ListProposal = Backbone.View.extend({
 			"aoColumns": aoColumns,
 			"aaSorting": [[8, 'desc']]
 		});	
+
+		//backbone convention to allow chaining
+		return this;
 	},
 	addProposal: function(proposal) {
 		this.collection.add(proposal);
