@@ -39,6 +39,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 	gotoTopics: function(e) {
 		e.preventDefault();
 
+console.log('going back');
 		window.history.back();
 	},
 	gotoProposals: function(e) {

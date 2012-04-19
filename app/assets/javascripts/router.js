@@ -76,9 +76,30 @@ var AppRouter = Backbone.Router.extend({
 		return paramsAsHash;
 	},
 	load: function(view,params) {
+		//Destroy each loaded datatable object explicitly, even though we clear the DOM, these are hanging
+		//around and causing issues with trapped events
+		/* var allTables = jQuery('#main table');
+		for(var i = 0; i < allTables.length; i++) {
+			if (App.isDataTable(allTables[i].id)) {
+console.log(allTables[i].id);				
+				//unbind events
+				$('#' + allTables[i].id).off();
+				var oTable = $('#' + allTables[i].id).dataTable();
+				oTable.fnDestroy();
+			}
+		} */
+		//unload the current view, prevent zombies, remove existing event bindings
+		if (this.currentView){
+			$(this.currentView.el).empty; //do this instead of a remove, if you remove, the DOM elem will be removed and since multiple views use that elem, it won't work
+			this.currentView.undelegateEvents();
+			if (this.currentView.onClose){
+				this.currentView.onClose();
+			}
+		}
+		//load the view
 		if (App.Views[view]) {
 			var viewobj = App.Views[view];
-			new viewobj(params);						
+		    this.currentView = new viewobj(params);	
 		}
 	}
 });
