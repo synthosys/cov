@@ -61,7 +61,7 @@
                     %b.caret
                   %ul.dropdown-menu                  
                     - if !current_user.division.blank?
-                      %li= link_to "Program Dashboard", dashboard_index_path(:anchor => "programs")
+                      %li= link_to "Dashboard", dashboard_index_path(:anchor => "programs")
                       %li= link_to "Research Topics", research_index_path(:anchor => "topics")
                     %li= link_to "Loaded Proposals", proposals_path
                     %li.divider
@@ -75,13 +75,21 @@
                     %b.caret
                   %ul.dropdown-menu                  
                     %li= link_to "Assigned Proposals", proposals_path
-                    %li= link_to "Program Dashboard", dashboard_index_path(:anchor => "programs")
+                    %li= link_to "Dashboard", dashboard_index_path(:anchor => "programs")
                     %li= link_to "Research Topics", research_index_path(:anchor => "topics")
               - elsif can? :read, Proposal
                 %li= link_to "Assigned Proposals", proposals_path
               - else 
-                %li{:class => controller_name == "dashboard" ? 'active': ''}= link_to"Program Dashboard", dashboard_index_path(:anchor => "programs")
+                %li{:class => controller_name == "dashboard" ? 'active': ''}= link_to "Dashboard", dashboard_index_path(:anchor => "programs")
                 %li{:class => controller_name == "research" ? 'active': ''}= link_to "Research Topics", research_index_path(:anchor => "topics")
+                %li.navbar-text.dropdown
+                  %a.dropdown-toggle{ "data-toggle" => "dropdown", :href => "#" }
+                    More Tools
+                    %b.caret
+                  %ul.dropdown-menu
+                    %li= link_to "Portfolio Explorer", "http://readidata.nitrd.gov/star/explore.php" , {:target => "_blank" }
+                    %li= link_to "Expertise Locator", "http://readidata.nitrd.gov/star/locate.php" , {:target => "_blank" }
+                    %li= link_to "Patents", "http://readidata.nitrd.gov/star/locate.php" , {:target => "_blank" }
             - else
               %li= link_to "Home", pages_home_path
           %ul.nav.pull-right

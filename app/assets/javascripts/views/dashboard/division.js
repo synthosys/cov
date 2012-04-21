@@ -11,8 +11,8 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			//set year selection
 			var startYear = getStartYear();
 			var endYear = getEndYear();
-			$("select#filter_year_from", self.el).html(App.renderYearSelect(getStartYear()));
-			$("select#filter_year_to", self.el).html(App.renderYearSelect(getEndYear()));
+			$("select#filter_year_from", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),getStartYear()));
+			$("select#filter_year_to", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),getEndYear()));
 			self.render();
 		})		
 	},

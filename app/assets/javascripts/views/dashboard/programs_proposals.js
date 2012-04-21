@@ -1,5 +1,6 @@
 App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	events: {
+		"click button#view_programs": "gotoPrograms",
 		"click button#view_topics": "gotoTopics"
 	},
 	initialize: function() {
@@ -17,10 +18,16 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
             });
 		})
 	},
-	gotoTopics: function(e) {
+	gotoPrograms: function(e) {
 		e.preventDefault();
 
-		window.history.back();
+		App.app_router.navigate('programs',{trigger: true});
+	},
+	gotoTopics: function(e) {
+		e.preventDefault();
+		
+		var id = $(e.currentTarget).attr('id');
+		App.app_router.navigate('programs/topics/'+this.options.pge+'/?year='+this.options.params['year'], {trigger: true});
 	},
 	render: function() {
 		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), org: getDivision(), pge:this.options.pge, year: this.options.params['year'], route:'programs/proposal'});

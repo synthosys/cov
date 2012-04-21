@@ -1,7 +1,8 @@
 App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	events: {
-		"click button#view_awards": "gotoProposals",
-		"submit form#topic_weights": "render",
+		"click button#view_proposals": "gotoProposals",
+		"click button#update": "render",
+		"click button#reset": "reset",
 		"change select#filter_year_from": "load",
 		"change select#filter_year_to": "load"
 	},
@@ -24,8 +25,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				var startYear = getStartYear();
 				var endYear = getEndYear();
 				var year = self.options.params['year']?self.options.params['year'].split('-'):[startYear,endYear];
-				$("select#filter_year_from", self.el).html(App.renderYearSelect(year[0]?year[0]:startYear));
-				$("select#filter_year_to", self.el).html(App.renderYearSelect(year[1]?year[1]:endYear));
+				$("select#filter_year_from", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),year[0]?year[0]:startYear));
+				$("select#filter_year_to", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),year[1]?year[1]:endYear));
 				//load
 				self.load();
             });
@@ -34,7 +35,18 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	gotoProposals: function(e) {
 		e.preventDefault();
 
-		App.app_router.navigate('programs/proposals/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+		window.history.back();
+		//App.app_router.navigate('programs/proposals/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+	},
+	reset: function(e) {
+		e.preventDefault();
+		
+		$("input#t1").val('4');
+		$("input#t2").val('3');
+		$("input#t3").val('2');
+		$("input#t4").val('1');
+		
+		this.render();
 	},
 	load: function(e) {
 		if (e) e.preventDefault();
@@ -89,12 +101,13 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"fnRender": function( oObj ) {
 					return oObj.aData.weighted.toFixed(0);
 				},
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "weighted"
 			},
 			{
 				"fnRender": function ( oObj ) {
-					var html = '<strong>t'+oObj.aData.topicid+': '+oObj.aData.label+'</strong>';
-					if (oObj.aData.words) html += ' - '+oObj.aData.words;
+					var html = '<strong>t'+oObj.aData.topicid+'</strong>';
+					if (oObj.aData.words) html += ': '+oObj.aData.words;
 					return html;
 				},
 				"sTitle": "Topic",
@@ -103,6 +116,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			{
 				"sTitle": "Awarded",
 				"bVisible": true,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
 			{
@@ -112,16 +126,19 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"bUseRendered": false,
 				"bVisible": true,
 				"sTitle": "Awarded Amt.",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.award"
 			}
 		];
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": "Declined",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
 			columns.push({
 				"sTitle": "Other",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.other"
 			});
 			columns.push({
@@ -130,15 +147,12 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				},
 				"bUseRendered": false,
 				"sTitle": "Requested Amt.",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.request"
 			});
 		}
-		
-		$('#topics_table', this.el).dataTable({
-			"bDestroy": true,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers",
-			"iDisplayLength": 50,
+
+		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]

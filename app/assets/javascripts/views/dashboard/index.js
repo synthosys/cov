@@ -46,12 +46,15 @@ App.Views.Dashboard = Backbone.View.extend({
 		//show the division
 		$("#division", this.el).html(App.divisions[division]?App.divisions[division]:division);
 		//show the division summary
-		this.renderSummary(division,getStartYear(),getEndYear());
+		this.renderSummary();
 
 		//backbone convention to allow chaining
 		return this;		
 	},
-	renderSummary: function(division,startyear,endyear) {
+	renderSummary: function() {
+		var division = getDivision();
+		var startyear = getStartYear();
+		var endyear = getCurrentYear();
 		var template = _.template($("#template_division_summary", this.el).html());
 		var loader = "<img src='" + baseURI + "/assets/ajax-load.gif" + "'/>";
 		var data = { 'startyear': startyear, 'endyear': endyear, 'awards':loader, 'declines': '', 'institutions': loader, 'researchers': loader };

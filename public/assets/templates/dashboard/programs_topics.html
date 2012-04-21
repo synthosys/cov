@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="span9">
 		<h3>Program ID: p{{pge}} - {{label}}</h3>
-		<p>Below is the list of Research Topics that were assigned to the Proposals in the Program you selected.</p>
+		<p>Below are the Research Topics assigned to the Proposals in the Program you selected. The Awarded/Declined columns reflect the number of proposals with the Topic assigned. Please review the sidebar for additional information.</p>
 		<div class="row">
 		<div class="span9 table-header-controls">
 		<form class="form-horizontal pull-right">
@@ -24,7 +24,7 @@
 	</div><!-- span9 -->
 	<div class="span3">
 		<div class="cf" style="margin-bottom: 15px;">
-		<button class="btn btn-primary pull-right" id="view_awards">View Proposals <i class="icon-chevron-right icon-white"></i></button>
+		<button class="btn btn-primary pull-right" id="view_proposals"><i class="icon-chevron-left icon-white"></i> View Proposals</button>
 		</div>
 		<div class="cf" style="margin-top: 33px; clear:both;">
 		<h4>Research Topic Weighting</h4>
@@ -38,8 +38,7 @@
 						<th>Weight</th>
 					</tr>
 				</thead>
-			</table>
-			
+			</table>			
 				<div class="input-prepend">
 					<span class="add-on">1st</span>
 					<input type="text" id="t1" class="span1" value="4">
@@ -51,7 +50,7 @@
 				</div><!-- /input-prepend -->
 				
 				<div class="input-prepend">
-					<span class="add-on">2nd</span>
+					<span class="add-on">3rd</span>
 					<input type="text" id="t3" class="span1" value="2">
 				</div><!-- /input-prepend -->
 
@@ -60,9 +59,19 @@
 					<input type="text" id="t4" class="span1" value="1">
 				</div><!-- /input-prepend -->
 				<div class="text-center">
-			<button type="submit" class="btn"><i class="icon-refresh"></i> Update Table</button>
+					<small>(enter ‘0’ to omit Topic assignment)</small>
+					<div class="btn-toolbar">
+					<button id="reset" class="btn">Defaults</button>
+					<button id="update" class="btn btn-primary">Update</button>
+					</div>
 			</div><!-- /text-center -->
 		</form>
+		<small><strong>Example:</strong> using the default weighting of 4/3/2/1, the Prevalence of a Topic would be 20 if it the assignments were:<br />
+		3 Proposals with Topic as Primary (3*4)<br />
+		2 Proposals with Topic as the 3rd (2*2)<br />
+		4 Proposals with Topic as the 4th (4*1)<br />
+		<br />
+		<strong>Tip: </strong>if you would like to show only those Proposals with the Research Topic assigned as the Primary Topic, enter 1/0/0/0 as your weights.</small>
 	</div><!-- inline-style -->
 
 	</div><!-- span3 -->

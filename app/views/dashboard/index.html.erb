@@ -1,10 +1,9 @@
+<div class="pull-right alert" id="division_summary">
+</div>
 <div class="page-header">
-	<div class="pull-right alert" id="division_summary">
-	</div>
 	<h1 id="directorate"></h1>
 	<h2 id="division"></h2>
 </div>
-
 <div id="dashboard" class="tabbable">
 	<ul class="nav nav-tabs">
 		<li><a href="#tab_programs" data-toggle="tab">Programs</a></li>
@@ -24,13 +23,10 @@
 	<div class="span2">
 	{{= if (awards) { }}<strong>Awards: </strong><span id="awards">{{awards}}</span><br />{{= } }}
 	{{= if (declines) { }}<strong>Declines: </strong><span id="institutions">{{declines}}</span>{{= } }}	
-	</p>
 	</div>
 	<div class="span2">
-	<p>
 	{{= if (researchers) { }}<strong>Researchers: </strong><span id="researchers">{{researchers}}</span><br />{{= } }}
 	{{= if (institutions) { }}<strong>Institutions: </strong><span id="institutions">{{institutions}}</span>{{= } }}	
-	</p>
 	</div>
 </div>
 </script>

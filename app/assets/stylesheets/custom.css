@@ -248,6 +248,10 @@ font-size: 26px;
 color: #334779;
 }
 
+.page-header h2 {
+margin-top: 10px;
+}
+
 h2 {
 font-size: 18px;
 line-height: 19px;

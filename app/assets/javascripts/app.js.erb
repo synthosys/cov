@@ -269,6 +269,23 @@ var App = {
 		});
 		return object;
 	},
+	renderDataTable: function(el,params) {
+		el.dataTable({
+			"bDestroy": _.has(params,'bDestroy')?params.bDestroy:true,
+			"bJQueryUI": _.has(params,'bJQueryUI')?params.bJQueryUI:true,
+			"sPaginationType": _.has(params,'sPaginationType')?params.sPaginationType:"full_numbers",
+			"iDisplayLength": _.has(params,'iDisplayLength')?params.iDisplayLength:50,
+			"bAutoWidth": _.has(params,'bAutoWidth')?params.bAutoWidth:true,
+			"bProcessing": true,
+			"aaData": params.aaData,
+			"aoColumns": params.aoColumns,
+			"aaSorting": _.has(params,'aaSorting')?params.aaSorting:[],
+			"oLanguage": {
+				"sLengthMenu:": "Display _MENU_ records per page",
+				"sSearch": "Keyword Filter:"
+			}
+		});		
+	},
 	isDataTable: function( sInstance )
 	{
 	    var settings = $.fn.dataTableSettings;
@@ -282,9 +299,9 @@ var App = {
 	    }
 	    return false;
 	},
-	renderYearSelect: function (current) {
+	renderYearSelect: function (start,end,current) {
 		var html = '';
-		for (var i=getStartYear();i<=getCurrentYear();i++) {
+		for (var i=start;i<=end;i++) {
 			var selected = (i.toString()==current.toString())?' selected':'';
 			html += '<option value="'+i.toString()+'"'+selected+'>'+i.toString()+'</option>';
 		}

@@ -1,6 +1,6 @@
 App.Views.dashboardPrograms = Backbone.View.extend({
 	events: {
-		"click a[class=link_to_topics]": "gotoTopics"
+		"click a[class=link_to_proposals]": "gotoProposals"
 	},
 	initialize: function() {
 		//use programs collection
@@ -17,11 +17,11 @@ App.Views.dashboardPrograms = Backbone.View.extend({
 			self.collection.fetch();
 		})
     },
-	gotoTopics: function(e) {
+	gotoProposals: function(e) {
 		e.preventDefault();
-		
+
 		var id = $(e.currentTarget).attr('id');
-		App.app_router.navigate('programs/topics/'+id+'/', {trigger: true});
+		App.app_router.navigate('programs/proposals/'+id+'/?year='+getStartYear()+'-'+getEndYear(), {trigger: true});
 	},
    	render: function() {
 		$("#pge_table", this.el).empty();
@@ -29,9 +29,9 @@ App.Views.dashboardPrograms = Backbone.View.extend({
        	// get a list of pges
 		for (var i = 0; i < this.collection.models.length; i=i+2) {
 			var html = '<tr>';
-			html += '<td><a href="#" id="'+this.collection.models[i].get("pge")+'" class="link_to_topics">p'+ this.collection.models[i].get("pge")+' - '+this.collection.models[i].get("label")+'</a></td>';
+			html += '<td><a href="#" id="'+this.collection.models[i].get("pge")+'" class="link_to_proposals">p'+ this.collection.models[i].get("pge")+' - '+this.collection.models[i].get("label")+'</a></td>';
 			html += '<td>';
-			if (this.collection.models[i+1]) html += '<a href="#" id="'+this.collection.models[i+1].get("pge")+'" class="link_to_topics">p'+this.collection.models[i+1].get("pge")+' - '+this.collection.models[i+1].get("label")+'</a>';
+			if (this.collection.models[i+1]) html += '<a href="#" id="'+this.collection.models[i+1].get("pge")+'" class="link_to_proposals">p'+this.collection.models[i+1].get("pge")+' - '+this.collection.models[i+1].get("label")+'</a>';
 			html += '</td>';
 			html+= '</tr>';
 			$("#pge_table", this.el).append(html);
