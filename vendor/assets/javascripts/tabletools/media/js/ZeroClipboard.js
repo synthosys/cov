@@ -65,6 +65,7 @@ var ZeroClipboard_TableTools = {
 			try {
 		        obj = obj.offsetParent;
 		    } catch (e) {
+				obj = null;
 		    }		    
 			//obj = obj.offsetParent;
 		}

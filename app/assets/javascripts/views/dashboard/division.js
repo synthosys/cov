@@ -88,6 +88,9 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		var startYear = $('select#filter_year_from', this.el).val();
 		var endYear = $('select#filter_year_to', this.el).val();
 
+		//clear datatable if exists
+		App.clearDataTable('division_table', $('#division_table', this.el));
+
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
 			//use programs collection, if already loaded, reuse it
