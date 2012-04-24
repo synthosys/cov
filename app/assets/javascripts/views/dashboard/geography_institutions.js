@@ -1,6 +1,6 @@
 App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 	events: {
-		"click button#view_geography": "gotoGeography"
+		"click button#gobackto": "goBackTo"
 	},
 	initialize: function() {
 		this.collection = new App.Collections.Topics;
@@ -15,7 +15,7 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 			self.load();
 		})		
 	},
-	gotoGeography: function(e) {
+	goBackTo: function(e) {
 		e.preventDefault();
 		
 		window.history.back();

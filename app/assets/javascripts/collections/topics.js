@@ -77,6 +77,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 					collated.push(tmp);				
 				}
 			}
+			
 			return collated;			
 		}
 	},
@@ -93,6 +94,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 		this.loadData(this.currentlyloading);
 	},	
 	loadData: function(topicrelevance) {
+		//this.params['t'+topicrelevance.toString()] = '679'; //test topic
 		//we have to make multiple calls here for each topic relevance (t1, t2, t3, t4)
 		this.params.summ='status,t'+topicrelevance.toString()+',year';	
 
@@ -124,6 +126,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 		this.topicsbyrelevance['t'+topicrelevance.toString()] = data;
 		this.currentlyloading++;
 		if (this.currentlyloading<=4) {
+			//delete this.params['t'+topicrelevance.toString()]; //test topic
 			this.loadData(this.currentlyloading);
 		} else {
 			var self = this;
@@ -133,8 +136,8 @@ App.Collections.Topics = Backbone.Collection.extend({
 				//for each relevance
 				_.each([1,2,3,4], function(topicrelevance) {
 					topicrelevance = 't'+topicrelevance.toString();
-					var topic = _.find(self.topicsbyrelevance[topicrelevance], function(topic) { return topic.t==topicid });
-					if (!tmp.label && !tmp.words && topic) {
+					var topic = _.find(self.topicsbyrelevance[topicrelevance], function(topicbyrelevance) { return topicbyrelevance.t==topicid });
+				 	if (!tmp.label && !tmp.words && topic) {
 						tmp.label = topic.label;
 						tmp.words = topic.words;
 					}
@@ -166,19 +169,20 @@ App.Collections.Topics = Backbone.Collection.extend({
 						funding_awarded += row[topicrelevance]['funding']['award'];
 						funding_requested += row[topicrelevance]['funding']['request'];
 						//by year
-						_.each(row.years, function(value,key) {
-							years[key][count][award] += value.count.award;
-							years[key][count][decline] += value.count.decline;
-							years[key][count][other] += value.count.other;
-							years[key][funding][award] += value.funding.award;
-							years[key][funding][request] += value.funding.request;
+						_.each(row[topicrelevance].years, function(value,key) {
+							years[key].count.award += value.count.award;
+							years[key].count.decline += value.count.decline;
+							years[key].count.other += value.count.other;
+							years[key].funding.award += value.funding.award;
+							years[key].funding.request += value.funding.request;
 						});
 					}
 				});
 				//save it
-				this.loaded_topics[i]['years'] = years;
-				this.loaded_topics[i]['count'] = {award:count_awarded,decline:count_declined,other:count_other};
-				this.loaded_topics[i]['funding'] = {award:funding_awarded,request:funding_requested};
+				row.years = years;
+				row.count = {award:count_awarded,decline:count_declined,other:count_other};
+				row.funding = {award:funding_awarded,request:funding_requested};
+				this.loaded_topics[i] = row;
 			}
 			//trigger load complete event
 			this.trigger('loadcomplete');			

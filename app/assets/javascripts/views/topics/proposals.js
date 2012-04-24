@@ -104,10 +104,10 @@ App.Views.topicsProposals = Backbone.View.extend({
 			html += ' to ';
 			html += '<select id="filter_year_to" class="span1">'+App.renderYearSelect(min_year,max_year,max_year)+'</select>';
 			//show status filter if private data access is available
-			//if (proposalaccessallowed) {
+			if (proposalaccessallowed) {
 				html += '<label for="inlineCheckboxes" class="control-label"><strong>Status :</strong></label>';
 				html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Award</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Decline</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
-			//}
+			}
 			$('form#filters', this.el).html(html);
 		}
 		
@@ -118,7 +118,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 	},
 	render: function() {
 		$('div#loader', this.el).html('');
-		
+
 		var data = _.map(this.collection.toJSON(), function(row) {
 			var tmp = {};
 			tmp.nsf_id = row.proposal.nsf_id;
@@ -183,7 +183,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "1st Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t1;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'">t'+item+'</a>':'t'+item;
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
 				"mDataProp": "t1"
 			},
@@ -191,7 +191,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "2nd Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t2;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'">t'+item+'</a>':'t'+item;
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
 				"mDataProp": "t2"
 			},
@@ -199,7 +199,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "3rd Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t3;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'">t'+item+'</a>':'t'+item;
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
 				"mDataProp": "t3"
 			},
@@ -207,7 +207,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "4th Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t4;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'">t'+item+'</a>':'t'+item;
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
 				"mDataProp": "t4"
 			}

@@ -28,3 +28,51 @@
 		<div id="division_graph"></div>		
 	</div> <!-- span5 -->
 </div> <!-- row -->
+
+<script type="text/template" id="template_form_topic_weights">
+<h4>Research Topic Weighting</h4>
+<p>Up to four Research Topics were assigned to each proposal. Topics are assigned in order of relevance.</p>
+<p>To calculate the overall prevalence of Research Topics within a set of Proposals, a Prevalence score is calculated based on the weight of each Topic assignment. Use the form below to adjust the default weighting:</p>
+<form id="topic_weights" class="form-horizontal">
+	<table class="table-condensed noborder" style="width: 140px;">
+		<thead>
+			<tr>
+				<th>Topic<br />Assignment</th>
+				<th>Weight</th>
+			</tr>
+		</thead>
+	</table>			
+		<div class="input-prepend">
+			<span class="add-on">1st</span>
+			<input type="text" id="t1" class="span1" value="4">
+		</div><!-- /input-prepend -->
+		
+		<div class="input-prepend">
+			<span class="add-on">2nd</span>
+			<input type="text" id="t2" class="span1" value="3">
+		</div><!-- /input-prepend -->
+		
+		<div class="input-prepend">
+			<span class="add-on">3rd</span>
+			<input type="text" id="t3" class="span1" value="2">
+		</div><!-- /input-prepend -->
+
+		<div class="input-prepend">
+			<span class="add-on">4th</span>
+			<input type="text" id="t4" class="span1" value="1">
+		</div><!-- /input-prepend -->
+		<div class="text-center">
+			<small>(enter ‘0’ to omit Topic assignment)</small>
+			<div class="btn-toolbar">
+			<button id="reset" class="btn">Defaults</button>
+			<button id="update" class="btn btn-primary">Update</button>
+			</div>
+	</div><!-- /text-center -->
+</form>
+<small><strong>Example:</strong> using the default weighting of 4/3/2/1, the Prevalence of a Topic would be 20 if it the assignments were:<br />
+3 Proposals with Topic as Primary (3*4)<br />
+2 Proposals with Topic as the 3rd (2*2)<br />
+4 Proposals with Topic as the 4th (4*1)<br />
+<br />
+<strong>Tip: </strong>if you would like to show only those Proposals with the Research Topic assigned as the Primary Topic, enter 1/0/0/0 as your weights.</small>
+</script>

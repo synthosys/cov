@@ -145,11 +145,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			});
 		}
 		
-		$('#topics_table', this.el).dataTable({
-			"bDestroy": true,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers",
-			"iDisplayLength": 50,
+		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]

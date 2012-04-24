@@ -1,10 +1,16 @@
 App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	events: {
-		"click button#view_programs": "gotoPrograms",
-		"click button#view_topics": "gotoTopics"
+		"click button#gobackto": "goBackTo",
+		"click button#view_topics": "gotoTopics",
+		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions'
 	},
 	initialize: function() {
-		_.bindAll(this, 'render'); //you must do this to trap bound events
+		//clear any existing active tabs
+		$("a[href^=#tab_]").parent().removeClass("active");
+		$("div[id^=tab_]").removeClass("active");
+		//set the active tab based on the route
+		$("a[href=#tab_programs]").parent().addClass('active'); 
+		$("div#tab_programs").addClass('active');
 
 		var self = this;
 		require(['text!templates/dashboard/programs_proposals.html'], function(html) {
@@ -18,16 +24,23 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
             });
 		})
 	},
-	gotoPrograms: function(e) {
+	goBackTo: function(e) {
 		e.preventDefault();
 
-		App.app_router.navigate('programs',{trigger: true});
+		window.history.back();		
 	},
 	gotoTopics: function(e) {
 		e.preventDefault();
 		
 		var id = $(e.currentTarget).attr('id');
 		App.app_router.navigate('programs/topics/'+this.options.pge+'/?year='+this.options.params['year'], {trigger: true});
+	},
+	gotoTopicsDivisions: function(e) {
+		e.preventDefault();
+		
+		var id = $(e.currentTarget).attr('id').split('_').pop();
+		
+		window.location.href = baseURI+'/research#topics/divisions/'+id+'/?year='+this.options.params['year'];
 	},
 	render: function() {
 		var proposals = new App.Views.topicsProposals({el: $('#proposals', this.el), org: getDivision(), pge:this.options.pge, year: this.options.params['year'], route:'programs/proposal'});

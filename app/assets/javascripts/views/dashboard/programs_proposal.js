@@ -1,6 +1,6 @@
 App.Views.dashboardProgramsProposal = Backbone.View.extend({
 	events: {
-		"click button#view_proposals": "gotoProposals"
+		"click button#gobackto": "goBackTo"
 	},
 	initialize: function() {
 		var self = this;
@@ -16,7 +16,7 @@ App.Views.dashboardProgramsProposal = Backbone.View.extend({
             });
 		})
     },
-	gotoProposals: function(e) {
+	goBackTo: function(e) {
 		e.preventDefault();
 
 		window.history.back();

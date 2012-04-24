@@ -1,14 +1,13 @@
 App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	events: {
-		"click button#view_proposals": "gotoProposals",
+		"click button#gobackto": "goBackTo",
 		"click button#update": "render",
 		"click button#reset": "reset",
 		"change select#filter_year_from": "load",
-		"change select#filter_year_to": "load"
+		"change select#filter_year_to": "load",
+		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions'
 	},
 	initialize: function() {
-		_.bindAll(this, 'render'); //you must do this to trap bound events
-		
 		//use the topics collection, it has a special function that will load all topic relevances!
 		this.collection = new App.Collections.Topics;
 		this.collection.on('loadcomplete', this.render, this);
@@ -32,11 +31,17 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
             });
 		});
 	},
-	gotoProposals: function(e) {
+	goBackTo: function(e) {
 		e.preventDefault();
 
-		window.history.back();
-		//App.app_router.navigate('programs/proposals/'+this.options.pge+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+		window.history.back();		
+	},
+	gotoTopicsDivisions: function(e) {
+		e.preventDefault();
+		
+		var id = $(e.currentTarget).attr('id').split('_').pop();
+		
+		window.location.href = baseURI+'/research#topics/divisions/'+id+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val();
 	},
 	reset: function(e) {
 		e.preventDefault();
@@ -69,6 +74,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		
 		//prepare for datatable data - conv to array
 		var self = this;
+		var years = this.getYears(this.collection.loaded_topics);
 		var data = _.map(this.collection.loaded_topics, function(row) {
 			var topicid = row.t;
 			//the suppres attribute is used to suppress t0 topics for now
@@ -85,8 +91,20 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 					topic_weightedprevalence += (tmp*weight);					
 				}
 			});
+			//figure out the growth rate here
+			var growthCount = 0;
+			var growthFunding = 0;
+			for (var j=1;j<years.length;j++) {
+				var denom = row.years[years[j]].count.award+row.years[years[j-1]].count.award;
+				if (row.years[years[j-1]].count.award) growthCount += (row.years[years[j]].count.award-row.years[years[j-1]].count.award)/denom;
+				if (row.years[years[j-1]].funding.award) growthFunding += (row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/row.years[years[j-1]].funding.award;
+			}
+			if (years.length>0) {
+				growthCount = (growthCount/years.length).toFixed(2);
+				growthFunding = (growthFunding/years.length).toFixed(2);
+			}
 			//return it
-			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress};
+			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,growth:{count:growthCount,funding:growthFunding}};
 		});
 
 		//columns
@@ -106,7 +124,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			},
 			{
 				"fnRender": function ( oObj ) {
-					var html = '<strong>t'+oObj.aData.topicid+'</strong>';
+					var html = "<a href='#' id='link_to_topics_divisions_"+oObj.aData.topicid+"'><strong>t"+oObj.aData.topicid+'</strong></a>';
 					if (oObj.aData.words) html += ': '+oObj.aData.words;
 					return html;
 				},
@@ -115,7 +133,6 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			},
 			{
 				"sTitle": "Awarded",
-				"bVisible": true,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
@@ -124,12 +141,18 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 					return self.collection.formatFunding(oObj.aData.funding.award);
 				},
 				"bUseRendered": false,
-				"bVisible": true,
 				"sTitle": "Awarded Amt.",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.award"
 			}
 		];
+		if (years.length>0) {
+			columns.push({
+				"sTitle": "Growth (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "growth.count"				
+			});
+		}
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": "Declined",
@@ -160,5 +183,20 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 
 		//backbone convention to allow chaining
 		return this;
+	},
+	getYears: function(data) {
+		//make a list of unique years
+		var years = [];
+		_.each(data, function(row) {
+			if (row.years) {
+				_.each(row.years, function(value,key) {
+					//key is year
+					if ($.inArray(key,years)==-1) years.push(key);
+				});
+			}
+		});
+		years = _.sortBy(years, function(year) { return year; });
+
+		return years;
 	}
 });

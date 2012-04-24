@@ -1,32 +1,4 @@
 App.Views.programsFunding = Backbone.View.extend({
-	events: {
-		//"change div[class=dataTables_length] select": 'refreshGraph',
-		"click table thead tr th": 'refreshGraph'
-	},
-	refreshGraph: function() {
-		//figure out sortby, sortorder, numitems, title of graph based on what was clicked
-		//defaults
-		var dataAttribute='count.award', sortBy='count.award', sortOrder='desc', numItems=25, title='Awarded';
-		 
-		var renderTableTo = $('#'+this.options.tableid, this.el);
-		var oTable = renderTableTo.dataTable();
-		var settings = oTable.fnSettings();
-		//let's see what we're sorting by
-		var sorts = settings.aaSorting;
-		if (sorts.length>0) {
-			sort_column = sorts[0][0];
-			//find the corresponding column
-			sortBy = settings.aoColumns[sort_column]["mDataProp"];
-			sortOrder = sorts[0][1];
-			//which data attribute are we going to show in the graph?
-			//if it's title, default to count.award
-			if (sort_column!=0) { dataAttribute = sortBy; title = settings.aoColumns[sort_column]["sTitle"]; }
-		}
-		//number of items
-		numItems = settings['_iDisplayLength'];
-		//render
-		this.renderGraph(dataAttribute,sortBy,sortOrder,numItems,title);
-	},
 	//accept table elem, graph elem
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -37,12 +9,16 @@ App.Views.programsFunding = Backbone.View.extend({
 		//columns
 		var columns = [
 			{
+				"bVisible": false,
+				"mDataProp": "pge"
+			},
+			{
 				"sTitle": "Programs",
 				"sWidth": "300px",
 				"fnRender": function( oObj ) {
-					return "p"+oObj.aData.pge+' - '+oObj.aData.label;
+					return "<a href='#' id='link_to_programs_proposals_"+oObj.aData.pge+"'>p"+oObj.aData.pge+'</a> - '+oObj.aData.label;
 				},
-				"mDataProp": "pge"
+				"mDataProp": "label"
 			},
 			{
 				"sTitle": "Awarded",
@@ -78,47 +54,59 @@ App.Views.programsFunding = Backbone.View.extend({
 			oTable.fnDestroy();
 			oTable.empty();
 		}
-		renderTableTo.dataTable({
-			"bDestroy":true,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers",
-			"iDisplayLength": 25,
+		var self = this;
+		App.renderDataTable(renderTableTo,{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[1, 'desc']]
+			"aaSorting": [[2, 'desc']],
+			"fnDrawCallback": function() {
+				if (this.fnSettings().bSorted) {
+					var oSettings = this.fnSettings();
+				    
+					//defaults
+					var dataAttribute='count.award', title='Awarded';
+
+					//let's see what we're sorting by
+					var sorts = oSettings.aaSorting;
+					if (sorts.length>0) {
+						sort_column = sorts[0][0];
+						//find the corresponding column
+						sortBy = oSettings.aoColumns[sort_column]["mDataProp"];
+						//which data attribute are we going to show in the graph?
+						//if it's title, default to count.award
+						if (sort_column!=1) { dataAttribute = sortBy; title = oSettings.aoColumns[sort_column]["sTitle"]; }
+					}
+
+					var tabledata = [];
+				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
+				    {
+				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
+				        tabledata.push( oRow._aData );
+				    }
+					self.renderGraph(tabledata,dataAttribute,title);					
+				}
+			}
 		});
-		
-		//render the graph
-		this.renderGraph('count.award','count.award','desc',25,'Awarded');
 
 		//backbone convention to allow chaining
 		return this;
 	},
-	renderGraph: function(dataAttribute,sortBy,sortOrder,numItems,title) {
-		//if funding rate
-		if (dataAttribute=='fundingrate') {
-			//set computed values
-			data = this.prepareData(this.options.data);			
-		} else {
-			data = this.options.data;
-		}
-		//sort the data
+	renderGraph: function(tabledata,dataAttribute,title) {
+		$('#'+this.options.graphid).html('Loading...');
+			
 		var self = this;
-		data = _.sortBy(data, function(row) {
-			return (sortOrder=='desc')?-self.findAttribute(sortBy,row):self.findAttribute(sortBy,row);
-		});
 
 		//now prepare chart data
 		var chartData = [];
 		if (dataAttribute=='fundingrate') {
 			//assemble a data array that looks like [[pge, value],[pge, value]]
-			_.each(data, function(row) {
+			_.each(tabledata, function(row) {
 				chartData.push([row.pge, row.fundingrate]);
 			});
 		} else {
 			//make a list of unique years
 			var years = [];
-			_.each(data, function(row) {
+			_.each(tabledata, function(row) {
 				if (row.years) {
 					_.each(row.years, function(value,key) {
 						//key is year
@@ -128,7 +116,7 @@ App.Views.programsFunding = Backbone.View.extend({
 			});
 			years = _.sortBy(years, function(year) { return year; });
 			//assemble a data array that looks like [[pge, year_1_value, year2_value],[pge, year_1_value, year2_value]]
-			_.each(data, function(row) {
+			_.each(tabledata, function(row) {
 				var item = [];
 				item.push('p'+row.pge);
 				_.each(years, function(year) {

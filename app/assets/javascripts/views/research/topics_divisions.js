@@ -1,6 +1,6 @@
 App.Views.researchTopicsDivisions = Backbone.View.extend({
 	events: {
-		"click button#view_topics": "gotoTopics",
+		"click button#gobackto": "goBackTo",
 		"click a[class=link_to_proposals]": "gotoProposals",
 		"change select#filter_year_from": "loadList",
 		"change select#filter_year_to": "loadList"
@@ -36,7 +36,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			self.loadList();
 		})
     },
-	gotoTopics: function(e) {
+	goBackTo: function(e) {
 		e.preventDefault();
 
 		window.history.back();
@@ -162,11 +162,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			"mDataProp": "org"
 		});
 		
-		$('#divisions_table', this.el).dataTable({
-			"bDestroy": true,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers",
-			"iDisplayLength": 50,
+		App.renderDataTable($('#divisions_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
 			"bSort": false,
@@ -199,7 +195,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 					} 
 				}
 			}
-		});	
+		});
 		
 		//summary
 		//all

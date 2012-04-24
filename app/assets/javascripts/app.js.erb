@@ -270,7 +270,7 @@ var App = {
 		return object;
 	},
 	renderDataTable: function(el,params) {
-		el.dataTable({
+		var tableparams = {
 			"bDestroy": _.has(params,'bDestroy')?params.bDestroy:true,
 			"bJQueryUI": _.has(params,'bJQueryUI')?params.bJQueryUI:true,
 			"sPaginationType": _.has(params,'sPaginationType')?params.sPaginationType:"full_numbers",
@@ -284,7 +284,13 @@ var App = {
 				"sLengthMenu:": "Display _MENU_ records per page",
 				"sSearch": "Keyword Filter:"
 			}
-		});		
+		};
+		//now add any custom params
+		_.each(params, function(value,key) {
+			if (!_.has(tableparams,key)) tableparams[key] = value;
+		});
+		
+		el.dataTable(tableparams);		
 	},
 	isDataTable: function( sInstance )
 	{

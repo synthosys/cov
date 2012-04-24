@@ -1,32 +1,4 @@
 App.Views.programsGrowth = Backbone.View.extend({
-	events: {
-		//"change div[class=dataTables_length] select": 'refreshGraph',
-		"click table thead tr th": 'refreshGraph'
-	},
-	refreshGraph: function() {
-		if (this.getYears(this.options.data).length>1) {
-			var datatype = this.options.datatype;
-			//figure out sortby, sortorder, numitems, title of graph based on what was clicked
-			//defaults
-			var sortBy='growth.'+datatype?datatype:'count', sortOrder='desc', numItems=25, title='Awarded'+((datatype=='funding')?' ($)':' (#)');
-
-			var renderTableTo = $('#'+this.options.tableid, this.el);
-			var oTable = renderTableTo.dataTable();
-			var settings = oTable.fnSettings();
-			//let's see what we're sorting by
-			var sorts = settings.aaSorting;
-			if (sorts.length>0) {
-				sort_column = sorts[0][0];
-				//find the corresponding column
-				sortBy = settings.aoColumns[sort_column]["mDataProp"];
-				sortOrder = sorts[0][1];
-			}
-			//number of items
-			numItems = settings['_iDisplayLength'];
-			//render
-			this.renderGraph(sortBy,sortOrder,numItems,title);			
-		}
-	},
 	//accept table elem, graph elem
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -38,46 +10,41 @@ App.Views.programsGrowth = Backbone.View.extend({
 		//columns
 		var columns = [
 			{
+				"bVisible": false,
+				"mDataProp": "pge"
+			},
+			{
 				"sTitle": "Programs",
 				"sWidth": "300px",
 				"fnRender": function( oObj ) {
-					return "p"+oObj.aData.pge+' - '+oObj.aData.label;
+					return "<a href='#' id='link_to_programs_proposals_"+oObj.aData.pge+"'>p"+oObj.aData.pge+'</a> - '+oObj.aData.label;
 				},
-				"mDataProp": "pge"
+				"mDataProp": "label"
 			}
 		];
-		var sorting = [0, 'asc'];
+		var sorting = [1, 'asc'];
 		var years = this.getYears(this.options.data);
-		if (years[0]) {
+		_.each(years,function(year) {
 			columns.push({
-				"sTitle": years[0].toString()+((datatype=='funding')?' ($)':' (#)'),
+				"sTitle": year.toString()+((datatype=='funding')?' ($)':' (#)'),
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.startyear.funding/1000).toFixed(0))+'K':oObj.aData.startyear.count;
+					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.years[year].funding.award/1000).toFixed(0))+'K':oObj.aData.years[year].count.award;
 				},
 				"bUseRendered": false,
-				"mDataProp": "startyear."+datatype
-			});
-			sorting = [1, 'desc'];
-		}
+				"mDataProp": "years."+year+"."+datatype+'.award'
+			});			
+		});
 		if (years.length>1) {
-			columns.push({
-				"sTitle": years[years.length-1].toString()+((datatype=='funding')?' ($)':' (#)'),
-				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.endyear.funding/1000).toFixed(0))+'K':oObj.aData.endyear.count;
-				},
-				"bUseRendered": false,
-				"mDataProp": "endyear."+datatype
-			});
 			//growth rate
 			columns.push({
 				"sTitle": 'Growth '+((datatype=='funding')?' ($)':' (#)')+'<br />'+years[0].toString()+'-'+years[years.length-1].toString(),
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.growth.funding/1000).toFixed(0))+'K':oObj.aData.growth.count;
+					return (datatype=='funding')?oObj.aData.growth.funding:oObj.aData.growth.count;
 				},
 				"bUseRendered": false,
 				"mDataProp": "growth."+datatype
 			});
-			sorting = [3, 'desc'];
+			sorting = [columns.length-1, 'desc'];
 		}
 		//data table
 		if (App.isDataTable(this.options.tableid)) {
@@ -85,38 +52,43 @@ App.Views.programsGrowth = Backbone.View.extend({
 			oTable.fnDestroy();
 			oTable.empty();
 		}
-		renderTableTo.dataTable({
-			"bDestroy":true,
-			"bJQueryUI": true,
-			"sPaginationType": "full_numbers",
-			"iDisplayLength": 25,
+		var self = this;
+		App.renderDataTable(renderTableTo,{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [sorting]
+			"aaSorting": [sorting],
+			"fnDrawCallback": function() {
+				if (this.fnSettings().bSorted) {
+					var tabledata = [];
+				    var oSettings = this.fnSettings();
+
+				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
+				    {
+				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
+				        tabledata.push( oRow._aData );
+				    }
+					self.renderGraph(tabledata);					
+				}
+			}
 		});
 		
-		//render the graph
-		if (years.length>1) this.renderGraph('growth.'+datatype,'desc',25,'Awarded'+((datatype=='funding')?' ($)':' (#)')); else $('#'+this.options.graphid, this.el).html('');
-
 		//backbone convention to allow chaining
 		return this;
 	},
-	renderGraph: function(sortBy,sortOrder,numItems,title) {
-		var datatype = this.options.datatype;
+	renderGraph: function(tabledata) {		
+//console.log(tabledata);
 		
-		//set computed values
-		data = this.prepareData(this.options.data);			
-		//sort the data
-		var self = this;
-		data = _.sortBy(data, function(row) {
-			return (sortOrder=='desc')?-self.findAttribute(sortBy,row):self.findAttribute(sortBy,row);
-		});
+		$('#'+this.options.graphid).html('Loading...');
 
+		var datatype = this.options.datatype;
+		var title = 'Awarded'+((this.options.datatype=='funding')?' ($)':' (#)');
+		var self = this;
+		
 		//now prepare chart data
 		var chartData = [];
 		//assemble a data array that looks like [[pge, value],[pge, value]]
-		_.each(data, function(row) {
-			chartData.push(['p'+row.pge, self.findAttribute('growth.'+(datatype?datatype:'count'),row)]);
+		_.each(tabledata, function(row) {
+			chartData.push(['p'+row.pge, parseFloat(self.findAttribute('growth.'+(datatype?datatype:'count'),row))]);
 		});
 		//now take only the top x
 		//chartData = _.first(chartData,numItems);
@@ -152,25 +124,22 @@ App.Views.programsGrowth = Backbone.View.extend({
 		//calculate growth rate
 		var years = this.getYears(data);
 
-		var startYear = years[0]?years[0]:null;
-		var endYear = years.length>1?years[years.length-1]:null;
 		var prepared = [];
 		for (var i=0;i<data.length;i++) {
-			var tmp = {pge:data[i].pge, label:data[i].label, startyear:{}, endyear:{}, growth:{}};
-			//count
-			var startCount = (startYear&&data[i].years&&data[i].years[startYear])?data[i].years[startYear].count.award:0;
-			var endCount = (endYear&&data[i].years&&data[i].years[endYear])?data[i].years[endYear].count.award:0;
-			var growthCount = endCount-startCount;
-			//funding
-			var startFunding = (startYear&&data[i].years&&data[i].years[startYear])?data[i].years[startYear].funding.award:0;
-			var endFunding = (endYear&&data[i].years&&data[i].years[endYear])?data[i].years[endYear].funding.award:0;
-			var growthFunding = endFunding-startFunding;
+			var tmp = {pge:data[i].pge, label:data[i].label, years:data[i].years, growth:{}};
+			var growthCount = 0;
+			var growthFunding = 0;
+			for (var j=1;j<years.length;j++) {
+				var denom = data[i].years[years[j]].count.award+data[i].years[years[j-1]].count.award;
+				if (data[i].years[years[j-1]].count.award) growthCount += (data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom;
+				if (data[i].years[years[j-1]].funding.award) growthFunding += (data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/data[i].years[years[j-1]].funding.award;
+			}
+			if (years.length>0) {
+				growthCount = (growthCount/years.length).toFixed(2);
+				growthFunding = (growthFunding/years.length).toFixed(2);
+			}
 			
 			//now save it
-			tmp.startyear.count = startCount;
-			tmp.startyear.funding = startFunding;
-			tmp.endyear.count = endCount;
-			tmp.endyear.funding = endFunding;
 			tmp.growth.count = growthCount;
 			tmp.growth.funding = growthFunding;
 			
