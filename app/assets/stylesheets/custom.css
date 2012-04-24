@@ -368,10 +368,10 @@ padding-top: 30px;
 */
 
 .dataTables_length {
-float: right;
+float: left;
 }
 .dataTables_filter {
-float: left;
+float: right;
 }
 
 .dataTable {

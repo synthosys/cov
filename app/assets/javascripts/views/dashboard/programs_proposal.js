@@ -22,7 +22,7 @@ App.Views.dashboardProgramsProposal = Backbone.View.extend({
 		window.history.back();
 	},
    	render: function() {
-		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id});
+		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id, year: this.options.params['year']});
 
 		//backbone convention to allow chaining
 		return this;

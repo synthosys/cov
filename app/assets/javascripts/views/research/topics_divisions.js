@@ -107,13 +107,12 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 				current.count.other=data[i].count.other;
 				current.funding.award=data[i].funding.award;
 				current.funding.request=data[i].funding.request;
-			} else {
-				all.count.award+=data[i].count.award;
-				all.count.decline+=data[i].count.decline;
-				all.count.other+=data[i].count.other;
-				all.funding.award+=data[i].funding.award;
-				all.funding.request+=data[i].funding.request;				
 			}
+			all.count.award+=data[i].count.award;
+			all.count.decline+=data[i].count.decline;
+			all.count.other+=data[i].count.other;
+			all.funding.award+=data[i].funding.award;
+			all.funding.request+=data[i].funding.request;				
 		}
 
 		//columns
@@ -148,7 +147,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			columns.push({
 				"sTitle": "Funding Rate",
 				"fnRender": function (oObj) {
-					return oObj.aData.fundingrate+'%';
+					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
 				},
 				"bUseRendered": false,
 				"mDataProp": "fundingrate"
@@ -199,29 +198,25 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		
 		//summary
 		//all
-		var summary_all_html = '<p>';
-		summary_all_html+='<strong>Proposals Awarded: </strong>'+all.count.award;
-		summary_all_html+='<br /><strong>Awards: </strong>'+this.collection.formatFunding(all.funding.award);
+		var summary_all_html = '';
+		summary_all_html+='<li><strong>Proposals Awarded: </strong>'+all.count.award+'</li>';
+		summary_all_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(all.funding.award)+'</li>';
 		if (proposalaccessallowed) {
-			summary_all_html+='<br /><strong>Declines: </strong>'+this.collection.formatFunding(all.count.decline);
+			summary_all_html+='<li><strong>Declines: </strong>'+this.collection.formatFunding(all.count.decline)+'</li>';
 			var total = all.count.award+all.count.decline;
-			summary_all_html+='<br /><strong>Funding Rate: </strong>';			
-			summary_all_html+=((total>0)?(all.count.award/total)*100:0).toString()+'%';
+			summary_all_html+='<li><strong>Funding Rate: </strong>'+((total>0)?((all.count.award/total)*100).toFixed(2):0).toString()+'%'+'</li>';			
 		}
-		summary_all_html += '</p>';
-		$('#summary_all', this.el).html(summary_all_html);
+		$(summary_all_html).insertAfter($('ul#summary li#nsf', this.el));
 		//current
-		var summary_current_html = '<p>';
-		summary_current_html+='<strong>Proposals Awarded: </strong>'+current.count.award;
-		summary_current_html+='<br /><strong>Awards: </strong>'+this.collection.formatFunding(current.funding.award);
+		var summary_current_html = '';
+		summary_current_html+='<li><strong>Proposals Awarded: </strong>'+current.count.award+'</li>';
+		summary_current_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(current.funding.award)+'</li>';
 		if (proposalaccessallowed) {
-			summary_current_html+='<br /><strong>Declines: </strong>'+this.collection.formatFunding(current.count.decline);
+			summary_current_html+='<li><strong>Declines: </strong>'+this.collection.formatFunding(current.count.decline)+'</li>';
 			var total = all.count.award+current.count.decline;
-			summary_current_html+='<br /><strong>Funding Rate: </strong>';			
-			summary_current_html+=((total>0)?(current.count.award/total)*100:0).toString()+'%';
+			summary_current_html+='<li><strong>Funding Rate: </strong>'+((total>0)?((current.count.award/total)*100).toFixed(2):0).toString()+'%'+'</li>';
 		}
-		summary_current_html += '</p>';
-		$('#summary_current', this.el).html(summary_current_html);
+		$(summary_current_html).insertAfter($('ul#summary li#org', this.el));
 
 		//backbone convention to allow chaining
 		return this;

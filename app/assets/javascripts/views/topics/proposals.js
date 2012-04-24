@@ -35,16 +35,19 @@ App.Views.topicsProposals = Backbone.View.extend({
 			alert('Pick an appropriate date range');
 			return false;
 		}
-		if ($('input[id^=filter_status[]]:checked', this.el).length==0) {
+		if (proposalaccessallowed && $('input[id^=filter_status[]]:checked', this.el).length==0) {
 			alert('Please specify at least one status filter');
 			return false;
 		}
 		
 		var startyear = $('select#filter_year_from', this.el).val();
 		var endyear = $('select#filter_year_to', this.el).val();
-		var status = _.map($('input[id^=filter_status[]]:checked', this.el), function(checkbox) {
-			return $(checkbox).val();
-		});
+		var status = ['award'];
+		if (proposalaccessallowed) {
+			status = _.map($('input[id^=filter_status[]]:checked', this.el), function(checkbox) {
+				return $(checkbox).val();
+			});			
+		}
 		var filtered = _.filter(this.loaded_data,function(data) {
 			if (data.status.code=='award') {
 				var year = data.awarded.date.split('/').shift();
@@ -106,7 +109,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 			//show status filter if private data access is available
 			if (proposalaccessallowed) {
 				html += '<label for="inlineCheckboxes" class="control-label"><strong>Status :</strong></label>';
-				html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Award</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Decline</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
+				html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
 			}
 			$('form#filters', this.el).html(html);
 		}
@@ -180,35 +183,43 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"mDataProp": "amount"				
 			},
 			{
-				"sTitle": "1st Topic",
+				"sTitle": "1st<br />Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t1;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
+					if (!item) return '';
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].words+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
+				"bUseRendered": false,
 				"mDataProp": "t1"
 			},
 			{
-				"sTitle": "2nd Topic",
+				"sTitle": "2nd<br />Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t2;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
+					if (!item) return '';
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].words+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
+				"bUseRendered": false,
 				"mDataProp": "t2"
 			},
 			{
-				"sTitle": "3rd Topic",
+				"sTitle": "3rd<br />Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t3;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
+					if (!item) return '';
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].words+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
+				"bUseRendered": false,
 				"mDataProp": "t3"
 			},
 			{
-				"sTitle": "4th Topic",
+				"sTitle": "4th<br />Topic",
 				"fnRender": function (oObj) {
 					var item = oObj.aData.t4;
-					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].label+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
+					if (!item) return '';
+					return (App.legend_topics[item])?'<a href="#" title="'+App.legend_topics[item].words+'" id="link_to_topics_divisions_'+item+'">t'+item+'</a>':'t'+item;
 				},
+				"bUseRendered": false,
 				"mDataProp": "t4"
 			}
 		];

@@ -59,13 +59,13 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		for (var key in grouped) {
 			var tmp = {};
 			tmp.state = key;
-			tmp.label = null;
+			tmp.label = '';
 			tmp.count = 0;
 			//get the count
 			var count = grouped[key].length;
 			//add up the totals
 			if (count>0 && App.states[key]) { tmp.label = App.states[key]; tmp.count = count; }
-			collated.push(tmp);
+			collated.push(tmp);				
 		}
 		var data = new google.visualization.DataTable();
 		data.addRows(collated.length);
@@ -105,14 +105,14 @@ App.Views.dashboardGeography = Backbone.View.extend({
 				{
 					"sTitle": "State",
 					"fnRender": function(oObj) {
-						return '<a href="#" class="link_to_geography_institutions" id="'+oObj.aData.state+'">'+oObj.aData.label+'</a>';
+						return '<a href="#" class="link_to_geography_institutions" id="'+oObj.aData.state+'">'+(oObj.aData.label?oObj.aData.label:oObj.aData.state)+'</a>';
 					},
 					"mDataProp": "state"
 				},
 				{
 					"sTitle": "Institutions",
 					"mDataProp": "count"
-				},
+				}
 			],
 			"aaData": collated,
 			"aaSorting": [[1, 'desc']], //, [0, 'desc']

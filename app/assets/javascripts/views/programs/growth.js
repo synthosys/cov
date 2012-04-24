@@ -47,11 +47,6 @@ App.Views.programsGrowth = Backbone.View.extend({
 			sorting = [columns.length-1, 'desc'];
 		}
 		//data table
-		if (App.isDataTable(this.options.tableid)) {
-			var oTable = renderTableTo.dataTable();
-			oTable.fnDestroy();
-			oTable.empty();
-		}
 		var self = this;
 		App.renderDataTable(renderTableTo,{
 			"aaData": data,
@@ -130,9 +125,8 @@ App.Views.programsGrowth = Backbone.View.extend({
 			var growthCount = 0;
 			var growthFunding = 0;
 			for (var j=1;j<years.length;j++) {
-				var denom = data[i].years[years[j]].count.award+data[i].years[years[j-1]].count.award;
-				if (data[i].years[years[j-1]].count.award) growthCount += (data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom;
-				if (data[i].years[years[j-1]].funding.award) growthFunding += (data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/data[i].years[years[j-1]].funding.award;
+				if (data[i].years[years[j-1]].count.award) growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/data[i].years[years[j-1]].count.award)*100;
+				if (data[i].years[years[j-1]].funding.award) growthFunding += ((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/data[i].years[years[j-1]].funding.award)*100;
 			}
 			if (years.length>0) {
 				growthCount = (growthCount/years.length).toFixed(2);

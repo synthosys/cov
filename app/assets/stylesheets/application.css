@@ -4,6 +4,7 @@
  * the top of the compiled file, but it's generally better to create a new file per style scope.
  *= require bootstrap
  *= require jquery-ui/css/smoothness/jquery-ui-1.8.18.custom
+ *= require tabletools/media/css/TableTools
  *= require_self
  *= require_tree . 
 */

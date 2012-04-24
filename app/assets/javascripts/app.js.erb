@@ -208,7 +208,6 @@ var App = {
 		//have the navbar auto-re-adjust
 		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
 
-
 		if ($.browser.msie != true) {
 			$(window).scroll(function() {
 				if ($(window).scrollTop() > navb_dims["t"]) {
@@ -218,7 +217,7 @@ var App = {
 				}
 			});
 		}
-		
+
 		var self = this;
 		$.getJSON(apiurl+'topic?legend=topic'+'&jsoncallback=?', function(data) {
 			_.each(data, function(item) {
@@ -269,6 +268,14 @@ var App = {
 		});
 		return object;
 	},
+	clearDataTable: function(elem_id, renderTableTo) {
+		if (this.isDataTable(elem_id)) {
+			var oTable = renderTableTo.dataTable();
+			oTable.fnDestroy();
+			oTable.empty();
+			$(".DTTT_collection").remove(); //remove table tools explicitly
+		}
+	},
 	renderDataTable: function(el,params) {
 		var tableparams = {
 			"bDestroy": _.has(params,'bDestroy')?params.bDestroy:true,
@@ -282,8 +289,18 @@ var App = {
 			"aaSorting": _.has(params,'aaSorting')?params.aaSorting:[],
 			"oLanguage": {
 				"sLengthMenu:": "Display _MENU_ records per page",
-				"sSearch": "Keyword Filter:"
-			}
+				"sSearch": "Filter:"
+			},
+			"sDom": '<"H"fTr>t<"F"ilp>',
+	        "oTableTools": {
+				"sSwfPath": baseURI+"/assets/tabletools/media/swf/copy_csv_xls_pdf.swf",
+	            "aButtons": [
+	                {
+	                    "sExtends":    "csv",
+	                    "sButtonText": "Export as CSV"
+	                }
+	            ]
+	        }
 		};
 		//now add any custom params
 		_.each(params, function(value,key) {

@@ -69,7 +69,9 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
 		this.collection.load({org:getDivision()+','+this.options.pge,year:year});
 	},
-	render: function() {
+	render: function(e) {
+		if (e) e.preventDefault();
+
 		$('div#loader', this.el).html('');
 		
 		//prepare for datatable data - conv to array
@@ -95,9 +97,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			var growthCount = 0;
 			var growthFunding = 0;
 			for (var j=1;j<years.length;j++) {
-				var denom = row.years[years[j]].count.award+row.years[years[j-1]].count.award;
-				if (row.years[years[j-1]].count.award) growthCount += (row.years[years[j]].count.award-row.years[years[j-1]].count.award)/denom;
-				if (row.years[years[j-1]].funding.award) growthFunding += (row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/row.years[years[j-1]].funding.award;
+				if (row.years[years[j-1]].count.award) growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/row.years[years[j-1]].count.award)*100;
+				if (row.years[years[j-1]].funding.award) growthFunding += ((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/row.years[years[j-1]].funding.award)*100;
 			}
 			if (years.length>0) {
 				growthCount = (growthCount/years.length).toFixed(2);

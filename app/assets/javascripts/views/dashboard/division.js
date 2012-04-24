@@ -60,7 +60,12 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		//backbone convention to allow chaining
 		return this;
 	},
-	show: function() {
+	show: function(e) {
+		if (e) e.preventDefault();
+		
+		//clear datatable if exists
+		App.clearDataTable('division_table', $('#division_table', this.el));
+		
 		//simply switch a view, no need to reload data
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
@@ -73,13 +78,16 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			else this.renderTopics(); //just render
 		}
 	},
-	load: function() {
+	load: function(e) {
+		if (e) e.preventDefault();
+		
 		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
 			alert('Pick an appropriate date range');
 			return;
 		}
 		var startYear = $('select#filter_year_from', this.el).val();
 		var endYear = $('select#filter_year_to', this.el).val();
+
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
 			//use programs collection, if already loaded, reuse it
@@ -116,7 +124,9 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		}
 		$('div#loader', this.el).html('');
 	},
-	renderTopics: function() {
+	renderTopics: function(e) {
+		if (e) e.preventDefault();
+		
 		var renderTable_ID = 'division_table';
 		var renderGraph_ID = 'division_graph';
 		//growth or funding? this is in the id of the selected value

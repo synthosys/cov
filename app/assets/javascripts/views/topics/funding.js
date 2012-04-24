@@ -34,11 +34,11 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"mDataProp": "words"
 			},
 			{
-				"sTitle": "Awarded",
+				"sTitle": "Awarded (#)",
 				"mDataProp": "count.award"
 			},
 			{
-				"sTitle": "Awards",
+				"sTitle": "Awards ($)",
 				"fnRender": function (oObj) {
 					return '$'+App.addCommas((oObj.aData.funding.award/1000).toFixed(0))+'K';
 				},
@@ -49,24 +49,19 @@ App.Views.topicsFunding = Backbone.View.extend({
 		//if access to private data allowed
 		if (proposalaccessallowed) {
 			columns.push({
-				"sTitle": "Declines",
+				"sTitle": "Declines (#)",
 				"mDataProp": "count.decline"
 			});
 			columns.push({
 				"sTitle": "Funding Rate",
 				"fnRender": function (oObj) {
-					return oObj.aData.fundingrate+'%';
+					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
 				},
 				"bUseRendered": false,
 				"mDataProp": "fundingrate"
 			});
 		}
 		//data table
-		if (App.isDataTable(this.options.tableid)) {
-			var oTable = renderTableTo.dataTable();
-			oTable.fnDestroy();
-			oTable.empty();
-		}
 		var self = this;
 		App.renderDataTable(renderTableTo,{
 			"aaData": data,

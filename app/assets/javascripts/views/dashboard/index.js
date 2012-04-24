@@ -57,7 +57,7 @@ App.Views.Dashboard = Backbone.View.extend({
 		var endyear = getCurrentYear();
 		var template = _.template($("#template_division_summary", this.el).html());
 		var loader = "<img src='" + baseURI + "/assets/ajax-load.gif" + "'/>";
-		var data = { 'startyear': startyear, 'endyear': endyear, 'awards':loader, 'declines': '', 'institutions': loader, 'researchers': loader };
+		var data = { division: division, 'startyear': startyear, 'endyear': endyear, 'awards':loader, 'declines': '', 'institutions': loader, 'researchers': loader };
 		if (proposalaccessallowed) data.declines = loader;
 		var compiled = template(data);
 		$("#division_summary", this.el).html(compiled);
