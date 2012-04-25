@@ -21,8 +21,8 @@ App.Views.researchTopics = Backbone.View.extend({
 			var startYear = getStartYear();
 			var endYear = getEndYear();
 			var year = (self.options.params && self.options.params['year'])?self.options.params['year'].split('-'):[startYear,endYear];
-			$("select#filter_year_from", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),year[0]?year[0]:startYear));
-			$("select#filter_year_to", self.el).html(App.renderYearSelect(getStartYear(),getCurrentYear(),year[1]?year[1]:endYear));
+			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
+			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
 			$('div#loader', self.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Topics");
 			self.loadList();
 		})

@@ -6,12 +6,25 @@ App.Views.topicsProposals = Backbone.View.extend({
 		"click input[id^=filter_status]": "filter"
 	},
 	initialize: function() {
-		_.bindAll(this, 'render'); //you must do this to trap bound events
+		//_.bindAll(this, 'render'); //you must do this to trap bound events
 		this.collection = new App.Collections.Topics;
 		this.collection.on('reset', this.process, this);
 
-		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters"></form></div><div id="loader"></div><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table>'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
-		
+		//set up the filters
+		var startYear = getStartYear();
+		var endYear = getEndYear();
+		var year = this.options.year?this.options.year.split('-'):[startYear,endYear];
+		var html = '<label class="control-label"><strong>Proposals from*:</strong></label>';
+		html += '<select id="filter_year_from" class="span1">'+App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear)+'</select>';
+		html += ' to ';
+		html += '<select id="filter_year_to" class="span1">'+App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear)+'</select>';
+		//show status filter if private data access is available
+		if (proposalaccessallowed) {
+			html += '<label for="inlineCheckboxes" class="control-label"><strong>Status :</strong></label>';
+			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
+		}
+		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table>'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
+
 		this.load();
 	},
 	gotoDetails: function(e) {
@@ -64,7 +77,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 	},
 	load: function() {
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading proposals");
-		$('form#filters', this.el).html('');
+		//$('form#filters', this.el).html('');
 		this.loaded_data = [];
 		
 		var self = this;
@@ -83,7 +96,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 		var data = this.collection.toJSON();
 
 		//if the filters haven't been set up yet, set them up
-		if (data.length>0) {
+		//not setting up smart filters against the loaded data, just setting up filter years statically upon init
+		/* if (data.length>0) {
 			//set up filters
 			//parse the data to figure out the dates
 			var years = _.map(data, function(item) {
@@ -107,7 +121,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
 			}
 			$('form#filters', this.el).html(html);
-		}
+		} */
 		
 		//save off the loaded data as that is what we'll filter against
 		this.loaded_data = data;
