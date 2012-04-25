@@ -5,7 +5,18 @@ App.Views.programsFunding = Backbone.View.extend({
 		
 		//data
 		//set computed values
-		data = this.prepareData(this.options.data);
+		this.prepareData(this.options.data);
+		var data = [];
+		for (var i=0, len=this.options.data.length;i<len;i++) {
+			tmp = {
+				pge:this.options.data[i].pge,
+				label:this.options.data[i].label,
+				count:{award:this.options.data[i].count.award,decline:this.options.data[i].count.decline},
+				funding:{award:this.options.data[i].funding.award},
+				fundingrate:this.options.data[i].fundingrate,
+			};
+			data.push(tmp);
+		}
 		//columns
 		var columns = [
 			{
@@ -76,7 +87,7 @@ App.Views.programsFunding = Backbone.View.extend({
 				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
 				    {
 				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
-				        tabledata.push( oRow._aData );
+				        tabledata.push( oRow._aData.pge );
 				    }
 					self.renderGraph(tabledata,dataAttribute,title);					
 				}
@@ -86,23 +97,32 @@ App.Views.programsFunding = Backbone.View.extend({
 		//backbone convention to allow chaining
 		return this;
 	},
-	renderGraph: function(tabledata,dataAttribute,title) {
+	renderGraph: function(pges,dataAttribute,title) {
 		$('#'+this.options.graphid).html('Loading...');
 			
 		var self = this;
+
+		//we get a list of pges to display in the graph
+		//turn the array into a hash so it's faster to find items by
+		var data_hash = {};
+		_.each(this.options.data, function(row) {
+			data_hash[row.pge] = row;
+		});		
 
 		//now prepare chart data
 		var chartData = [];
 		if (dataAttribute=='fundingrate') {
 			//assemble a data array that looks like [[pge, value],[pge, value]]
-			_.each(tabledata, function(row) {
-				chartData.push([row.pge, row.fundingrate]);
+			_.each(pges, function(pge) {
+				row = data_hash[pge];
+				if (row) chartData.push([row.pge, row.fundingrate]);
 			});
 		} else {
 			//make a list of unique years
 			var years = [];
-			_.each(tabledata, function(row) {
-				if (row.years) {
+			_.each(pges, function(pge) {
+				row = data_hash[pge];
+				if (row && row.years) {
 					_.each(row.years, function(value,key) {
 						//key is year
 						if ($.inArray(key,years)==-1) years.push(key);
@@ -111,14 +131,17 @@ App.Views.programsFunding = Backbone.View.extend({
 			});
 			years = _.sortBy(years, function(year) { return year; });
 			//assemble a data array that looks like [[pge, year_1_value, year2_value],[pge, year_1_value, year2_value]]
-			_.each(tabledata, function(row) {
-				var item = [];
-				item.push('p'+row.pge);
-				_.each(years, function(year) {
-					if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
-					else item.push(0);
-				});
-				chartData.push(item);
+			_.each(pges, function(pge) {
+				row = data_hash[pge];
+				if (row) {
+					var item = [];
+					item.push('p'+row.pge);
+					_.each(years, function(year) {
+						if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
+						else item.push(0);
+					});
+					chartData.push(item);
+				}
 			});			
 		}
 		//now take only the top x
@@ -158,10 +181,10 @@ App.Views.programsFunding = Backbone.View.extend({
 		return newTarget;
 	},
 	prepareData: function(data) {
-		for (var i=0;i<data.length;i++) {
+		for (var i=0, len=data.length;i<len;i++) {
 			var total = data[i].count.award+data[i].count.decline;
 			data[i].fundingrate = (total>0)?(data[i].count.award/total)*100:0;
 		}
-		return data;
+		this.options.data = data; //return data;
 	}
 });

@@ -67,7 +67,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
-		this.collection.load({org:getDivision()+','+this.options.pge,year:year});
+		this.collection.load({org:getDivision()+','+this.options.pge,year:year},true);
 	},
 	render: function(e) {
 		if (e) e.preventDefault();

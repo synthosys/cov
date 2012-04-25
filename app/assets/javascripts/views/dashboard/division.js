@@ -5,7 +5,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		"change select#filter_year_to": "load",
 		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions',
 		"click a[id^=link_to_programs_proposals_]": 'gotoProgramsProposals',
-		"click button#update": "renderTopics",
+		"click button#update": "refresh",
 		"click button#reset": "reset"
 	},
 	initialize: function() {
@@ -41,6 +41,11 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		var id = $(e.currentTarget).attr('id').split('_').pop();
 
 		App.app_router.navigate('programs/proposals/'+id+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+	},
+	refresh: function(e) {
+		e.preventDefault();
+		
+		this.renderTopics();
 	},
 	reset: function(e) {
 		e.preventDefault();
@@ -94,17 +99,21 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
 			//use programs collection, if already loaded, reuse it
-			if (!this.programsCollection) this.programsCollection = new App.Collections.Programs;
+			if (!this.programsCollection) {
+				this.programsCollection = new App.Collections.Programs;
+				this.programsCollection.on('loadcomplete', this.renderPrograms, this);	
+			}
 			this.programsCollection.params = { org:getDivision(), year:startYear+'-'+endYear };
-			this.programsCollection.on('loadcomplete', this.renderPrograms, this);	
 			$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading programs");
 			this.programsCollection.fetch();		
 		} else if ($('select#filter_data', this.el).val().match(/^topics/)) {
 			//use topics collection, if already loaded, reuse it
-			if (!this.topicsCollection) this.topicsCollection = new App.Collections.Topics;
-			this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
+			if (!this.topicsCollection) {
+				this.topicsCollection = new App.Collections.Topics;
+				this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
+			}
 			$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
-			this.topicsCollection.load({ org:getDivision(), year:startYear+'-'+endYear });		
+			this.topicsCollection.load({ org:getDivision(), year:startYear+'-'+endYear, summ: 'status,year,t1' }, true);		
 		}	
 	},
 	renderPrograms: function() {
@@ -127,9 +136,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		}
 		$('div#loader', this.el).html('');
 	},
-	renderTopics: function(e) {
-		if (e) e.preventDefault();
-		
+	renderTopics: function() {
 		var renderTable_ID = 'division_table';
 		var renderGraph_ID = 'division_graph';
 		//growth or funding? this is in the id of the selected value

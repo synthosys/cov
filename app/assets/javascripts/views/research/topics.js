@@ -47,17 +47,23 @@ App.Views.researchTopics = Backbone.View.extend({
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
-		this.collection.load({org:getDivision(),year:year});
+		this.collection.load({org:getDivision(),year:year},false);
 	},
 	loadNSF: function() {
 		//load data for all of nsf as well so we can compare
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();		
-		this.collection_nsf.load({year: year});
+		this.collection_nsf.load({year: year},false);
 	},
    	render: function() {
 		$('div#loader', this.el).html('');
+		
+		//make an array hash which is much faster than an array for searching
+		var all_of_nsf_hash = {};
+		_.each(this.collection_nsf.loaded_topics, function(row) {
+			all_of_nsf_hash[row.t] = row;
+		});
 		
 		var self = this;
 		var data = _.map(this.collection.loaded_topics, function(row) {
@@ -66,9 +72,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			var suppress = (topicid=='0')?'1':'0';
 			var tmp = {topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,count_nsf:{award:0,decline:0,other:0},funding_nsf:{award:0,request:0},awardpercentage:0};
 			//figure out the totals against all of nsf
-			var all_of_nsf = _.find(self.collection_nsf.loaded_topics, function(row) {
-				return row.t==topicid;
-			})
+			var all_of_nsf = all_of_nsf_hash[topicid];
 			if (all_of_nsf) {
 				tmp.count_nsf.award = all_of_nsf.count.award;
 				tmp.count_nsf.decline = all_of_nsf.count.decline;

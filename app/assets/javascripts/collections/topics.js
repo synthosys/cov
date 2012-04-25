@@ -14,6 +14,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 			topicrelevance = "t"+topicrelevance;
 
 			var rawdata = data["data"];
+//alert(topicrelevance+' '+rawdata.length);			
 
 			//make a list of the years
 			var years = _.pluck(rawdata,"year");
@@ -70,7 +71,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 							}
 							return {count:{award:memo.count.award+awarded_count, decline:memo.count.decline+declined_count,other:memo.count.other+other_count}, funding:{award:memo.funding.award+awarded_dollar,request:memo.funding.request+requested_dollar}};
 						},{count:{award:0,decline:0,other:0},funding:{award:0,request:0}});			
-					});
+					});						
 					tmp.years = topic_by_year;
 
 					//save it
@@ -81,32 +82,33 @@ App.Collections.Topics = Backbone.Collection.extend({
 			return collated;			
 		}
 	},
-	load: function(params) {
+	load: function(params,summbyyear) {
 		this.params = params;
 		
 		this.currentlyloading = 1;
-		this.topicsbyrelevance = {'t1':[],'t2':[],'t3':[],'t4':[]};
+		this.topicsbyrelevance = {'t1':{},'t2':{},'t3':{},'t4':{}};
 		this.loaded_topicids = [];
 		this.loaded_years = [];
 		this.loaded_topics = []; //this will end up looking like [ { t:topicid, label: label, words: words, t1: {count: count, etc. }, t2: {count: count, etc. }}]
 		//this.reset(); //clear the collection - not necessary, i think
 		
-		this.loadData(this.currentlyloading);
+		this.loadData(this.currentlyloading,summbyyear);
 	},	
-	loadData: function(topicrelevance) {
+	loadData: function(topicrelevance,summbyyear) {
 		//this.params['t'+topicrelevance.toString()] = '679'; //test topic
 		//we have to make multiple calls here for each topic relevance (t1, t2, t3, t4)
-		this.params.summ='status,t'+topicrelevance.toString()+',year';	
+		this.params.summ='status,t'+topicrelevance.toString();
+		if (summbyyear) this.params.summ+=',year';	
 
 		var self = this;
 		//pass along the params
 		this.fetch({
 			success: function() {
-				self.gatherData(topicrelevance);
+				self.gatherData(topicrelevance,summbyyear);
 			}
 		});		
 	},
-	gatherData: function(topicrelevance) {
+	gatherData: function(topicrelevance,summbyyear) {
 		//the collection with the loaded data gets passed in
 		var data = this.toJSON();
 
@@ -123,20 +125,36 @@ App.Collections.Topics = Backbone.Collection.extend({
 			}
 		});
 		this.loaded_years = this.loaded_years.concat(years);
-		this.topicsbyrelevance['t'+topicrelevance.toString()] = data;
+		//make an array hash which is much faster than an array for searching
+		var data_hash = {};
+		_.each(data, function(row) {
+			data_hash[row.t] = row;
+		});		
+		this.topicsbyrelevance['t'+topicrelevance.toString()] = data_hash;
 		this.currentlyloading++;
 		if (this.currentlyloading<=4) {
 			//delete this.params['t'+topicrelevance.toString()]; //test topic
-			this.loadData(this.currentlyloading);
+			this.loadData(this.currentlyloading,summbyyear);
 		} else {
 			var self = this;
+//alert(this.loaded_topicids.length);			
+			//var unique_topicids = _.uniq(this.loaded_topicids); //do not use this, very slow in ie for large arrays (falls down with 2000+)
+			Array.prototype.unique = function() {
+		        var o = {}, i, l = this.length, r = [];
+		        for(i=0; i<l;i+=1) o[this[i]] = this[i];
+		        for(i in o) r.push(o[i]);
+		        return r;
+		    };
+			var unique_topicids = this.loaded_topicids.unique();
+//alert(unique_topicids.length);			
 			//using the unique list of retrieved topic ids
-			_.each(_.uniq(this.loaded_topicids), function (topicid) {
+			for (var i=0, len=unique_topicids.length; i<len; i++) {
+				var topicid = unique_topicids[i];
 				var tmp = {t:topicid, label:null, words:null};				
 				//for each relevance
 				_.each([1,2,3,4], function(topicrelevance) {
 					topicrelevance = 't'+topicrelevance.toString();
-					var topic = _.find(self.topicsbyrelevance[topicrelevance], function(topicbyrelevance) { return topicbyrelevance.t==topicid });
+					var topic = self.topicsbyrelevance[topicrelevance][topicid];
 				 	if (!tmp.label && !tmp.words && topic) {
 						tmp.label = topic.label;
 						tmp.words = topic.words;
@@ -144,8 +162,8 @@ App.Collections.Topics = Backbone.Collection.extend({
 					tmp[topicrelevance] = topic;
 				});
 				self.loaded_topics.push(tmp);
-			});
-			for (var i=0;i<this.loaded_topics.length;i++) {
+			}
+			for (var i=0, len=this.loaded_topics.length;i<len;i++) {
 				var row = this.loaded_topics[i];
 				//collate by year
 				//initialize
@@ -184,6 +202,7 @@ App.Collections.Topics = Backbone.Collection.extend({
 				row.funding = {award:funding_awarded,request:funding_requested};
 				this.loaded_topics[i] = row;
 			}
+//alert(this.loaded_topics.length);
 			//trigger load complete event
 			this.trigger('loadcomplete');			
 		}

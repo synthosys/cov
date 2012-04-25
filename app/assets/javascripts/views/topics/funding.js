@@ -10,7 +10,19 @@ App.Views.topicsFunding = Backbone.View.extend({
 		
 		//data
 		//set computed values
-		data = this.prepareData(this.options.data);
+		this.prepareData(this.options.data);
+		var data = [];
+		for (var i=0, len=this.options.data.length;i<len;i++) {
+			tmp = {
+				t:this.options.data[i].t,
+				words:this.options.data[i].words,
+				count:{award:this.options.data[i].count.award,decline:this.options.data[i].count.decline},
+				funding:{award:this.options.data[i].funding.award},
+				fundingrate:this.options.data[i].fundingrate,
+				weighted:this.options.data[i].weighted,
+			};
+			data.push(tmp);
+		}
 		//columns
 		var columns = [
 			{
@@ -85,11 +97,11 @@ App.Views.topicsFunding = Backbone.View.extend({
 						if (sort_column!=1 && sort_column!=2) { dataAttribute = sortBy; title = oSettings.aoColumns[sort_column]["sTitle"]; }
 					}
 
-					var tabledata = [];
-				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
+					var tabledata = []; //just the ids
+				    for ( var i=0, iLen=Math.min(oSettings.aiDisplay.length,40) ; i<iLen ; i++ )
 				    {
 				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
-				        tabledata.push( oRow._aData );
+				        tabledata.push( oRow._aData.t );
 				    }
 					self.renderGraph(tabledata,dataAttribute,title);					
 				}
@@ -99,23 +111,32 @@ App.Views.topicsFunding = Backbone.View.extend({
 		//backbone convention to allow chaining
 		return this;
 	},
-	renderGraph: function(tabledata,dataAttribute,title) {
+	renderGraph: function(topicids,dataAttribute,title) {
 		$('#'+this.options.graphid).html('Loading...');
 		
 		var self = this;
-
+		
+		//we get a list of topicids to display in the graph
+		//turn the array into a hash so it's faster to find items by
+		var data_hash = {};
+		_.each(this.options.data, function(row) {
+			data_hash[row.t] = row;
+		});		
+		
 		//now prepare chart data
 		var chartData = [];
 		if (dataAttribute=='fundingrate') {
 			//assemble a data array that looks like [[topicid, value],[topicid, value]]
-			_.each(tabledata, function(row) {
-				chartData.push([row.t, row.fundingrate]);
+			_.each(topicids, function(topicid) {
+				row = data_hash[topicid];
+				if (row) chartData.push([row.t, row.fundingrate]);
 			});
 		} else {
 			//make a list of unique years
 			var years = [];
-			_.each(tabledata, function(row) {
-				if (row.years) {
+			_.each(topicids, function(topicid) {
+				row = data_hash[topicid];
+				if (row && row.years) {
 					_.each(row.years, function(value,key) {
 						//key is year
 						if ($.inArray(key,years)==-1) years.push(key);
@@ -124,14 +145,17 @@ App.Views.topicsFunding = Backbone.View.extend({
 			});
 			years = _.sortBy(years, function(year) { return year; });
 			//assemble a data array that looks like [[topicid, year_1_value, year2_value],[topicid, year_1_value, year2_value]]
-			_.each(tabledata, function(row) {
-				var item = [];
-				item.push('t'+row.t);
-				_.each(years, function(year) {
-					if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
-					else item.push(0);
-				});
-				chartData.push(item);
+			_.each(topicids, function(topicid) {
+				row = data_hash[topicid];
+				if (row) {
+					var item = [];
+					item.push('t'+row.t);
+					_.each(years, function(year) {
+						if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
+						else item.push(0);
+					});
+					chartData.push(item);					
+				}
 			});			
 		}
 		//now take only the top x
@@ -171,7 +195,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		return newTarget;
 	},
 	prepareData: function(data) {
-		for (var i=0;i<data.length;i++) {
+		for (var i=0, len=data.length;i<len;i++) {
 			//funding rate
 			var total = data[i].count.award+data[i].count.decline;
 			data[i].fundingrate = (total>0)?(data[i].count.award/total)*100:0;
@@ -191,6 +215,6 @@ App.Views.topicsFunding = Backbone.View.extend({
 			});
 			data[i].weighted = topic_weightedprevalence;
 		}
-		return data;
+		this.options.data = data; //return data;
 	}
 });

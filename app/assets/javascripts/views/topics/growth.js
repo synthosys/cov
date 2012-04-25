@@ -5,8 +5,9 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		
 		var datatype = this.options.datatype?this.options.datatype:'growth.count';
 		//data
-		//set computed values
-		data = this.prepareData(this.options.data);
+		//set computed values		
+		var data = this.prepareData(this.options.data);
+
 		//columns
 		var columns = [
 			{
@@ -57,7 +58,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 					var tabledata = [];
 				    var oSettings = this.fnSettings();
 
-				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
+				    for ( var i=0, iLen=Math.min(oSettings.aiDisplay.length,40) ; i<iLen ; i++ )
 				    {
 				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
 				        tabledata.push( oRow._aData );
@@ -137,6 +138,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			
 			prepared.push(tmp);
 		}
+//alert(prepared.length);
 		return prepared;
 	},
 	getYears: function(data) {
