@@ -127,7 +127,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 			tmp.status = row.status.code;
 			if (proposalaccessallowed) {
 				if (row.status.code=="award") var date = row.awarded.date;
-				else var date = row.request.date;
+				else if (row.request.date) var date = row.request.date;
+				else var date = '';
 			} else {
 				var date = row.awarded.date;
 			}

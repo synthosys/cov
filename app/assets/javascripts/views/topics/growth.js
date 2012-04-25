@@ -134,9 +134,9 @@ App.Views.topicsGrowth = Backbone.View.extend({
 				if (data[i].years[years[j-1]].count.award) growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/data[i].years[years[j-1]].count.award)*100;
 				if (data[i].years[years[j-1]].funding.award) growthFunding += ((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/data[i].years[years[j-1]].funding.award)*100;
 			}
-			if (years.length>0) {
-				growthCount = (growthCount/years.length).toFixed(2);
-				growthFunding = (growthFunding/years.length).toFixed(2);
+			if (years.length>1) {
+				growthCount = (growthCount/(years.length-1)).toFixed(2);
+				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
 			}
 			
 			//now save it

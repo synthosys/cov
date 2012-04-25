@@ -71,7 +71,7 @@ App.Views.Dashboard = Backbone.View.extend({
 				if (item.status=='award') {
 					$("#division_summary #awards", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["awarded_dollar"]/1000000).toFixed(0))+'M');
 				} else if (item.status=='decline') {
-					$("#division_summary #declines", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["requested_dollar"]/1000000).toFixed(0))+'M');
+					$("#division_summary #declines", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["request_dollar"]/1000000).toFixed(0))+'M');
 				}
 			});
 		});

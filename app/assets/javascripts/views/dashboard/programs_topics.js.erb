@@ -100,9 +100,9 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				if (row.years[years[j-1]].count.award) growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/row.years[years[j-1]].count.award)*100;
 				if (row.years[years[j-1]].funding.award) growthFunding += ((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/row.years[years[j-1]].funding.award)*100;
 			}
-			if (years.length>0) {
-				growthCount = (growthCount/years.length).toFixed(2);
-				growthFunding = (growthFunding/years.length).toFixed(2);
+			if (years.length>1) {
+				growthCount = (growthCount/(years.length-1)).toFixed(2);
+				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
 			}
 			//return it
 			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,growth:{count:growthCount,funding:growthFunding}};
