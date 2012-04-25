@@ -3,10 +3,12 @@ App.Views.topicsGrowth = Backbone.View.extend({
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
 		
-		var datatype = this.options.datatype?this.options.datatype:'growth.count';
+		var datatype = this.options.datatype?this.options.datatype:'count';
 		//data
 		//set computed values		
 		var data = this.prepareData(this.options.data);
+		//flatten this even more to help datatables - for ie issues
+		
 
 		//columns
 		var columns = [
@@ -29,10 +31,10 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			columns.push({
 				"sTitle": year.toString()+((datatype=='funding')?' ($)':' (#)'),
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.years[year].funding.award/1000).toFixed(0))+'K':oObj.aData.years[year].count.award;
+					return (datatype=='funding')?'$'+App.addCommas((oObj.aData['year_'+year+'_'+datatype]/1000).toFixed(0))+'K':oObj.aData['year_'+year+'_'+datatype];
 				},
 				"bUseRendered": false,
-				"mDataProp": "years."+year+"."+datatype+'.award'
+				"mDataProp": "year_"+year+"_"+datatype
 			});			
 		});
 		if (years.length>1) {
@@ -115,12 +117,17 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		return newTarget;
 	},
 	prepareData: function(data) {
+		var datatype = this.options.datatype?this.options.datatype:'count';
 		//calculate growth rate
 		var years = this.getYears(data);
 
 		var prepared = [];
 		for (var i=0;i<data.length;i++) {
-			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, years:data[i].years, growth:{}};
+			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, growth:{}};
+			_.each(years,function(year) {
+				//add the year
+				tmp['year_'+year+'_'+datatype] = data[i].years[year][datatype].award;				
+			});
 			var growthCount = 0;
 			var growthFunding = 0;
 			for (var j=1;j<years.length;j++) {
