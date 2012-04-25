@@ -52,7 +52,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 			if (data.status.code=='award') {
 				var year = data.awarded.date.split('/').shift();
 			} else if (proposalaccessallowed) {
-				var year = data.request.date.split('/').shift();
+				if (data.request.date) var year = data.request.date.split('/').shift();
+				else var year = null;
 			}
 			if (year && year>=startyear && year<=endyear && $.inArray(data.status.code,status)!=-1) return true;
 			else return false;
