@@ -204,6 +204,7 @@ var App = {
 	},
 	legend_topics: {},	
 	views: {},
+ 	privatedataaccesschecked: false,
    init: function() {
 		//have the navbar auto-re-adjust
 		navb_dims = {"w": $(".navbar-inner").width(), "t": $(".navbar-inner").offset()["top"], "h": $("navbar-inner").height()}
@@ -226,7 +227,34 @@ var App = {
 		    self.app_router = new AppRouter;
 		    Backbone.history.start();
 			//load any bootstrapped views
-			self.load();
+			if (isPrivateDataAccessAllowed()) {
+				if (!self.privatedataaccesschecked) {
+				    // Check to see if we have access to nsfstarmetrics server 
+				    $.ajax({
+				      url: "http://128.150.10.70/py/api/access",
+				      dataType: 'JSONP',
+				      timeout: 500,
+					  success: function(data) {
+						proposalaccessallowed = true;
+						apiurl = "http://128.150.10.70/py/api/";
+						//set the flag that tells us we already did this
+						self.privatedataaccesschecked = true;
+						self.load();						
+					  },
+					  error: function(x,t,m) {
+						//set the flag that tells us we already did this
+						self.privatedataaccesschecked = true;						
+						self.load();						
+					  }
+					});
+				} else {
+					self.load();					
+				}
+			} else {
+				//set the flag that tells us we already did this
+				self.privatedataaccesschecked = true;				
+				self.load();
+			}		
 		});
     },
 	load: function() {

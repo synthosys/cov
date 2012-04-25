@@ -40,6 +40,14 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 		var state = this.options.state;
 		var filtered = _.filter(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"]==state; });
 
+		//prepare 
+		var data = [];
+		_.each(filtered, function(row) {
+			var tmp = {name:row.name,count:row.count,amount:0};
+			if (row.awarded_dollar) tmp.amount = row.awarded_dollar;
+			else if (row.request_dollar) tmp.amount = row.request_dollar;
+			data.push(tmp);
+		});
 		var self = this;
 		var oTable = $("#institutions_table", this.el).dataTable({
 			"bJQueryUI": true,
@@ -54,19 +62,19 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 					"mDataProp": "name"
 				},
 				{
-					"sTitle": "Awards (#)",
+					"sTitle": "Count (#)",
 					"mDataProp": "count"
 				},
 				{
-					"sTitle": "Awards ($)",
+					"sTitle": "Amount ($)",
 					"fnRender": function ( oObj ) {
-						return self.collection.formatFunding(oObj.aData.awarded_dollar);
+						return self.collection.formatFunding(oObj.aData.amount);
 					},
 					"bUseRendered": false,
-					"mDataProp": "awarded_dollar"
+					"mDataProp": "amount"
 				}
 			],
-			"aaData": filtered,
+			"aaData": data,
 			"aaSorting": [[1, 'desc']], //, [0, 'desc']
 		});
 

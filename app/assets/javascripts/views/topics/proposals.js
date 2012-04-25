@@ -85,21 +85,14 @@ App.Views.topicsProposals = Backbone.View.extend({
 		if (data.length>0) {
 			//set up filters
 			//parse the data to figure out the dates
-			//awards first
-			var award_years = _.map(data, function(item) {
-				if (item.awarded.date) return item.awarded.date.split('/').shift();
+			var years = _.map(data, function(item) {
+				if (item.status.code=='award' && item.awarded.date) return item.awarded.date.split('/').shift();
+				else if (proposalaccessallowed && item.status.code!='award' && item.request.date) {
+					return item.request.date.split('/').shift();
+				} else return '';
 			});
-			//if proposal access allowed
-			var other_years = [];
-			if (proposalaccessallowed) {
-				var other_years = _.map(data, function(item) {
-					if (item.request.date) return item.request.date.split('/').shift();
-				});
-			}
-			//merge the two
-			var years = $.merge(award_years, other_years);
 			years = _.uniq(years);
-			years = _.without(years,[undefined]);
+			years = _.without(years,['']);
 			years = _.sortBy(years, function(year) { return year; });
 			var min_year = years[0];
 			var max_year = years[years.length-1];

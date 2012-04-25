@@ -247,7 +247,7 @@ App.Views.ListProposal = Backbone.View.extend({
 			//update status
 			//clean this up, just alert for now
 			alert('Things went wrong during the load. You can try your request again.');
-			$(load_elem).remove();			
+			$('div[id^=loadstatus_]').remove();			
 		}										 		
 	},
 	unassignProposal: function(e) {

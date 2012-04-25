@@ -1,5 +1,4 @@
 var AppRouter = Backbone.Router.extend({
- 	privatedataaccesschecked: false,
 	loaded_views: {},
 	routes: {
 		// Define some URL routes
@@ -103,7 +102,7 @@ var AppRouter = Backbone.Router.extend({
 		//if access is disallowed at the user level, we don't have to check
 		var self = this;
 		if (isPrivateDataAccessAllowed()) {
-			if (!this.privatedataaccesschecked) {
+			if (!App.privatedataaccesschecked) {
 			    // Check to see if we have access to nsfstarmetrics server 
 			    $.ajax({
 			      url: "http://128.150.10.70/py/api/access",
@@ -113,12 +112,12 @@ var AppRouter = Backbone.Router.extend({
 					proposalaccessallowed = true;
 					apiurl = "http://128.150.10.70/py/api/";
 					//set the flag that tells us we already did this
-					self.privatedataaccesschecked = true;
+					App.privatedataaccesschecked = true;
 					self.loadView(view,params);						
 				  },
 				  error: function(x,t,m) {
 					//set the flag that tells us we already did this
-					self.privatedataaccesschecked = true;						
+					App.privatedataaccesschecked = true;						
 					self.loadView(view,params);						
 				  }
 				});
@@ -127,7 +126,7 @@ var AppRouter = Backbone.Router.extend({
 			}
 		} else {
 			//set the flag that tells us we already did this
-			this.privatedataaccesschecked = true;				
+			App.privatedataaccesschecked = true;				
 			this.loadView(view,params);						
 		}		
 	},
