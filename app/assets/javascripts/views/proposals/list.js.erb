@@ -229,7 +229,12 @@ App.Views.ListProposal = Backbone.View.extend({
 					}, {
 					success: function(data) {
 						$(load_elem).remove();
-						self.updateProposal(proposal);
+						//get the proposal again so we get all the updated info from the back end
+						proposal.fetch({
+							success: function(model,response) {								
+								self.updateProposal(model);
+							}
+						});
 					},
 					error: function(data) {
 						//update status

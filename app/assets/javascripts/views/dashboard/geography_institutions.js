@@ -64,7 +64,7 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 					},
 					"bUseRendered": false,
 					"mDataProp": "awarded_dollar"
-				},
+				}
 			],
 			"aaData": filtered,
 			"aaSorting": [[1, 'desc']], //, [0, 'desc']

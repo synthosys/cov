@@ -70,10 +70,12 @@ var AppRouter = Backbone.Router.extend({
 
 		var paramsAsHash = {};
 		var keyValues = params.split('&');
-		for (var i in keyValues) {
-		    var key = keyValues[i].split('=');
-		    paramsAsHash[key[0]] = key[1];
-		}
+		_.each(keyValues,function(keyValue) {
+			if (keyValue) {
+			    var key = keyValue.split('=');
+			    paramsAsHash[key[0]] = key[1];				
+			}
+		});
 
 		return paramsAsHash;
 	},
@@ -106,20 +108,20 @@ var AppRouter = Backbone.Router.extend({
 			    $.ajax({
 			      url: "http://128.150.10.70/py/api/access",
 			      dataType: 'JSONP',
-			      timeout: 500}).then(
-					function() {
-						proposalaccessallowed = true;
-						apiurl = "http://128.150.10.70/py/api/";
-						//set the flag that tells us we already did this
-						self.privatedataaccesschecked = true;
-						self.loadView(view,params);						
-					},
-					function() {
-						//set the flag that tells us we already did this
-						self.privatedataaccesschecked = true;						
-						self.loadView(view,params);						
-					}
-				);
+			      timeout: 500,
+				  success: function(data) {
+					proposalaccessallowed = true;
+					apiurl = "http://128.150.10.70/py/api/";
+					//set the flag that tells us we already did this
+					self.privatedataaccesschecked = true;
+					self.loadView(view,params);						
+				  },
+				  error: function(x,t,m) {
+					//set the flag that tells us we already did this
+					self.privatedataaccesschecked = true;						
+					self.loadView(view,params);						
+				  }
+				});
 			} else {
 				this.loadView(view,params);										
 			}

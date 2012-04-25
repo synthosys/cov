@@ -139,13 +139,12 @@ App.Collections.Topics = Backbone.Collection.extend({
 			var self = this;
 //alert(this.loaded_topicids.length);			
 			//var unique_topicids = _.uniq(this.loaded_topicids); //do not use this, very slow in ie for large arrays (falls down with 2000+)
-			Array.prototype.unique = function() {
-		        var o = {}, i, l = this.length, r = [];
-		        for(i=0; i<l;i+=1) o[this[i]] = this[i];
+			var unique_topicids = function(arr) {
+		        var o = {}, i, l = arr.length, r = [];
+		        for(i=0; i<l;i+=1) o[arr[i]] = arr[i];
 		        for(i in o) r.push(o[i]);
 		        return r;
-		    };
-			var unique_topicids = this.loaded_topicids.unique();
+		    }(this.loaded_topicids);
 //alert(unique_topicids.length);			
 			//using the unique list of retrieved topic ids
 			for (var i=0, len=unique_topicids.length; i<len; i++) {

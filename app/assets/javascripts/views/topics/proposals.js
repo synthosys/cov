@@ -99,6 +99,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 			//merge the two
 			var years = $.merge(award_years, other_years);
 			years = _.uniq(years);
+			years = _.without(years,[undefined]);
 			years = _.sortBy(years, function(year) { return year; });
 			var min_year = years[0];
 			var max_year = years[years.length-1];
