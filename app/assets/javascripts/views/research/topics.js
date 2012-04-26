@@ -41,7 +41,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			return;
 		}
 		
-		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
+		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Please wait while data is retrieved for all "+getDivision()+" Research Topics");
 
 		//load	
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
@@ -104,6 +104,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			},
 			{
 				"sTitle": getDivision()+" Awarded (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
 			{
@@ -112,6 +113,7 @@ App.Views.researchTopics = Backbone.View.extend({
 					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
 				},
 				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "awardpercentage"
 			},
 			{
@@ -120,18 +122,21 @@ App.Views.researchTopics = Backbone.View.extend({
 				},
 				"bUseRendered": false,
 				"sTitle": getDivision()+" Awards ($)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.award"
 			}
 		];
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": getDivision()+" Declines (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
 		}
 		//all of nsf columns
 		columns.push({
 			"sTitle": "NSF Awarded (#)",
+			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": "count_nsf.award"
 		});
 		columns.push({
@@ -140,11 +145,13 @@ App.Views.researchTopics = Backbone.View.extend({
 			},
 			"bUseRendered": false,
 			"sTitle": "NSF Awards ($)",
+			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": "funding_nsf.award"
 		});
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": "NSF Declines (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count_nsf.decline"
 			});
 		}
@@ -153,7 +160,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
-		});
+		},'researchtopics');
 		
 		//backbone convention to allow chaining
 		return this;

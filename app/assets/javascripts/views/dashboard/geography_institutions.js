@@ -43,40 +43,57 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 		//prepare 
 		var data = [];
 		_.each(filtered, function(row) {
-			var tmp = {name:row.name,count:row.count,amount:0};
-			if (row.awarded_dollar) tmp.amount = row.awarded_dollar;
-			else if (row.request_dollar) tmp.amount = row.request_dollar;
+			var tmp = {name:row.name,count:{award:0,other:0},funding:{award:0,other:0}};
+			if (row.awarded_dollar) { tmp.count.award = row.count; tmp.funding.award = row.awarded_dollar; }
+			else if (row.request_dollar) { tmp.count.other = row.count; tmp.funding.other = row.request_dollar; }
 			data.push(tmp);
 		});
+		
 		var self = this;
-		var oTable = $("#institutions_table", this.el).dataTable({
-			"bJQueryUI": true,
-			"bAutoWidth": false,
-			"bDestroy": true,
-			"bProcessing": true,
-			"iDisplayLength": 50,
-			"sPaginationType": "full_numbers",
-			"aoColumns": [
-				{
-					"sTitle": "Institution",
-					"mDataProp": "name"
+		var columns = [
+			{
+				"sTitle": "Institution",
+				"mDataProp": "name"
+			},
+			{
+				"sTitle": "Awarded (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "count.award"
+			},
+			{
+				"sTitle": "Awards ($)",
+				"fnRender": function ( oObj ) {
+					return self.collection.formatFunding(oObj.aData.funding.award);
 				},
-				{
-					"sTitle": "Count (#)",
-					"mDataProp": "count"
+				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "funding.award"
+			}
+		];
+		if (proposalaccessallowed) {
+			columns.push({
+				"sTitle": "Requested (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "count.other"
+			});
+			columns.push({
+				"sTitle": "Requests ($)",
+				"fnRender": function ( oObj ) {
+					return self.collection.formatFunding(oObj.aData.funding.other);
 				},
-				{
-					"sTitle": "Amount ($)",
-					"fnRender": function ( oObj ) {
-						return self.collection.formatFunding(oObj.aData.amount);
-					},
-					"bUseRendered": false,
-					"mDataProp": "amount"
-				}
-			],
+				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "funding.other"				
+			});
+		}
+		
+		//export file name
+		var exportfilename = 'geo_'+state+'_'+this.options.params.year.replace('-','_');
+		App.renderDataTable($("#institutions_table", this.el),{
+			"aoColumns": columns,
 			"aaData": data,
 			"aaSorting": [[1, 'desc']], //, [0, 'desc']
-		});
+		},exportfilename);
 
 		$('div#loader', this.el).html('');		
 

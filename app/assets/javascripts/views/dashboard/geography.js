@@ -91,11 +91,13 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		geochart.draw(data, option);				
 
 		//also show a list, just to be fancy
-		var oTable = $("#geography_table", this.el).dataTable({
-			"bJQueryUI": true,
-			"bAutoWidth": false,
-			"bDestroy": true,
-			"bProcessing": true,
+		//set the export file name
+		var exportfilename = 'geo_export_';
+		exportfilename += $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
+		exportfilename += '-';
+		exportfilename += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
+		
+		App.renderDataTable($("#geography_table", this.el),{
 			"iDisplayLength": 100,
 			"bInfo": false,
 			"bFilter": false,
@@ -116,7 +118,7 @@ App.Views.dashboardGeography = Backbone.View.extend({
 			],
 			"aaData": collated,
 			"aaSorting": [[1, 'desc']], //, [0, 'desc']
-		});
+		},exportfilename);
 
 		$('div#loader', this.el).html('');		
 

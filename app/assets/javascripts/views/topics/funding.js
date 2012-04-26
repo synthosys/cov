@@ -47,6 +47,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 			},
 			{
 				"sTitle": "Awarded (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
 			{
@@ -55,6 +56,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 					return '$'+App.addCommas((oObj.aData.funding.award/1000).toFixed(0))+'K';
 				},
 				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.award"
 			}
 		];
@@ -62,6 +64,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": "Declines (#)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
 			columns.push({
@@ -70,6 +73,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
 				},
 				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "fundingrate"
 			});
 		}
@@ -106,7 +110,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 					self.renderGraph(tabledata,dataAttribute,title);					
 				}
 			}
-		});
+		},'topics_funding');
 
 		//backbone convention to allow chaining
 		return this;

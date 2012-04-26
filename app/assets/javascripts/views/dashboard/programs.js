@@ -26,12 +26,15 @@ App.Views.dashboardPrograms = Backbone.View.extend({
    	render: function() {
 		$("#pge_table", this.el).empty();
 		
+		//sort by pge
+		var sorted = _.sortBy(this.collection.models, function(model) { return model.get('pge'); });
+		
        	// get a list of pges
-		for (var i = 0; i < this.collection.models.length; i=i+2) {
+		for (var i = 0; i < sorted.length; i=i+2) {
 			var html = '<tr>';
-			html += '<td><a href="#" id="'+this.collection.models[i].get("pge")+'" class="link_to_proposals">p'+ this.collection.models[i].get("pge")+' - '+this.collection.models[i].get("label")+'</a></td>';
+			html += '<td><a href="#" id="'+sorted[i].get("pge")+'" class="link_to_proposals">p'+ sorted[i].get("pge")+' - '+sorted[i].get("label")+'</a></td>';
 			html += '<td>';
-			if (this.collection.models[i+1]) html += '<a href="#" id="'+this.collection.models[i+1].get("pge")+'" class="link_to_proposals">p'+this.collection.models[i+1].get("pge")+' - '+this.collection.models[i+1].get("label")+'</a>';
+			if (sorted[i+1]) html += '<a href="#" id="'+sorted[i+1].get("pge")+'" class="link_to_proposals">p'+sorted[i+1].get("pge")+' - '+sorted[i+1].get("label")+'</a>';
 			html += '</td>';
 			html+= '</tr>';
 			$("#pge_table", this.el).append(html);

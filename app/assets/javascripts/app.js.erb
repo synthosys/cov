@@ -304,7 +304,8 @@ var App = {
 			$(".DTTT_collection").remove(); //remove table tools explicitly
 		}
 	},
-	renderDataTable: function(el,params) {
+	renderDataTable: function(el,params,exportfilename) {
+		//export file name is passed in as a special param because of how it's specified in the datatables params, hard to target such a nested attribute easily so passing it as an extra param
 		var tableparams = {
 			"bDestroy": _.has(params,'bDestroy')?params.bDestroy:true,
 			"bJQueryUI": _.has(params,'bJQueryUI')?params.bJQueryUI:true,
@@ -313,7 +314,8 @@ var App = {
 			"bAutoWidth": _.has(params,'bAutoWidth')?params.bAutoWidth:false,
 			"bProcessing": true,
 			"aaData": params.aaData,
-			"aoColumns": params.aoColumns,
+			"aoColumns": _.has(params,'aoColumns')?params.aoColumns:[],
+			"aoColumnDefs": _.has(params,'aoColumnDefs')?params.aoColumnDefs:[],
 			"aaSorting": _.has(params,'aaSorting')?params.aaSorting:[],
 			"oLanguage": {
 				"sLengthMenu:": "Display _MENU_ records per page",
@@ -325,7 +327,8 @@ var App = {
 	            "aButtons": [
 	                {
 	                    "sExtends":    "csv",
-	                    "sButtonText": "Export as CSV"
+	                    "sButtonText": "Export as CSV",
+						"sTitle": exportfilename?exportfilename:"NSF_Export"
 	                }
 	            ]
 	        }

@@ -81,6 +81,9 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			var topicid = row.t;
 			//the suppres attribute is used to suppress t0 topics for now
 			var suppress = (topicid=='0')?'1':'0';
+			//funding rate
+			var total = row.count.award+row.count.decline;
+			var fundingrate = (total>0)?(row.count.award/total)*100:0;
 			//figure out the weights and relevances here
 			var topic_weightedprevalence = 0;
 			_.each([1,2,3,4], function(topicrelevance) {
@@ -105,7 +108,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
 			}
 			//return it
-			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,growth:{count:growthCount,funding:growthFunding}};
+			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},fundingrate:fundingrate,suppress:suppress,growth:{count:growthCount,funding:growthFunding}};
 		});
 
 		//columns
@@ -136,34 +139,29 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"sTitle": "Awarded",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
-			},
-			{
-				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.award);
-				},
-				"bUseRendered": false,
-				"sTitle": "Awarded Amt.",
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "funding.award"
 			}
 		];
 		if (years.length>0) {
 			columns.push({
-				"sTitle": "Growth (#)",
+				"sTitle": "Avg.<br />Growth",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "growth.count"				
 			});
 		}
+		columns.push({
+			"fnRender": function ( oObj ) {
+				return self.collection.formatFunding(oObj.aData.funding.award);
+			},
+			"bUseRendered": false,
+			"sTitle": "Awarded Amt.",
+			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+			"mDataProp": "funding.award"
+		});
 		if (proposalaccessallowed) {
 			columns.push({
 				"sTitle": "Declined",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
-			});
-			columns.push({
-				"sTitle": "Other",
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "count.other"
 			});
 			columns.push({
 				"fnRender": function ( oObj ) {
@@ -174,13 +172,28 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.request"
 			});
+			columns.push({
+				"sTitle": "Funding Rate",
+				"fnRender": function (oObj) {
+					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
+				},
+				"bUseRendered": false,
+				"mDataProp": "fundingrate"
+			});
 		}
 
+		//make export file name
+		var exportfilename = 'topics';
+		if (this.options.pge) exportfilename += '_p'+this.options.pge;
+		//year
+		var startyear = $('select#filter_year_from', this.el).val();
+		var endyear = $('select#filter_year_to', this.el).val();
+		exportfilename += '_'+startyear+'_'+endyear;
 		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
-		});
+		},exportfilename);
 
 		//backbone convention to allow chaining
 		return this;

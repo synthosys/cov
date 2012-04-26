@@ -31,17 +31,19 @@ App.Views.programsGrowth = Backbone.View.extend({
 					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.years[year].funding.award/1000).toFixed(0))+'K':oObj.aData.years[year].count.award;
 				},
 				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "years."+year+"."+datatype+'.award'
 			});			
 		});
 		if (years.length>1) {
 			//growth rate
 			columns.push({
-				"sTitle": 'Growth '+((datatype=='funding')?' ($)':' (#)')+'<br />'+years[0].toString()+'-'+years[years.length-1].toString(),
+				"sTitle": 'Avg.<br />Growth',
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?oObj.aData.growth.funding:oObj.aData.growth.count;
+					return (datatype=='funding')?oObj.aData.growth.funding.toString()+'%':oObj.aData.growth.count.toString()+'%';
 				},
 				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "growth."+datatype
 			});
 			sorting = [columns.length-1, 'desc'];
@@ -65,7 +67,7 @@ App.Views.programsGrowth = Backbone.View.extend({
 					self.renderGraph(tabledata);					
 				}
 			}
-		});
+		},'programs_growth');
 		
 		//backbone convention to allow chaining
 		return this;
