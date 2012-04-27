@@ -100,8 +100,10 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			var growthCount = 0;
 			var growthFunding = 0;
 			for (var j=1;j<years.length;j++) {
-				if (row.years[years[j-1]].count.award) growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/row.years[years[j-1]].count.award)*100;
-				if (row.years[years[j-1]].funding.award) growthFunding += ((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/row.years[years[j-1]].funding.award)*100;
+				var denom = row.years[years[j-1]].count.award?row.years[years[j-1]].count.award:1;
+				growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/denom)*100;
+				denom = row.years[years[j-1]].funding.award?row.years[years[j-1]].funding.award:1;
+				growthFunding += ((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/denom)*100;
 			}
 			if (years.length>1) {
 				growthCount = (growthCount/(years.length-1)).toFixed(2);

@@ -2,10 +2,12 @@ App.Views.topicsFunding = Backbone.View.extend({
 	initialize: function() {
 		//render a form to manipulate the weights after the graph
 		var html = $("#template_form_topic_weights", this.el).html();
-		$(html).insertAfter($('#'+this.options.graphid, this.el));
+		$('#form_topic_weights', this.el).html(html);
 	},
 	//accept table elem, graph elem
 	render: function() {
+		$('#form_topic_weights', this.el).show();
+		
 		var renderTableTo = $('#'+this.options.tableid, this.el);
 		
 		//data
@@ -30,7 +32,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"mDataProp": "t"
 			},
 			{
-				"sTitle": "Prevalence (Weighted)",
+				"sTitle": "Prevalence<br />(Weighted)",
 				"fnRender": function( oObj ) {
 					return oObj.aData.weighted.toFixed(0);
 				},
@@ -83,9 +85,11 @@ App.Views.topicsFunding = Backbone.View.extend({
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[3, 'desc']],
+			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
-				if (this.fnSettings().bSorted) {
-					var oSettings = this.fnSettings();
+				var oSettings = this.fnSettings();
+				//only show graph if sorting, no filtering, nothing else
+				if (oSettings.bSorted && oSettings.oPreviousSearch.sSearch=='') {
 				    
 					//defaults
 					var dataAttribute='count.award', title='Awarded';
@@ -155,8 +159,16 @@ App.Views.topicsFunding = Backbone.View.extend({
 					var item = [];
 					item.push('t'+row.t);
 					_.each(years, function(year) {
-						if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
-						else item.push(0);
+						if (row.years && row.years[year]) {
+							var val = self.findAttribute(dataAttribute,row.years[year]);
+							item.push(val);
+							//if attribute is a dollar amount, add a formatted tooltip
+							if (dataAttribute=='funding.award') item.push('$'+App.addCommas((val/1000).toFixed(0))+'K');
+						}
+						else {
+							item.push(0);
+							item.push('');
+						}
 					});
 					chartData.push(item);					
 				}
@@ -173,6 +185,8 @@ App.Views.topicsFunding = Backbone.View.extend({
 		} else {
 			_.each(years, function(year) {
 				data.addColumn('number', year);
+				//if attribute is a dollar amount
+				if (dataAttribute=='funding.award') data.addColumn({type:'string',role:'tooltip'});				
 			});			
 		}
         data.addRows(chartData);
@@ -181,7 +195,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		var option = {
 		  height: chartData.length*30,
 		  isStacked: true,
-		  vAxis: {title: 'Topic' },
+		  //vAxis: {title: 'Topic' },
 		  title: title,
 		  legend: { position: 'top' }
 		}

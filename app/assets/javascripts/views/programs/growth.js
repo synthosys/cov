@@ -54,17 +54,22 @@ App.Views.programsGrowth = Backbone.View.extend({
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [sorting],
+			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
-				if (this.fnSettings().bSorted) {
-					var tabledata = [];
-				    var oSettings = this.fnSettings();
+				if (years.length>1) {
+					var oSettings = this.fnSettings();
+					//only show graph if sorting, no filtering, nothing else
+					if (oSettings.bSorted && oSettings.oPreviousSearch.sSearch=='') {
+						var tabledata = [];
+					    var oSettings = this.fnSettings();
 
-				    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
-				    {
-				        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
-				        tabledata.push( oRow._aData );
-				    }
-					self.renderGraph(tabledata);					
+					    for ( var i=0, iLen=oSettings.aiDisplay.length ; i<iLen ; i++ )
+					    {
+					        var oRow = oSettings.aoData[ oSettings.aiDisplay[ i ] ];
+					        tabledata.push( oRow._aData );
+					    }
+						self.renderGraph(tabledata);					
+					}
 				}
 			}
 		},'programs_growth');
@@ -100,7 +105,7 @@ App.Views.programsGrowth = Backbone.View.extend({
 		var option = {
 		  height: chartData.length*30,
 		  isStacked: true,
-		  vAxis: {title: 'PGE' },
+		  //vAxis: {title: 'PGE' },
 		  title: title,
 		  legend: { position: 'top' }
 		}
@@ -127,8 +132,10 @@ App.Views.programsGrowth = Backbone.View.extend({
 			var growthCount = 0;
 			var growthFunding = 0;
 			for (var j=1;j<years.length;j++) {
-				if (data[i].years[years[j-1]].count.award) growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/data[i].years[years[j-1]].count.award)*100;
-				if (data[i].years[years[j-1]].funding.award) growthFunding += ((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/data[i].years[years[j-1]].funding.award)*100;
+				var denom = data[i].years[years[j-1]].count.award?data[i].years[years[j-1]].count.award:1;
+				growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom)*100;
+				denom = data[i].years[years[j-1]].funding.award?data[i].years[years[j-1]].funding.award:1;
+				growthFunding += ((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/denom)*100;
 			}
 			if (years.length>1) {
 				growthCount = (growthCount/(years.length-1)).toFixed(2);

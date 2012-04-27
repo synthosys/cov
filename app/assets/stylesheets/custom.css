@@ -42,6 +42,10 @@ min-height: 500px;
   background-image: url(../img/glyphicons-halflings-gray.png);
 }
 
+.margin-bottom10 {
+margin-bottom: 10px;
+}
+
 /*
 ------------------------------------------------------------ Data Tables Reset
 */
@@ -62,7 +66,7 @@ min-height: 500px;
 }
 
 .ui-icon {
-display: inline-block;
+display: block;
 }
 
 .header {
@@ -371,7 +375,28 @@ padding-top: 30px;
 float: left;
 }
 .dataTables_filter {
-float: right;
+float: left;
+}
+
+.dataTables_filter label,
+.dataTables_filter input {
+margin-bottom: 0;
+}
+
+div.DTTT_container {
+margin-bottom: 10px;
+}
+
+.DTTT_container .DTTT_button {
+background: rgb(237,237,237);
+background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(47%,rgba(246,246,246,1)), color-stop(100%,rgba(237,237,237,1)));
+background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(246,246,246,1) 47%,rgba(237,237,237,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed',GradientType=0 );
+border: 1px solid #ccc;
 }
 
 .dataTable {
@@ -395,6 +420,8 @@ display: inline;
 .dataTables_info {
 float: left;
 font-weight: bold;
+line-height: 34px;
+margin-left:10px;
 }
 
 .dataTables_paginate {
@@ -519,3 +546,29 @@ opacity: .5;
 opacity: 1;
 }
 */
+
+/*
+--------------------------------------------------------------------------------------- TOPICS DIVISION SUMMARY
+*/
+
+#topics_divisions_summary .nav-list {
+padding: 0;
+}
+
+#topics_divisions_summary .nav-list li {
+color: #000;
+font-weight: normal;
+padding-left: 10px;
+}
+
+#topics_divisions_summary .nav-list .nav-header {
+color: #C66A28;
+margin: 10px 0 0 0;
+padding: 0;
+font-weight: bold;
+}
+
+#topics_divisions_summary .nav-list .nav-header span {
+font-weight: normal;
+color: #333;
+}

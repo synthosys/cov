@@ -70,6 +70,10 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		
 		//clear datatable if exists
 		App.clearDataTable('division_table', $('#division_table', this.el));
+		//clear graph
+		$('#division_graph', this.el).html('');
+		//hide
+		$('#form_topic_weights', this.el).hide();
 		
 		//simply switch a view, no need to reload data
 		//based on what type of data we are trying to show
@@ -95,6 +99,10 @@ App.Views.dashboardDivision = Backbone.View.extend({
 
 		//clear datatable if exists
 		App.clearDataTable('division_table', $('#division_table', this.el));
+		//clear graph
+		$('#division_graph', this.el).html('');
+		//hide
+		$('#form_topic_weights', this.el).hide();
 
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {

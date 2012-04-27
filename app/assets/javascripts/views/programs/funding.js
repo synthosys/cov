@@ -69,9 +69,11 @@ App.Views.programsFunding = Backbone.View.extend({
 			"aaData": data,
 			"aoColumns": columns,
 			"aaSorting": [[2, 'desc']],
+			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
 				var oSettings = this.fnSettings();
-				if (oSettings.bSorted) {
+				//only show graph if sorting, no filtering, nothing else
+				if (oSettings.bSorted && oSettings.oPreviousSearch.sSearch=='') {
 					//defaults
 					var dataAttribute='count.award', title='Awarded';
 
@@ -140,8 +142,16 @@ App.Views.programsFunding = Backbone.View.extend({
 					var item = [];
 					item.push('p'+row.pge);
 					_.each(years, function(year) {
-						if (row.years && row.years[year]) item.push(self.findAttribute(dataAttribute,row.years[year]));
-						else item.push(0);
+						if (row.years && row.years[year]) {
+							var val = self.findAttribute(dataAttribute,row.years[year]);
+							item.push(val);
+							//if attribute is a dollar amount, add a formatted tooltip
+							if (dataAttribute=='funding.award') item.push('$'+App.addCommas((val/1000).toFixed(0))+'K');
+						}
+						else {
+							item.push(0);
+							item.push('');
+						}
 					});
 					chartData.push(item);
 				}
@@ -158,6 +168,8 @@ App.Views.programsFunding = Backbone.View.extend({
 		} else {
 			_.each(years, function(year) {
 				data.addColumn('number', year);
+				//if attribute is a dollar amount
+				if (dataAttribute=='funding.award') data.addColumn({type:'string',role:'tooltip'});				
 			});			
 		}
         data.addRows(chartData);
@@ -166,7 +178,7 @@ App.Views.programsFunding = Backbone.View.extend({
 		var option = {
 		  height: chartData.length*30,
 		  isStacked: true,
-		  vAxis: {title: 'PGE' },
+		  //vAxis: {title: 'PGE' },
 		  title: title,
 		  legend: { position: 'top' }
 		}
