@@ -131,7 +131,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 													var proposaltopics = _.find(topics,function(item) {
 														return proposal.nsf_id==item.proposal.nsf_id;
 													});
-													tmp["topics"] = proposaltopics["topic"]["id"];
+													tmp["topics"] = (proposaltopics["topic"] && proposaltopics["topic"]["id"])?proposaltopics["topic"]["id"]:[];
 													//attach the researchers
 													var researchers = _.filter(data["data"],function(item) {
 														return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
