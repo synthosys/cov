@@ -24,6 +24,9 @@ App.Views.researchTopics = Backbone.View.extend({
 			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
 			$('div#loader', self.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Topics");
+			$('div#data_footnote', self.el).hide();
+			$('div#data_footnote', self.el).html(App.renderDataFootNote('topics'));
+			
 			self.loadList();
 		})
     },
@@ -42,6 +45,7 @@ App.Views.researchTopics = Backbone.View.extend({
 		}
 		
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Please wait while data is retrieved for all "+getDivision()+" Research Topics");
+		$('div#data_footnote', self.el).hide();		
 
 		//load	
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
@@ -57,20 +61,27 @@ App.Views.researchTopics = Backbone.View.extend({
 		this.collection_nsf.load({year: year},false);
 	},
    	render: function() {
-		$('div#loader', this.el).html('');
-		
 		//make an array hash which is much faster than an array for searching
 		var all_of_nsf_hash = {};
 		_.each(this.collection_nsf.loaded_topics, function(row) {
 			all_of_nsf_hash[row.t] = row;
 		});
 		
+		var totalawardamount = 0;
+		//before we do anything else, let's count total award amounts, we need this to calculate
+		//percentage of portfolio
+		_.each(this.collection.loaded_topics,function(row) {
+			totalawardamount += row.funding.award;
+		});
+
 		var self = this;
 		var data = _.map(this.collection.loaded_topics, function(row) {
 			var topicid = row.t;
 			//the suppres attribute is used to suppress t0 topics for now
 			var suppress = (topicid=='0')?'1':'0';
-			var tmp = {topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,count_nsf:{award:0,decline:0,other:0},funding_nsf:{award:0,request:0},awardpercentage:0};
+			//perc of portfolio
+			var percofportfolio = totalawardamount>0?((row.funding.award/totalawardamount)*100).toFixed(2):0;
+			var tmp = {topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,count_nsf:{award:0,decline:0,other:0},funding_nsf:{award:0,request:0},awardpercentage:0,percofportfolio:percofportfolio};
 			//figure out the totals against all of nsf
 			var all_of_nsf = all_of_nsf_hash[topicid];
 			if (all_of_nsf) {
@@ -80,7 +91,7 @@ App.Views.researchTopics = Backbone.View.extend({
 				tmp.funding_nsf.award = all_of_nsf.funding.award;
 				tmp.funding_nsf.request = all_of_nsf.funding.request;
 				
-				if (all_of_nsf.count.award>0) tmp.awardpercentage = (tmp.count.award/all_of_nsf.count.award)*100;
+				if (all_of_nsf.count.award>0) tmp.awardpercentage = (tmp.funding.award/all_of_nsf.funding.award)*100;
 			}
 			//return it
 			return tmp;
@@ -94,7 +105,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			},
 			{
 				"fnRender": function ( oObj ) {
-					var html = '<strong>t'+oObj.aData.topicid+': '+oObj.aData.label+'</strong>';
+					var html = '<strong>t'+oObj.aData.topicid+'</strong>';
 					if (oObj.aData.words) html += ' - '+oObj.aData.words;
 					html += ' <a href="#" id="'+oObj.aData.topicid+'" class="link_to_divisions">View Topic Details</a>';
 					return html;
@@ -108,6 +119,15 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "count.award"
 			},
 			{
+				"fnRender": function ( oObj ) {
+					return self.collection.formatFunding(oObj.aData.funding.award);
+				},
+				"bUseRendered": false,
+				"sTitle": getDivision()+" Awards ($)",
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "funding.award"
+			},
+			{
 				"sTitle": "Awarded (as % of NSF)",
 				"fnRender": function(oObj) {
 					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
@@ -117,13 +137,22 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "awardpercentage"
 			},
 			{
-				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.award);
-				},
-				"bUseRendered": false,
-				"sTitle": getDivision()+" Awards ($)",
+				"sTitle": "% of Portfolio ($)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "funding.award"
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.percofportfolio = val;
+			          // Store the computed display for speed
+			          source.percofportfolio_rendered = val.toString()+'%';
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.percofportfolio_rendered) return source.percofportfolio_rendered;
+			          else return source.percofportfolio.toString()+'%';
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.percofportfolio;
+				}
 			}
 		];
 		if (proposalaccessallowed) {
@@ -162,6 +191,10 @@ App.Views.researchTopics = Backbone.View.extend({
 			"aaSorting": [[0, 'asc'],[3, 'desc']]
 		},'researchtopics');
 		
+
+		$('div#loader', this.el).html('');
+		$('div#data_footnote', self.el).show();	
+
 		//backbone convention to allow chaining
 		return this;
    	}

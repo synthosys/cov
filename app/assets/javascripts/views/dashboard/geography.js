@@ -53,7 +53,7 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		var data = this.collection.toJSON();
 		
 		//group by state
-		var grouped = _.groupBy(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"]; });
+		var grouped = _.groupBy(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"].toUpperCase(); });
 		//now put it together
 		var collated = [];
 		for (var key in grouped) {
@@ -89,7 +89,13 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		  }
 		}
 		geochart.draw(data, option);				
-
+		//go to states when clicked
+		var self = this;
+		google.visualization.events.addListener(
+		    geochart, 'regionClick', function (e) {
+App.app_router.navigate('geography/institutions/'+e['region'].split('-').pop()+'/?year='+$('select#filter_year_from', self.el).val()+'-'+$('select#filter_year_to', self.el).val(), {trigger: true});
+		});
+		
 		//also show a list, just to be fancy
 		//set the export file name
 		var exportfilename = 'geo_export_';

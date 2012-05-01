@@ -19,10 +19,10 @@ App.Views.dashboardProgramsProposal = Backbone.View.extend({
 	goBackTo: function(e) {
 		e.preventDefault();
 
-		window.history.back();
+		App.app_router.navigate('programs/proposals/'+this.options.params['pge']+'/?year='+this.options.params['year']+(this.options.params['status']?'&status='+this.options.params['status']:''), {trigger: true});
 	},
    	render: function() {
-		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id, year: this.options.params['year']});
+		var proposal = new App.Views.proposalsProposal({el: $('#proposal', this.el), nsf_id:this.options.nsf_id, year: this.options.params['year'], status: this.options.params['status']});
 
 		//backbone convention to allow chaining
 		return this;

@@ -14,18 +14,25 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		var columns = [
 			{
 				"bVisible": false,
+				"mDataProp": "suppress"
+			},
+			{
+				"bVisible": false,
 				"mDataProp": "t"
 			},
 			{
 				"sTitle": "Topics",
 				"sWidth": "300px",
 				"fnRender": function( oObj ) {
-					return "<a href='#' id='link_to_topics_divisions_"+oObj.aData.t+"'>t"+oObj.aData.t+'</a>'+' - '+oObj.aData.words;
+					var html = '<strong>t'+oObj.aData.t+'</strong>';
+					if (oObj.aData.words) html += ' - '+oObj.aData.words;
+					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.t+'">View Topic Details</a>';
+					return html;
 				},
 				"mDataProp": "words"
 			}
 		];
-		var sorting = [1, 'asc'];
+		var sorting = [2, 'asc'];
 		var years = this.getYears(this.options.data);
 		_.each(years,function(year) {
 			columns.push({
@@ -42,12 +49,36 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			//growth rate
 			columns.push({
 				"sTitle": 'Avg.<br />Growth',
-				"fnRender": function (oObj) {
-					return (datatype=='funding')?oObj.aData.growth.funding.toString()+'%':oObj.aData.growth.count.toString()+'%';
-				},
-				"bUseRendered": false,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "growth."+datatype
+				"mDataProp": function ( source, type, val ) {
+					if (datatype=='funding') {
+				        if (type === 'set') {
+				          source.growth.funding = val;
+				          // Store the computed display for speed
+				          source.growth_funding_rendered = val.toString()+'%';
+				          return;
+				        }
+				        else if (type === 'display' || type === 'filter') {
+						  if (source.growth_funding_rendered) return source.growth_funding_rendered;
+				          else return (source.growth.funding).toString()+'%';
+				        }
+				        // 'sort' and 'type' both just use the raw data
+				        return source.growth.funding;						
+					} else {
+				        if (type === 'set') {
+				          source.growth.count = val;
+				          // Store the computed display for speed
+				          source.growth_count_rendered = val.toString()+'%';
+				          return;
+				        }
+				        else if (type === 'display' || type === 'filter') {
+						  if (source.growth_count_rendered) return source.growth_count_rendered;
+				          else return (source.growth.count).toString()+'%';
+				        }
+				        // 'sort' and 'type' both just use the raw data
+				        return source.growth.count;						
+					}
+				}
 			});
 			sorting = [columns.length-1, 'desc'];
 		}
@@ -56,7 +87,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		App.renderDataTable(renderTableTo,{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [sorting],
+			"aaSorting": [[0, 'asc'],sorting],
 			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
 				if (years.length>1) {
@@ -130,7 +161,9 @@ App.Views.topicsGrowth = Backbone.View.extend({
 
 		var prepared = [];
 		for (var i=0;i<data.length;i++) {
-			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, growth:{}};
+			//the suppres attribute is used to suppress t0 topics for now
+			var suppress = (data[i].t=='0')?'1':'0';			
+			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, growth:{}, suppress:suppress};
 			_.each(years,function(year) {
 				//add the year
 				tmp['year_'+year+'_'+datatype] = data[i].years[year][datatype].award;				
@@ -140,8 +173,8 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			for (var j=1;j<years.length;j++) {
 				var denom = data[i].years[years[j-1]].count.award?data[i].years[years[j-1]].count.award:1;
 				growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom)*100;
-				denom = data[i].years[years[j-1]].funding.award?data[i].years[years[j-1]].funding.award:1;
-				growthFunding += ((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/denom)*100;
+				denom = data[i].years[years[j-1]].funding.award?data[i].years[years[j-1]].funding.award/1000000:1;
+				growthFunding += (((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/1000000)/denom)*100;
 			}
 			if (years.length>1) {
 				growthCount = (growthCount/(years.length-1)).toFixed(2);

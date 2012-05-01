@@ -26,6 +26,9 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				var year = self.options.params['year']?self.options.params['year'].split('-'):[startYear,endYear];
 				$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 				$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
+				//set footnote
+				$('div#data_footnote', self.el).html(App.renderDataFootNote('topics'));
+				$('div#data_footnote', self.el).hide();		
 				//load
 				self.load();
             });
@@ -62,6 +65,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		}
 		
 		$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
+		$('div#data_footnote', self.el).hide();		
 
 		//load	
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
@@ -72,7 +76,12 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	render: function(e) {
 		if (e) e.preventDefault();
 
-		$('div#loader', this.el).html('');
+		var totalawardamount = 0;
+		//before we do anything else, let's count total award amounts, we need this to calculate
+		//percentage of portfolio
+		_.each(this.collection.loaded_topics,function(row) {
+			totalawardamount += row.funding.award;
+		});
 		
 		//prepare for datatable data - conv to array
 		var self = this;
@@ -84,6 +93,10 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			//funding rate
 			var total = row.count.award+row.count.decline;
 			var fundingrate = (total>0)?(row.count.award/total)*100:0;
+			//avg award size
+			var avgawardsize = row.count.award>0?(row.funding.award/row.count.award).toFixed(2):0;
+			//perc of portfolio
+			var percofportfolio = totalawardamount>0?((row.funding.award/totalawardamount)*100).toFixed(2):0;
 			//figure out the weights and relevances here
 			var topic_weightedprevalence = 0;
 			_.each([1,2,3,4], function(topicrelevance) {
@@ -102,15 +115,15 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			for (var j=1;j<years.length;j++) {
 				var denom = row.years[years[j-1]].count.award?row.years[years[j-1]].count.award:1;
 				growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/denom)*100;
-				denom = row.years[years[j-1]].funding.award?row.years[years[j-1]].funding.award:1;
-				growthFunding += ((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/denom)*100;
+				denom = row.years[years[j-1]].funding.award?row.years[years[j-1]].funding.award/1000000:1;
+				growthFunding += (((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/1000000)/denom)*100;
 			}
 			if (years.length>1) {
-				growthCount = (growthCount/(years.length-1)).toFixed(2);
-				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
+				growthCount = (growthCount/(years.length-1)).toFixed(0);
+				growthFunding = (growthFunding/(years.length-1)).toFixed(0);
 			}
 			//return it
-			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},fundingrate:fundingrate,suppress:suppress,growth:{count:growthCount,funding:growthFunding}};
+			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},fundingrate:fundingrate,suppress:suppress,growth:{count:growthCount,funding:growthFunding},avgawardsize:avgawardsize,percofportfolio:percofportfolio};
 		});
 
 		//columns
@@ -130,8 +143,9 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			},
 			{
 				"fnRender": function ( oObj ) {
-					var html = "<a href='#' id='link_to_topics_divisions_"+oObj.aData.topicid+"'><strong>t"+oObj.aData.topicid+'</strong></a>';
-					if (oObj.aData.words) html += ': '+oObj.aData.words;
+					var html = "<strong>t"+oObj.aData.topicid+'</strong>';
+					if (oObj.aData.words) html += ' - '+oObj.aData.words;
+					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.topicid+'">View Topic Details</a>';
 					return html;
 				},
 				"sTitle": "Topic",
@@ -143,21 +157,79 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"mDataProp": "count.award"
 			}
 		];
+		columns.push({
+			"sTitle": "Awarded Amt.",
+			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          source.funding.award = val;
+		          // Store the computed display for speed
+		          source.funding_award_rendered = self.collection.formatFunding(val);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.funding_award_rendered) return source.funding_award_rendered;
+		          else return self.collection.formatFunding(source.funding.award); //.amount_rendered;
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.funding.award;
+			}
+		});
 		if (years.length>0) {
 			columns.push({
-				"sTitle": "Avg.<br />Growth",
+				"sTitle": "Avg.<br />Growth ($)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "growth.count"				
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.growth.funding = val;
+			          // Store the computed display for speed
+			          source.growth_funding_rendered = val.toString()+'%';
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.growth_funding_rendered) return source.growth_funding_rendered;
+			          else return (source.growth.funding).toString()+'%';
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.growth.funding;
+				}				
 			});
 		}
 		columns.push({
-			"fnRender": function ( oObj ) {
-				return self.collection.formatFunding(oObj.aData.funding.award);
-			},
-			"bUseRendered": false,
-			"sTitle": "Awarded Amt.",
+			"sTitle": "Avg. Award Size ($)",
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-			"mDataProp": "funding.award"
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          source.avgawardsize = val;
+		          // Store the computed display for speed
+		          source.avgawardsize_rendered = self.collection.formatFunding(val);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.avgawardsize_rendered) return source.avgawardsize_rendered;
+		          else return self.collection.formatFunding(source.avgawardsize);
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.avgawardsize;
+			}
+		});
+		columns.push({
+			"sTitle": "% of Portfolio ($)",
+			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          source.percofportfolio = val;
+		          // Store the computed display for speed
+		          source.percofportfolio_rendered = val.toString()+'%';
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.percofportfolio_rendered) return source.percofportfolio_rendered;
+		          else return source.percofportfolio.toString()+'%';
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.percofportfolio;
+			}
 		});
 		if (proposalaccessallowed) {
 			columns.push({
@@ -165,22 +237,40 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
-			columns.push({
-				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.request);
-				},
-				"bUseRendered": false,
+			/* columns.push({
 				"sTitle": "Requested Amt.",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "funding.request"
-			});
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.funding.request = val;
+			          // Store the computed display for speed
+			          source.funding_request_rendered = self.collection.formatFunding(val);
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.funding_request_rendered) return source.funding_request_rendered;
+			          else return self.collection.formatFunding(source.funding.request); //.amount_rendered;
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.funding.request;
+				}
+			}); */
 			columns.push({
 				"sTitle": "Funding Rate",
-				"fnRender": function (oObj) {
-					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
-				},
-				"bUseRendered": false,
-				"mDataProp": "fundingrate"
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.fundingrate = val;
+			          // Store the computed display for speed
+			          source.fundingrate_rendered = val.toFixed(2).toString()+'%';
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.fundingrate_rendered) return source.fundingrate_rendered;
+			          else return (source.fundingrate).toFixed(2).toString()+'%';
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.fundingrate;
+				}
 			});
 		}
 
@@ -194,9 +284,12 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'asc'],[3, 'desc']]
+			"aaSorting": [[0, 'asc'],[1, 'desc']]
 		},exportfilename);
 
+		$('div#loader', this.el).html('');
+		$('div#data_footnote', self.el).show();		
+		
 		//backbone convention to allow chaining
 		return this;
 	},

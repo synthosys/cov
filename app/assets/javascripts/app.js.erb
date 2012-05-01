@@ -357,8 +357,26 @@ var App = {
 		var html = '';
 		for (var i=start;i<=end;i++) {
 			var selected = (i.toString()==current.toString())?' selected':'';
-			html += '<option value="'+i.toString()+'"'+selected+'>'+i.toString()+'</option>';
+			html += '<option value="'+i.toString()+'"'+selected+'>'+(i==getCurrentYear()?i.toString():i.toString().replace(/^20/,'FY'))+'</option>';
 		}
+		return html;
+	},
+	renderDataFootNote: function(forwhat) {
+		var html = '<p><small>';
+		if (forwhat=='proposals') {
+			html += '<strong>"Amount"</strong> in all proposal tables footnote: The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only)".<br />';			
+			html += '<strong>"Date"</strong>: The <strong>"Date"</strong> for Awarded Proposals is the Award date. For Declines/Others (internal NSF users only), the date reflects the Requested Start Date.<br />';
+			html += '<strong>"Status"</strong> columns: "Other" proposals (internal NSF users only) include proposals with various statuses such as continuation, move by PI, and others.<br />';
+		} else if (forwhat=='topics' || forwhat=='programs') {
+			html += '<strong>"Average Growth ($)"</strong>: The <strong>"Average Growth ($)"</strong> reflects the average of the incremental growth/decline of the Awarded Amounts that were expended during the time period shown.<br />';
+			html += '<strong>"Avg Growth (#)"</strong>: The <strong>"Average Growth (#)"</strong> reflects the average of the incremental growth/decline of Proposals that were awarded during the time period shown.<br />';
+			html += '<strong>"Funding Rate"</strong>: The <strong>"Funding Rate"</strong> reflects the percentage of Awarded Proposals relative to the total number of Proposals (Awarded plus Declined but excluding "Others").<br />';
+			if (forwhat=='topics') {
+				html += '<strong>"Prevalence (Weighted)"</strong>: "See sidebar for more information.';
+			}
+		}
+		html += '</small></p>';
+		
 		return html;
 	}
 };

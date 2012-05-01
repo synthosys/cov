@@ -38,14 +38,13 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 		
 		//filter by state
 		var state = this.options.state;
-		var filtered = _.filter(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"]==state; });
+		var filtered = _.filter(data,function(row) { if (row["address"] && row["address"]["state"]) return row["address"]["state"].toUpperCase()==state.toUpperCase(); });
 
 		//prepare 
 		var data = [];
 		_.each(filtered, function(row) {
-			var tmp = {name:row.name,count:{award:0,other:0},funding:{award:0,other:0}};
-			if (row.awarded_dollar) { tmp.count.award = row.count; tmp.funding.award = row.awarded_dollar; }
-			else if (row.request_dollar) { tmp.count.other = row.count; tmp.funding.other = row.request_dollar; }
+			var tmp = {name:row.name,count:{award:'',other:''},funding:{award:'',other:''}};
+			if (row.awarded_dollar) { tmp.funding.award = row.awarded_dollar; }
 			data.push(tmp);
 		});
 		
@@ -54,11 +53,6 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 			{
 				"sTitle": "Institution",
 				"mDataProp": "name"
-			},
-			{
-				"sTitle": "Awarded (#)",
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "count.award"
 			},
 			{
 				"sTitle": "Awards ($)",
@@ -70,22 +64,6 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 				"mDataProp": "funding.award"
 			}
 		];
-		if (proposalaccessallowed) {
-			columns.push({
-				"sTitle": "Requested (#)",
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "count.other"
-			});
-			columns.push({
-				"sTitle": "Requests ($)",
-				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.other);
-				},
-				"bUseRendered": false,
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "funding.other"				
-			});
-		}
 		
 		//export file name
 		var exportfilename = 'geo_'+state+'_'+this.options.params.year.replace('-','_');

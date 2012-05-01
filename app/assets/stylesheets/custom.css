@@ -551,24 +551,24 @@ opacity: 1;
 --------------------------------------------------------------------------------------- TOPICS DIVISION SUMMARY
 */
 
-#topics_divisions_summary .nav-list {
+#topics_divisions_summary .nav-list, #proposal_summary .nav-list {
 padding: 0;
 }
 
-#topics_divisions_summary .nav-list li {
+#topics_divisions_summary .nav-list li, #proposal_summary .nav-list li {
 color: #000;
 font-weight: normal;
 padding-left: 10px;
 }
 
-#topics_divisions_summary .nav-list .nav-header {
+#topics_divisions_summary .nav-list .nav-header, #proposal_summary .nav-list .nav-header {
 color: #C66A28;
 margin: 10px 0 0 0;
 padding: 0;
 font-weight: bold;
 }
 
-#topics_divisions_summary .nav-list .nav-header span {
+#topics_divisions_summary .nav-list .nav-header span, #proposal_summary .nav-list .nav-header span {
 font-weight: normal;
 color: #333;
 }

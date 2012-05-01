@@ -27,7 +27,10 @@ App.Views.programsFunding = Backbone.View.extend({
 				"sTitle": "Programs",
 				"sWidth": "300px",
 				"fnRender": function( oObj ) {
-					return "<a href='#' id='link_to_programs_proposals_"+oObj.aData.pge+"'>p"+oObj.aData.pge+'</a> - '+oObj.aData.label;
+					var html = '<strong>p'+oObj.aData.pge+'</strong>';
+					if (oObj.aData.label) html += ' - '+oObj.aData.label;
+					html += ' <a href="#" id="link_to_programs_proposals_'+oObj.aData.pge+'">View Program Details</a>';
+					return html;
 				},
 				"mDataProp": "label"
 			},
@@ -38,12 +41,21 @@ App.Views.programsFunding = Backbone.View.extend({
 			},
 			{
 				"sTitle": "Awards ($)",
-				"fnRender": function (oObj) {
-					return '$'+App.addCommas((oObj.aData.funding.award/1000).toFixed(0))+'K';
-				},
-				"bUseRendered": false,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "funding.award"
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.funding.award = val;
+			          // Store the computed display for speed
+			          source.funding_award_rendered = '$'+App.addCommas((val/1000).toFixed(0))+'K';
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.funding_award_rendered) return source.funding_award_rendered;
+			          else return '$'+App.addCommas((source.funding.award/1000).toFixed(0))+'K';
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.funding.award;
+				}
 			}
 		];
 		//if access to private data allowed
@@ -55,12 +67,21 @@ App.Views.programsFunding = Backbone.View.extend({
 			});
 			columns.push({
 				"sTitle": "Funding Rate",
-				"fnRender": function (oObj) {
-					return (oObj.aData.fundingrate).toFixed(2).toString()+'%';
-				},
-				"bUseRendered": false,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "fundingrate"
+				"mDataProp": function ( source, type, val ) {
+			        if (type === 'set') {
+			          source.fundingrate = val;
+			          // Store the computed display for speed
+			          source.fundingrate_rendered = val.toFixed(2).toString()+'%';
+			          return;
+			        }
+			        else if (type === 'display' || type === 'filter') {
+					  if (source.fundingrate_rendered) return source.fundingrate_rendered;
+			          else return (source.fundingrate).toFixed(2).toString()+'%';
+			        }
+			        // 'sort' and 'type' both just use the raw data
+			        return source.fundingrate;
+				}
 			});
 		}
 		//data table
@@ -85,7 +106,16 @@ App.Views.programsFunding = Backbone.View.extend({
 						sortBy = oSettings.aoColumns[sort_column]["mDataProp"];
 						//which data attribute are we going to show in the graph?
 						//if it's title, default to count.award
-						if (sort_column!=1) { dataAttribute = sortBy; title = oSettings.aoColumns[sort_column]["sTitle"]; }
+						if (sort_column!=1) { 
+							title = oSettings.aoColumns[sort_column]["sTitle"];
+							if (_.isFunction(sortBy)) {
+								if (title=='Awards ($)') dataAttribute = 'funding.award';
+								else if (title=='Funding Rate') dataAttribute = 'fundingrate';
+								else dataAttribute = 'count.award';
+							} else {
+								dataAttribute = sortBy;
+							}
+						}
 					}
 
 					var tabledata = [];
@@ -167,7 +197,7 @@ App.Views.programsFunding = Backbone.View.extend({
 			data.addColumn('number', 'Funding Rate');
 		} else {
 			_.each(years, function(year) {
-				data.addColumn('number', year);
+				data.addColumn('number', year==getCurrentYear()?year.toString():year.toString().replace(/^20/,'FY'));
 				//if attribute is a dollar amount
 				if (dataAttribute=='funding.award') data.addColumn({type:'string',role:'tooltip'});				
 			});			

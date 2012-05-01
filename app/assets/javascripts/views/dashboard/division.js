@@ -113,6 +113,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			}
 			this.programsCollection.params = { org:getDivision(), year:startYear+'-'+endYear };
 			$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading programs");
+			$('div#data_footnote', self.el).html('');		
 			this.programsCollection.fetch();		
 		} else if ($('select#filter_data', this.el).val().match(/^topics/)) {
 			//use topics collection, if already loaded, reuse it
@@ -121,6 +122,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 				this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
 			}
 			$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
+			$('div#data_footnote', self.el).html('');		
 			this.topicsCollection.load({ org:getDivision(), year:startYear+'-'+endYear, summ: 'status,year,t1' }, true);		
 		}	
 	},
@@ -142,6 +144,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			this.programsFundingView.options.data = this.programsCollection.toJSON();
 			this.programsFundingView.render();			
 		}
+		$('div#data_footnote', this.el).html(App.renderDataFootNote('programs'));
 		$('div#loader', this.el).html('');
 	},
 	renderTopics: function() {
@@ -162,6 +165,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			this.topicsFundingView.options.data = this.topicsCollection.loaded_topics; //toJSON();
 			this.topicsFundingView.render();			
 		}
+		$('div#data_footnote', this.el).html(App.renderDataFootNote('topics'));
 		$('div#loader', this.el).html('');
 	}
 });

@@ -36,7 +36,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 				tmp.nsf_id = reviewer.nsf_id;
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
 				tmp.status = '';
-				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign"></i> (COI)</span>';
+				if (reviewer.status=='C') tmp.status += ' <span><i class="icon-exclamation-sign icon-red"></i> (COI)</span>';
 				tmp.inst = reviewer.inst.name;
 				tmp.dept = reviewer.inst.dept;
 				tmp.pi = (reviewer.pi && reviewer.pi.length>0 && $.inArray(reviewer.nsf_id,reviewer.pi)!=-1)?'icon-ok icon-green':'icon-remove icon-red';

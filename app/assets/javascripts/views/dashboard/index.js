@@ -54,7 +54,7 @@ App.Views.Dashboard = Backbone.View.extend({
 	renderSummary: function() {
 		var division = getDivision();
 		var startyear = getStartYear();
-		var endyear = getCurrentYear();
+		var endyear = getEndYear();
 		var template = _.template($("#template_division_summary", this.el).html());
 		var loader = "<img src='" + baseURI + "/assets/ajax-load.gif" + "'/>";
 		var data = { division: division, 'startyear': startyear, 'endyear': endyear, 'awards':loader, 'declines': '', 'institutions': loader, 'researchers': loader };
@@ -69,9 +69,9 @@ App.Views.Dashboard = Backbone.View.extend({
 		$.getJSON(apiurl + 'topic?' + params + '&jsoncallback=?', function(data) {
 			_.each(data["data"], function(item) {
 				if (item.status=='award') {
-					$("#division_summary #awards", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["awarded_dollar"]/1000000).toFixed(0))+'M');
+					$("#division_summary #awards", this.el).html(App.addCommas(item["count"])+' - '+'$'+App.addCommas((item["awarded_dollar"]/1000000).toFixed(0))+'M');
 				} else if (item.status=='decline') {
-					$("#division_summary #declines", this.el).html(item["count"]+' - '+'$'+App.addCommas((item["request_dollar"]/1000000).toFixed(0))+'M');
+					$("#division_summary #declines", this.el).html(App.addCommas(item["count"])+' - '+'$'+App.addCommas((item["request_dollar"]/1000000).toFixed(0))+'M');
 				}
 			});
 		});
@@ -79,13 +79,13 @@ App.Views.Dashboard = Backbone.View.extend({
 		//get count of institutions
 		var params = queryparams+"&page=org";
 		$.getJSON(apiurl + 'topic?' + params + '&count' + '&jsoncallback=?', function(data) {
-			$('#division_summary #institutions', this.el).html(data["count"]);
+			$('#division_summary #institutions', this.el).html(App.addCommas(data["count"]));
 		});
 
 		//get count of researchers
 		var params = queryparams+"&page=pi";
 		$.getJSON(apiurl + 'topic?' + params + '&count' + '&jsoncallback=?', function(data) {
-			$('#division_summary #researchers', this.el).html(data["count"]);
+			$('#division_summary #researchers', this.el).html(App.addCommas(data["count"]));
 		});				
 	}
 });

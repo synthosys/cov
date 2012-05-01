@@ -202,7 +202,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		summary_all_html+='<li><strong>Proposals Awarded: </strong>'+all.count.award+'</li>';
 		summary_all_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(all.funding.award)+'</li>';
 		if (proposalaccessallowed) {
-			summary_all_html+='<li><strong>Declines: </strong>'+this.collection.formatFunding(all.funding.request)+'</li>';
+			summary_all_html+='<li><strong>Declines: </strong>'+all.count.decline+'</li>';
 			var total = all.count.award+all.count.decline;
 			summary_all_html+='<li><strong>Funding Rate: </strong>'+((total>0)?((all.count.award/total)*100).toFixed(2):0).toString()+'%'+'</li>';			
 		}
@@ -212,7 +212,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		summary_current_html+='<li><strong>Proposals Awarded: </strong>'+current.count.award+'</li>';
 		summary_current_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(current.funding.award)+'</li>';
 		if (proposalaccessallowed) {
-			summary_current_html+='<li><strong>Declines: </strong>'+this.collection.formatFunding(current.funding.request)+'</li>';
+			summary_current_html+='<li><strong>Declines: </strong>'+current.count.decline+'</li>';
 			var total = all.count.award+current.count.decline;
 			summary_current_html+='<li><strong>Funding Rate: </strong>'+((total>0)?((current.count.award/total)*100).toFixed(2):0).toString()+'%'+'</li>';
 		}

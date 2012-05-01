@@ -319,7 +319,7 @@ App.Views.ShowProposal = Backbone.View.extend({
 		//gender graphs
 		this.showPanelDetailsView.renderReviewerGenderGraph(reviewers,'reviewers_gender_graph');
 		//institution classification
-		//$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers));
+		$('#reviewers_instclass_list', this.el).html(this.showPanelDetailsView.renderReviewerInstitutionClassification(reviewers));
 		//render reviewer map
 		$('#reviewers_location_list', this.el).html(this.showPanelDetailsView.renderReviewerLocationMap(reviewers,'reviewers_location_map'));
 		//also, by country		

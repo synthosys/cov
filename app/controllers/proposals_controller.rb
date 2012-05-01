@@ -123,6 +123,6 @@ class ProposalsController < ApplicationController
   end
   
   def get_all_users
-    @users = User.find(:all, :conditions => { :role => 'auditor'}, :order => 'name' )
+    @users = User.find(:all, :conditions => { :role => ['auditor','auditor+']}, :order => 'name' )
   end
 end

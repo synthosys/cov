@@ -50,7 +50,7 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 			_.each(reviewers,function(reviewer) {
 				var tmp = {};
 				if (reviewer.status=='R') tmp.status = 'icon-ok icon-green';
-				else if (reviewer.status=='C') tmp.status = 'icon-exclamation-sign';
+				else if (reviewer.status=='C') tmp.status = 'icon-exclamation-sign icon-red';
 				else tmp.status = 'icon-remove icon-red';
 				tmp.name = reviewer.first_name+' '+reviewer.last_name;
 				tmp.inst = reviewer.inst.name;
@@ -140,29 +140,21 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 	},
 	renderReviewerInstitutionClassification: function(data) {
 		//group by classification
-		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["flag"]) return row["inst"]["flag"]; });
+		var grouped = _.groupBy(data,function(row) { if (row["inst"] && row["inst"]["class"]) return row["inst"]["class"]; });
 
-		//make list of classifications
-		var tmp = [];
-		_.each(data, function(item) {
-			if (item['inst']['flag']) tmp = tmp.concat(item['inst']['flag']);
-		});
-		//now we have them! make them unique
-		tmp = _.uniq(tmp);
 		//now find the counts
 		var collated = [];
 		var self = this;
-		_.each(tmp, function(classification) {
-			var orgs = _.filter(data, function(item) {
-				return $.inArray(classification,item['inst']['flag'])!=-1;
+		for (var key in grouped) {
+			var legend = _.find(self.legend_classes, function(item) {
+				return item['class']==key;
 			});
-			if (orgs) {
-				if (self.legend_flags[classification]) {
-					collated.push([self.legend_flags[classification]['label'],orgs.length]);
-				}
-
+			if (legend) {
+				collated.push([legend['label'],grouped[key].length]);
+			} else {
+				collated.push([key,grouped[key].length]);
 			}
-		});
+		}
 		collated = _.sortBy(collated,function(row) { return row[1]; }).reverse();
 		var list = [];
 		_.each(collated, function(row) {

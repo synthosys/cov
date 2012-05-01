@@ -20,10 +20,15 @@ App.Views.topicsProposals = Backbone.View.extend({
 		html += '<select id="filter_year_to" class="span1">'+App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear)+'</select>';
 		//show status filter if private data access is available
 		if (proposalaccessallowed) {
+			var status = this.options.status?this.options.status.split(','):['award','decline','other'];
 			html += '<label for="inlineCheckboxes" class="control-label"><strong>&nbsp;Status:&nbsp;</strong></label>';
-			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award" checked> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+(proposalaccessallowed?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+(proposalaccessallowed?' checked':'')+'> Other</label>';
+			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award"'+($.inArray('award',status)?' checked':'')+'> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+($.inArray('decline',status)?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+($.inArray('propose',status)?' checked':'')+'> Other</label>';
 		}
-		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table><small>* The Amount shown reflects the Awarded amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only).</small>'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
+		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><p><small>Click column headers to sort.</small></p><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table><div id="data_footnote"></div'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
+
+		//set footnote
+		$('div#data_footnote', self.el).hide();		
+		$('div#data_footnote', this.el).html(App.renderDataFootNote('proposals'));
 
 		this.load();
 	},
@@ -38,7 +43,16 @@ App.Views.topicsProposals = Backbone.View.extend({
 		if (this.options.org) params.push('org='+this.options.org);
 		if (this.options.pge) params.push('pge='+this.options.pge);
 		if (this.options.topicid) params.push('t='+this.options.topicid);
-		if (this.options.year) params.push('year='+this.options.year);			
+		var startyear = $('select#filter_year_from', this.el).val();
+		var endyear = $('select#filter_year_to', this.el).val();
+		params.push('year='+startyear+'-'+endyear);
+		var status = ['award'];
+		if (proposalaccessallowed) {
+			status = _.map($('input[id^=filter_status[]]:checked', this.el), function(checkbox) {
+				return $(checkbox).val();
+			});			
+		}
+		params.push('status='+status.join(','));
 		if (params.length>0) params = '?'+params.join('&');
 		App.app_router.navigate(route+'/'+id+'/'+params, {trigger: true});
 	},
@@ -76,8 +90,6 @@ App.Views.topicsProposals = Backbone.View.extend({
 		this.collection.fetch();				
 	},
 	render: function() {
-		$('div#loader', this.el).html('');
-
 		var self = this;
 		
 		var data = _.map(this.collection.toJSON(), function(row) {
@@ -233,8 +245,11 @@ App.Views.topicsProposals = Backbone.View.extend({
 			"bAutoWidth": false,
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[4, 'desc']]
+			"aaSorting": [[0, 'desc']]
 		},exportfilename);
+
+		$('div#loader', this.el).html('');
+		$('div#data_footnote', this.el).show();		
 
 		//backbone convention to allow chaining
 		return this;

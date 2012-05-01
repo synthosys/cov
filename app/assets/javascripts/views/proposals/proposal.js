@@ -1,6 +1,7 @@
 App.Views.proposalsProposal = Backbone.View.extend({
 	events: {
-		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions'	
+		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions',
+		"click a[id^=link_to_programs_proposals_]": 'gotoProgramsProposals'	
 	},
 	initialize: function() {
 		var self = this;
@@ -16,6 +17,13 @@ App.Views.proposalsProposal = Backbone.View.extend({
 		
 		window.location.href = baseURI+'/research#topics/divisions/'+id+'/?year='+this.options.year;
 	},
+	gotoProgramsProposals: function(e) {
+		e.preventDefault();
+		
+		var id = $(e.currentTarget).attr('id').split('_').pop();
+		
+		window.location.href = baseURI+'/dashboard#programs/proposals/'+id+'/?year='+this.options.year;
+	},
    	render: function() {
 		var self = this;
 		$('div#details_loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading details");
@@ -26,9 +34,11 @@ App.Views.proposalsProposal = Backbone.View.extend({
 			if (data.count>0) {
 				var rawdata = data["data"][0];
 				$('#title', self.el).html(rawdata.title);
-				$('#abstract', self.el).html(rawdata.abstract);
+				$('#abstract', self.el).html(rawdata.abstract?(rawdata.abstract.length>980 || rawdata.abstract[rawdata.abstract.length-1]!='.'?rawdata.abstract+'...':rawdata.abstract):'No abstract available.');
 				$('#nsf_id span', self.el).html(rawdata.nsf_id);
-				$('#org span', self.el).html('<span title="'+rawdata.org.full+'">'+rawdata.org.name+'</span>');
+				$('#org span', self.el).html(rawdata.org.name);
+				$('#org span', self.el).attr('title',rawdata.org.full);
+				$('#pge span', self.el).html('<a href="#" id="link_to_programs_proposals_'+rawdata.pge.code+'" title="'+rawdata.pge.full+'">p'+rawdata.pge.code+'</a>');
 				if (proposalaccessallowed) {
 					if (rawdata.status.name=='award') {
 						$("#status span", self.el).html('Awarded');
@@ -47,7 +57,7 @@ App.Views.proposalsProposal = Backbone.View.extend({
 					$("#date span", self.el).html(rawdata.awarded.date);
 					$("#amount span", self.el).html('$'+App.addCommas((rawdata.awarded.dollar/1000).toFixed(0))+'K');
 				}
-				$('#awardsearch').html('<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+rawdata.nsf_id+'" target="_blank">Award Search</a>');
+				if (rawdata.status.name=='award') $('#awardsearch').html('<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber='+rawdata.nsf_id+'" target="_blank">Award Search</a>');
 				if (proposalaccessallowed) {
 					$('#ejacket').html('<a href="https://www.ejacket.nsf.gov/ej/showProposal.do?optimize=Y&ID='+rawdata.nsf_id+'&docid='+rawdata.nsf_id+'" target="_blank">Open in e-Jacket</a>');
 				}				
