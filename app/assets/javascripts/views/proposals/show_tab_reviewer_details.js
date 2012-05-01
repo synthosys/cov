@@ -167,7 +167,7 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 			var proposals_compiled = [];
 
 			// show the data by reverse date
-			proposals = _.sortBy(proposals, function(p) { return -parseInt(p.details.awarded.date.replace("/", "")); });
+			proposals = _.sortBy(proposals, function(p) { if (p.details.awarded && p.details.awarded.date) return -parseInt(p.details.awarded.date.replace("/", "")); else if (p.details.request && p.details.request.date) return -parseInt(p.details.request.date.replace("/", "")); });
 
 			_.each(proposals, function(proposal) {
 				var data = {};
