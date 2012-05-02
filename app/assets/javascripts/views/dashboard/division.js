@@ -107,6 +107,9 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		}
 		var startYear = $('select#filter_year_from', this.el).val();
 		var endYear = $('select#filter_year_to', this.el).val();
+		
+		//reset topic relevance
+		$('select#filter_topicrelevance', self.el).val('1');
 
 		//clear datatable if exists
 		App.clearDataTable('division_table', $('#division_table', this.el));

@@ -38,7 +38,7 @@ App.Views.programsFunding = Backbone.View.extend({
 				"mDataProp": "label"
 			},
 			{
-				"sTitle": "Awarded (#)",
+				"sTitle": "Awards (#)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
@@ -206,7 +206,7 @@ App.Views.programsFunding = Backbone.View.extend({
 		}
         chart.draw(data,option);		
 
-		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> click column headers in the table to the left to change chart variable (and sort the data).</p>');
+		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> Click column headers in the table to the left to change chart variable (and sort the data).</p>');
 	},
 	findAttribute: function(attr,data) {
 		//find nested attributes using a string variable containing nested attributes

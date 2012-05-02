@@ -20,9 +20,9 @@ App.Views.topicsProposals = Backbone.View.extend({
 		html += '<select id="filter_year_to" class="span1">'+App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear)+'</select>';
 		//show status filter if private data access is available
 		if (proposalaccessallowed) {
-			var status = this.options.status?this.options.status.split(','):['award','decline','other'];
+			var status = this.options.status?this.options.status.split(','):['award','decline','propose'];
 			html += '<label for="inlineCheckboxes" class="control-label"><strong>&nbsp;Status:&nbsp;</strong></label>';
-			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award"'+($.inArray('award',status)?' checked':'')+'> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+($.inArray('decline',status)?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+($.inArray('propose',status)?' checked':'')+'> Other</label>';
+			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award"'+($.inArray('award',status)!=-1?' checked':'')+'> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+($.inArray('decline',status)!=-1?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+($.inArray('propose',status)!=-1?' checked':'')+'> Other</label>';
 		}
 		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table><div id="data_footnote"></div'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
 

@@ -34,7 +34,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"mDataProp": "t"
 			},
 			{
-				"sTitle": "Prevalence<br />(Weighted)",
+				"sTitle": "Weighted<br />Prevalence",
 				"fnRender": function( oObj ) {
 					return oObj.aData.weighted.toFixed(0);
 				},
@@ -47,18 +47,18 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"fnRender": function( oObj ) {
 					var html = '<strong>t'+oObj.aData.t+'</strong>';
 					if (oObj.aData.words) html += ' - '+oObj.aData.words;
-					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.t+'">View Topic Details</a>';
+					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.t+'">View Topic at NSF</a>';
 					return html;					
 				},
 				"mDataProp": "words"
 			},
 			{
-				"sTitle": "Awarded (#)",
+				"sTitle": "Awards with Topic",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
 			{
-				"sTitle": "Awards ($)",
+				"sTitle": "Awards with Topic ($)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
@@ -79,7 +79,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		//if access to private data allowed
 		if (proposalaccessallowed) {
 			columns.push({
-				"sTitle": "Declines (#)",
+				"sTitle": "Declines with Topic",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
@@ -222,7 +222,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		}
         chart.draw(data,option);
 
-		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> click column headers in the table to the left to change chart variable (and sort the data).</p>');
+		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> Click column headers in the table to the left to change chart variable (and sort the data).</p>');
 	},
 	findAttribute: function(attr,data) {
 		//find nested attributes using a string variable containing nested attributes

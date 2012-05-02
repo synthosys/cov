@@ -45,7 +45,7 @@ App.Views.programsGrowth = Backbone.View.extend({
 		if (years.length>1) {
 			//growth rate
 			columns.push({
-				"sTitle": 'Avg.<br />Growth',
+				"sTitle": 'Avg. Growth'+(datatype=='funding'?' ($)':''),
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 					if (datatype=='funding') {

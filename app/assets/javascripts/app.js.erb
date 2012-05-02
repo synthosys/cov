@@ -374,7 +374,7 @@ var App = {
 		html += '<option value="1"'+(current=='1'?' selected':'')+'>Primary Topic</option>';
 		html += '<option value="1,2"'+(current=='1,2'?' selected':'')+'>Top 2</option>';
 		html += '<option value="1,2,3"'+(current=='1,2,3'?' selected':'')+'>Top 3</option>';
-		html += '<option value="1,2,3,4"'+(current=='1,2,3,4'?' selected':'')+'>All</option>';
+		html += '<option value="1,2,3,4"'+(current=='1,2,3,4'?' selected':'')+'>Top 4</option>';
 		
 		return html;
 	},
@@ -382,14 +382,14 @@ var App = {
 		var html = '<p><small>';
 		if (forwhat=='proposals') {
 			html += '<strong>"Amount"</strong> in all proposal tables footnote: The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only)".<br />';			
-			html += '<strong>"Date"</strong>: The <strong>"Date"</strong> for Awarded Proposals is the Award date. For Declines/Others (internal NSF users only), the date reflects the Requested Start Date.<br />';
+			html += 'The <strong>"Date"</strong> for Awarded Proposals is the Award date. For Declines/Others (internal NSF users only), the date reflects the Requested Start Date.<br />';
 			html += '<strong>"Status"</strong> columns: "Other" proposals (internal NSF users only) include proposals with various statuses such as continuation, move by PI, and others.<br />';
 		} else if (forwhat=='topics' || forwhat=='programs') {
-			html += '<strong>"Average Growth ($)"</strong>: The <strong>"Average Growth ($)"</strong> reflects the average of the incremental growth/decline of the Awarded Amounts that were expended during the time period shown.<br />';
-			html += '<strong>"Avg Growth (#)"</strong>: The <strong>"Average Growth (#)"</strong> reflects the average of the incremental growth/decline of Proposals that were awarded during the time period shown.<br />';
-			html += '<strong>"Funding Rate"</strong>: The <strong>"Funding Rate"</strong> reflects the percentage of Awarded Proposals relative to the total number of Proposals (Awarded plus Declined but excluding "Others").<br />';
+			html += 'The <strong>"Average Growth ($)"</strong> reflects the average of the incremental growth/decline of the Awarded Amounts that were expended during the time period shown.<br />';
+			html += 'The <strong>"Average Growth (#)"</strong> reflects the average of the incremental growth/decline of Proposals that were awarded during the time period shown.<br />';
+			html += 'The <strong>"Funding Rate"</strong> reflects the percentage of Awarded Proposals relative to the total number of Proposals (Awarded plus Declined but excluding "Others").<br />';
 			if (forwhat=='topics') {
-				html += '<strong>"Prevalence (Weighted)"</strong>: "See sidebar for more information.';
+				html += '<strong>"Weighted Prevalence"</strong>: "See sidebar for more information.';
 			}
 		}
 		html += '</small></p>';

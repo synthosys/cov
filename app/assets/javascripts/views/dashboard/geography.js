@@ -70,7 +70,7 @@ App.Views.dashboardGeography = Backbone.View.extend({
 		var data = new google.visualization.DataTable();
 		data.addRows(collated.length);
 		data.addColumn('string', 'State');
-		data.addColumn('number', 'Researchers');
+		data.addColumn('number', 'Institutions');
 		//data.addRows(collated);
 		_.each(collated, function(value,key) {
 			data.setValue(key,0,value.state);

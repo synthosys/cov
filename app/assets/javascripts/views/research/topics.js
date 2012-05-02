@@ -127,7 +127,7 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "label"
 			},
 			{
-				"sTitle": getDivision()+" Awarded (#)",
+				"sTitle": getDivision()+" Awards with Topic",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.award"
 			},
@@ -136,12 +136,12 @@ App.Views.researchTopics = Backbone.View.extend({
 					return self.collection.formatFunding(oObj.aData.funding.award);
 				},
 				"bUseRendered": false,
-				"sTitle": getDivision()+" Awards ($)",
+				"sTitle": getDivision()+" Awards with Topic ($)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "funding.award"
 			},
 			{
-				"sTitle": "Awards (as $ of NSF)",
+				"sTitle": "Awards (as % of NSF)",
 				"fnRender": function(oObj) {
 					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
 				},
@@ -150,7 +150,7 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "awardpercentage"
 			},
 			{
-				"sTitle": "% of Prg. Portfolio ($)",
+				"sTitle": "Awards (as % of "+getDivision()+")",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
@@ -170,14 +170,14 @@ App.Views.researchTopics = Backbone.View.extend({
 		];
 		if (proposalaccessallowed) {
 			columns.push({
-				"sTitle": getDivision()+" Declines (#)",
+				"sTitle": getDivision()+" Declines with Topic",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count.decline"
 			});
 		}
 		//all of nsf columns
 		columns.push({
-			"sTitle": "NSF Awarded (#)",
+			"sTitle": "NSF Awards with Topic (#)",
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": "count_nsf.award"
 		});
@@ -186,13 +186,13 @@ App.Views.researchTopics = Backbone.View.extend({
 				return self.collection.formatFunding(oObj.aData.funding_nsf.award);
 			},
 			"bUseRendered": false,
-			"sTitle": "NSF Awards ($)",
+			"sTitle": "NSF Awards with Topic ($)",
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": "funding_nsf.award"
 		});
 		if (proposalaccessallowed) {
 			columns.push({
-				"sTitle": "NSF Declines (#)",
+				"sTitle": "NSF Declines with Topic (#)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": "count_nsf.decline"
 			});

@@ -25,7 +25,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 				"fnRender": function( oObj ) {
 					var html = '<strong>t'+oObj.aData.t+'</strong>';
 					if (oObj.aData.words) html += ' - '+oObj.aData.words;
-					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.t+'">View Topic Details</a>';
+					html += ' <a href="#" id="link_to_topics_divisions_'+oObj.aData.t+'">View Topic at NSF</a>';
 					return html;
 				},
 				"mDataProp": "words"
@@ -47,7 +47,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		if (years.length>1) {
 			//growth rate
 			columns.push({
-				"sTitle": 'Avg.<br />Growth',
+				"sTitle": 'Avg. Topic Growth'+(datatype=='funding'?' ($)':''),
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 					if (datatype=='funding') {

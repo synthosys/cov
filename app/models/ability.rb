@@ -8,7 +8,11 @@ class Ability
     cannot :manage, :assignDivisionCan
     cannot :manage, :internalUserCan
     cannot :nsf,    :privateCan        #this is the one where we want to eventually test before we check the private
-
+    
+    #this is used in the layout to determine the type of navigation and header elements to show
+    cannot :menu
+    can :menu, user.role
+    
     if user.role? :su
       can :manage, :all
     elsif user.role? :admin

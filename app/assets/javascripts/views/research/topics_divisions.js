@@ -2,8 +2,8 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 	events: {
 		"click button#gobackto": "goBackTo",
 		"click a[class=link_to_proposals]": "gotoProposals",
-		"change select#filter_year_from": "loadList",
-		"change select#filter_year_to": "loadList"
+		"change select#filter_year_from": "load",
+		"change select#filter_year_to": "load"
 	},
 	initialize: function() {
 		//use topics collection
@@ -33,7 +33,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
 			$('div#loader', self.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Topics");
-			self.loadList();
+			self.load();
 		})
     },
 	goBackTo: function(e) {
@@ -47,7 +47,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		var id = $(e.currentTarget).attr('id');
 		App.app_router.navigate('topics/proposals/'+this.options.topicid+'/?org='+id+'&year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
 	},
-	loadList: function(e) {
+	load: function(e) {
 		if (e) e.preventDefault();
 		
 		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
@@ -119,7 +119,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		var columns = [
 			{
 				"fnRender": function ( oObj ) {
-					var html = '&nbsp;&nbsp;'+oObj.aData.label+' ('+oObj.aData.org+')';
+					var html = oObj.aData.label+' ('+oObj.aData.org+')';
 					return html;
 				},
 				"sWidth": "500px",
@@ -162,6 +162,11 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		});
 		
 		App.renderDataTable($('#divisions_table', this.el),{
+			"iDisplayLength": 200,
+			"bInfo": false,
+			"bFilter": false,
+			"bLengthChange": false,
+			"bPaginate": false,
 			"aaData": data,
 			"aoColumns": columns,
 			"bSort": false,
@@ -179,6 +184,9 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 					var iDisplayIndex = oSettings._iDisplayStart + i;
 					var sGroup = oSettings.aoData[ oSettings.aiDisplay[iDisplayIndex] ]._aData.directorate; //directorate
 					var sSubGroup = oSettings.aoData[ oSettings.aiDisplay[iDisplayIndex] ]._aData.parentdivision; //parent division
+					//indents
+					if (sSubGroup) $(nTrs[i]).find('td:eq(0)').attr('style','padding-left: 30px');
+					else if (sGroup) $(nTrs[i]).find('td:eq(0)').attr('style','padding-left: 15px');
 			//console.log(sSubGroup);				
 					if ( sGroup != sLastGroup )
 					{
@@ -189,7 +197,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 					}
 					if (sSubGroup != sLastSubGroup) {
 			//console.log(sSubGroup);					
-						$('<tr class="grouprow"><td class="group" colspan="'+iColspan+'" style="padding-left: 20px;"><strong>'+sSubGroup+'</strong></td></tr>').insertBefore(nTrs[i]);
+						$('<tr class="grouprow"><td class="group" colspan="'+iColspan+'" style="padding-left: 15px;"><strong>'+sSubGroup+'</strong></td></tr>').insertBefore(nTrs[i]);
 						sLastSubGroup = sSubGroup;					
 					} 
 				}
@@ -217,6 +225,63 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			summary_current_html+='<li><strong>Funding Rate: </strong>'+((total>0)?((current.count.award/total)*100).toFixed(2):0).toString()+'%'+'</li>';
 		}
 		$(summary_current_html).insertAfter($('ul#summary li#org', this.el));
+
+		//graphs
+		//awards
+		//prepare chart data
+		var chartData = [];
+		//assemble a data array that looks like [[topicid, value],[topicid, value]]
+		_.each(data, function(row) {
+			chartData.push([row.org, row.count.award]);
+		});
+		//sort
+		chartData = _.sortBy(chartData,function(row) { return -row[1]; });
+		//now take only the top x
+		chartData = _.first(chartData,15);
+		
+		//now we're ready to display the chart!
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Division');
+		data.addColumn('number', 'Awards');
+        data.addRows(chartData);
+
+        var chart = new google.visualization.BarChart(document.getElementById('graph_awards'));
+		var option = {
+		  height: chartData.length*30,
+		  //vAxis: {title: 'Topic' },
+		  title: 'Top Divisions (# of Awards)',
+		  legend: { position: 'top' }
+		}
+        chart.draw(data,option);		
+
+		if (proposalaccessallowed) {
+			//funding rate
+			//prepare chart data
+			chartData = [];
+			//assemble a data array that looks like [[topicid, value],[topicid, value]]
+			_.each(data, function(row) {
+				chartData.push([row.org, row.fundingrate]);
+			});
+			//sort
+			chartData = _.sortBy(chartData,function(row) { return -row[1]; });
+			//now take only the top x
+			chartData = _.first(chartData,15);
+
+			//now we're ready to display the chart!
+	        var data = new google.visualization.DataTable();
+	        data.addColumn('string', 'Division');
+			data.addColumn('number', 'Awards');
+	        data.addRows(chartData);
+
+	        var chart = new google.visualization.BarChart(document.getElementById('graph_fundingrate'));
+			var option = {
+			  height: chartData.length*30,
+			  //vAxis: {title: 'Topic' },
+			  title: 'Top Divisions (Funding Rate)',
+			  legend: { position: 'top' }
+			}
+	        chart.draw(data,option);		
+		}
 
 		//backbone convention to allow chaining
 		return this;

@@ -119,6 +119,10 @@ overflow: hidden;
 text-indent: -100%;
 }
 
+.header-base h1.internal a {
+background: transparent url(cov-logo-internal.png) no-repeat top left;
+}
+
 .header-base .seal-pres,
 .header-base .seal-nsf {
 display: block;
@@ -522,7 +526,7 @@ font-weight: bold;
 
 #topic_weights {
 width: 145px;
-margin: 0 auto;
+margin: 0 auto 15px auto;
 }
 
 #topic_weights .btn {
