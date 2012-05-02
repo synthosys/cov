@@ -34,7 +34,7 @@ App.Views.proposalsProposal = Backbone.View.extend({
 			if (data.count>0) {
 				var rawdata = data["data"][0];
 				$('#title', self.el).html(rawdata.title);
-				$('#abstract', self.el).html(rawdata.abstract?(rawdata.abstract.length>980 || rawdata.abstract[rawdata.abstract.length-1]!='.'?rawdata.abstract+'...':rawdata.abstract):'No abstract available.');
+				$('#abstract', self.el).html(rawdata.abstract?(rawdata.abstract.length>980 || rawdata.abstract[rawdata.abstract.length-1]!='.'?rawdata.abstract+'...':rawdata.abstract):'No abstract available. Abstracts are available for Awarded Proposals only.');
 				$('#nsf_id span', self.el).html(rawdata.nsf_id);
 				$('#org span', self.el).html(rawdata.org.name);
 				$('#org span', self.el).attr('title',rawdata.org.full);

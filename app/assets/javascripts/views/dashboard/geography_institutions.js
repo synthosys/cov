@@ -70,8 +70,11 @@ App.Views.dashboardGeographyInstitutions = Backbone.View.extend({
 		App.renderDataTable($("#institutions_table", this.el),{
 			"aoColumns": columns,
 			"aaData": data,
-			"aaSorting": [[1, 'desc']], //, [0, 'desc']
+			"aaSorting": [[1, 'desc']],
+			"sDom": '<"H"f<"datatable_help">Tr>t<"F"lip>'
 		},exportfilename);
+
+		$("div.datatable_help").html('<p><small>Click column headers to sort. Use the controls on the left to filter the data.</small></p>');
 
 		$('div#loader', this.el).html('');		
 

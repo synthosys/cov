@@ -321,7 +321,7 @@ var App = {
 				"sLengthMenu:": "Display _MENU_ records per page",
 				"sSearch": "Filter:"
 			},
-			"sDom": '<"H"fTr>t<"F"lip>',
+			"sDom": _.has(params,'sDom')?params.sDom:'<"H"fTr>t<"F"lip>',
 	        "oTableTools": {
 				"sSwfPath": baseURI+"/assets/tabletools/media/swf/copy_csv_xls_pdf.swf",
 	            "aButtons": [
@@ -359,6 +359,23 @@ var App = {
 			var selected = (i.toString()==current.toString())?' selected':'';
 			html += '<option value="'+i.toString()+'"'+selected+'>'+(i==getCurrentYear()?i.toString():i.toString().replace(/^20/,'FY'))+'</option>';
 		}
+		return html;
+	},
+	getSelectedYears: function() {
+		var years = [];
+		for (var i=$('select#filter_year_from').val();i<=$('select#filter_year_to').val();i++) {
+			years.push(parseInt(i));
+		}
+		return years;
+	},
+	renderTopicRelevance: function(current) {
+		var html = '';
+		//this could be done in a little dryer, more clever way
+		html += '<option value="1"'+(current=='1'?' selected':'')+'>Primary Topic</option>';
+		html += '<option value="1,2"'+(current=='1,2'?' selected':'')+'>Top 2</option>';
+		html += '<option value="1,2,3"'+(current=='1,2,3'?' selected':'')+'>Top 3</option>';
+		html += '<option value="1,2,3,4"'+(current=='1,2,3,4'?' selected':'')+'>All</option>';
+		
 		return html;
 	},
 	renderDataFootNote: function(forwhat) {

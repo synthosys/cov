@@ -1,4 +1,7 @@
 App.Views.programsGrowth = Backbone.View.extend({
+	initialize: function() {
+		this.model = new Topic();
+	},
 	//accept table elem, graph elem
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -26,17 +29,18 @@ App.Views.programsGrowth = Backbone.View.extend({
 			}
 		];
 		var sorting = [1, 'asc'];
-		var years = this.getYears(this.options.data);
+		var years = this.options.years;
 		_.each(years,function(year) {
 			columns.push({
 				"sTitle": year.toString()+((datatype=='funding')?' ($)':' (#)'),
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData.years[year].funding.award/1000).toFixed(0))+'K':oObj.aData.years[year].count.award;
+					return (datatype=='funding')?'$'+App.addCommas((oObj.aData['year_'+year+'_funding']/1000).toFixed(0))+'K':oObj.aData['year_'+year+'_count'];
 				},
 				"bUseRendered": false,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "years."+year+"."+datatype+'.award'
+				"mDataProp": "year_"+year+"_"+datatype
 			});			
+	
 		});
 		if (years.length>1) {
 			//growth rate
@@ -105,9 +109,7 @@ App.Views.programsGrowth = Backbone.View.extend({
 		return this;
 	},
 	renderGraph: function(tabledata) {		
-//console.log(tabledata);
-		
-		$('#'+this.options.graphid).html('Loading...');
+		$('#'+this.options.graphid, this.el).html('Loading...');
 
 		var datatype = this.options.datatype;
 		var title = 'Awarded'+((this.options.datatype=='funding')?' ($)':' (#)');
@@ -150,46 +152,23 @@ App.Views.programsGrowth = Backbone.View.extend({
 		return newTarget;
 	},
 	prepareData: function(data) {
-		//calculate growth rate
-		var years = this.getYears(data);
+		var datatype = this.options.datatype?this.options.datatype:'count';
+
+		var years = this.options.years;
 
 		var prepared = [];
 		for (var i=0;i<data.length;i++) {
-			var tmp = {pge:data[i].pge, label:data[i].label, years:data[i].years, growth:{}};
-			var growthCount = 0;
-			var growthFunding = 0;
-			for (var j=1;j<years.length;j++) {
-				var denom = data[i].years[years[j-1]].count.award?data[i].years[years[j-1]].count.award:1;
-				growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom)*100;
-				denom = data[i].years[years[j-1]].funding.award?data[i].years[years[j-1]].funding.award/1000000:1;
-				growthFunding += (((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/1000000)/denom)*100;
-			}
-			if (years.length>1) {
-				growthCount = (growthCount/(years.length-1)).toFixed(2);
-				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
-			}
-			
+			var tmp = {pge:data[i].pge, label:data[i].label, growth:{}};
+			_.each(years,function(year) {
+				//add the year
+				tmp['year_'+year+'_'+datatype] = (data[i].years[parseInt(year)] && data[i].years[parseInt(year)][datatype] && data[i].years[parseInt(year)][datatype].award)?data[i].years[parseInt(year)][datatype].award:0;				
+			});
+			var growth = this.model.calcGrowthRate(data[i],years);
 			//now save it
-			tmp.growth.count = growthCount;
-			tmp.growth.funding = growthFunding;
+			tmp.growth = growth;
 			
 			prepared.push(tmp);
 		}
 		return prepared;
-	},
-	getYears: function(data) {
-		//make a list of unique years
-		var years = [];
-		_.each(data, function(row) {
-			if (row.years) {
-				_.each(row.years, function(value,key) {
-					//key is year
-					if ($.inArray(key,years)==-1) years.push(key);
-				});
-			}
-		});
-		years = _.sortBy(years, function(year) { return year; });
-
-		return years;
 	}
 });

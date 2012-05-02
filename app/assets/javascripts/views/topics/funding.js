@@ -1,5 +1,6 @@
 App.Views.topicsFunding = Backbone.View.extend({
 	initialize: function() {
+		this.model = new Topic();
 		//render a form to manipulate the weights after the graph
 		var html = $("#template_form_topic_weights", this.el).html();
 		$('#form_topic_weights', this.el).html(html);
@@ -15,11 +16,9 @@ App.Views.topicsFunding = Backbone.View.extend({
 		this.prepareData(this.options.data);
 		var data = [];
 		for (var i=0, len=this.options.data.length;i<len;i++) {
-			//the suppres attribute is used to suppress t0 topics for now
-			var suppress = (this.options.data[i].t=='0')?'1':'0';			
+			if (this.options.data[i].t=='0') continue;
 			tmp = {
 				t:this.options.data[i].t,
-				suppress:suppress,
 				words:this.options.data[i].words,
 				count:{award:this.options.data[i].count.award,decline:this.options.data[i].count.decline},
 				funding:{award:this.options.data[i].funding.award},
@@ -30,10 +29,6 @@ App.Views.topicsFunding = Backbone.View.extend({
 		}
 		//columns
 		var columns = [
-			{
-				"bVisible": false,
-				"mDataProp": "suppress"
-			},
 			{
 				"bVisible": false,
 				"mDataProp": "t"
@@ -112,7 +107,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		App.renderDataTable(renderTableTo,{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'asc'],[4, 'desc']],
+			"aaSorting": [[3, 'desc']],
 			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
 				var oSettings = this.fnSettings();
@@ -125,13 +120,12 @@ App.Views.topicsFunding = Backbone.View.extend({
 					//let's see what we're sorting by
 					var sorts = oSettings.aaSorting;
 					if (sorts.length>0) {
-						if (sorts.length>1) sort_column = sorts[1][0];
-						else sort_column = sorts[0][0];
+						sort_column = sorts[0][0];
 						//find the corresponding column
 						sortBy = oSettings.aoColumns[sort_column]["mDataProp"];
 						//which data attribute are we going to show in the graph?
 						//if it's title or weighted, default to count.award
-						if (sort_column!=2 && sort_column!=3) { 
+						if (sort_column!=1 && sort_column!=2) { 
 							title = oSettings.aoColumns[sort_column]["sTitle"];
 							if (_.isFunction(sortBy)) {
 								if (title=='Awards ($)') dataAttribute = 'funding.award';
@@ -158,7 +152,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 		return this;
 	},
 	renderGraph: function(topicids,dataAttribute,title) {
-		$('#'+this.options.graphid).html('Loading...');
+		$('#'+this.options.graphid, this.el).html('Loading...');
 		
 		var self = this;
 		
@@ -178,18 +172,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 				if (row) chartData.push([row.t, row.fundingrate]);
 			});
 		} else {
-			//make a list of unique years
-			var years = [];
-			_.each(topicids, function(topicid) {
-				row = data_hash[topicid];
-				if (row && row.years) {
-					_.each(row.years, function(value,key) {
-						//key is year
-						if ($.inArray(key,years)==-1) years.push(key);
-					});
-				}
-			});
-			years = _.sortBy(years, function(year) { return year; });
+			var years = this.options.years;
 			//assemble a data array that looks like [[topicid, year_1_value, year2_value],[topicid, year_1_value, year2_value]]
 			_.each(topicids, function(topicid) {
 				row = data_hash[topicid];
@@ -205,7 +188,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 						}
 						else {
 							item.push(0);
-							item.push('');
+							if (dataAttribute=='funding.award') item.push('');
 						}
 					});
 					chartData.push(item);					
@@ -237,7 +220,9 @@ App.Views.topicsFunding = Backbone.View.extend({
 		  title: title,
 		  legend: { position: 'top' }
 		}
-        chart.draw(data,option);		
+        chart.draw(data,option);
+
+		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> click column headers in the table to the left to change chart variable (and sort the data).</p>');
 	},
 	findAttribute: function(attr,data) {
 		//find nested attributes using a string variable containing nested attributes
@@ -251,24 +236,19 @@ App.Views.topicsFunding = Backbone.View.extend({
 		return newTarget;
 	},
 	prepareData: function(data) {
+		//read the currently specified weights
+		var self = this;
+		var weights = {};
+		_.each([1,2,3,4], function(topicrelevance) { 
+			weights['t'+topicrelevance.toString()] = $('input#t'+topicrelevance.toString(), self.el).val();
+		});
+		
 		for (var i=0, len=data.length;i<len;i++) {
 			//funding rate
-			var total = data[i].count.award+data[i].count.decline;
-			data[i].fundingrate = (total>0)?(data[i].count.award/total)*100:0;
+			data[i].fundingrate = this.model.calcFundingRate(data[i]);
 			//topic weights
 			//figure out the weights and relevances here
-			var topic_weightedprevalence = 0;
-			var self = this;
-			_.each([1,2,3,4], function(topicrelevance) {
-				topicrelevance = 't'+topicrelevance.toString();
-				if (data[i][topicrelevance]) {
-					var tmp = data[i][topicrelevance]['count']['award']+data[i][topicrelevance]['count']['decline']+data[i][topicrelevance]['count']['other'];
-					//read the topic weight input
-					var el = $('input#'+topicrelevance, self.el);
-					var weight = (el&&el.val())?el.val():'0';
-					topic_weightedprevalence += (tmp*weight);					
-				}
-			});
+			var topic_weightedprevalence = this.model.calcWeightedRelevance(data[i],weights);
 			data[i].weighted = topic_weightedprevalence;
 		}
 		this.options.data = data; //return data;

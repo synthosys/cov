@@ -88,8 +88,6 @@ App.Collections.Topics = Backbone.Collection.extend({
 		this.currentlyloading = 1;
 		this.topicsbyrelevance = {'t1':{},'t2':{},'t3':{},'t4':{}};
 		this.loaded_topicids = [];
-		this.loaded_years = [];
-		this.loaded_topics = []; //this will end up looking like [ { t:topicid, label: label, words: words, t1: {count: count, etc. }, t2: {count: count, etc. }}]
 		//this.reset(); //clear the collection - not necessary, i think
 		
 		this.loadData(this.currentlyloading,summbyyear);
@@ -114,17 +112,6 @@ App.Collections.Topics = Backbone.Collection.extend({
 
 		var topicids = _.pluck(data,'t');
 		this.loaded_topicids = this.loaded_topicids.concat(topicids);
-		//make a list of unique years
-		var years = [];
-		_.each(data, function(row) {
-			if (row.years) {
-				_.each(row.years, function(value,key) {
-					//key is year
-					if ($.inArray(key,years)==-1) years.push(key);
-				});
-			}
-		});
-		this.loaded_years = this.loaded_years.concat(years);
 		//make an array hash which is much faster than an array for searching
 		var data_hash = {};
 		_.each(data, function(row) {
@@ -136,6 +123,8 @@ App.Collections.Topics = Backbone.Collection.extend({
 			//delete this.params['t'+topicrelevance.toString()]; //test topic
 			this.loadData(this.currentlyloading,summbyyear);
 		} else {
+			var loaded_topics = []; //this will end up looking like [ { t:topicid, label: label, words: words, t1: {count: count, etc. }, t2: {count: count, etc. }}]
+			
 			var self = this;
 //alert(this.loaded_topicids.length);			
 			//var unique_topicids = _.uniq(this.loaded_topicids); //do not use this, very slow in ie for large arrays (falls down with 2000+)
@@ -160,51 +149,60 @@ App.Collections.Topics = Backbone.Collection.extend({
 					}
 					tmp[topicrelevance] = topic;
 				});
-				self.loaded_topics.push(tmp);
+				loaded_topics.push(tmp);
 			}
-			for (var i=0, len=this.loaded_topics.length;i<len;i++) {
-				var row = this.loaded_topics[i];
-				//collate by year
-				//initialize
-				var years = {};
-				_.each(_.uniq(this.loaded_years), function(year) {
-					years[year] = {count:{award:0,decline:0,other:0}, funding:{award:0,request:0}};
-				});
-				//counts across prevalences
-				var count_awarded = 0;
-				var count_declined = 0;
-				var count_other = 0;
-				var funding_awarded = 0;
-				var funding_requested = 0;
-				_.each([1,2,3,4], function(topicrelevance) {
-					topicrelevance = 't'+topicrelevance.toString();
-					if (row[topicrelevance]) {
-						//store all the counts
-						count_awarded += row[topicrelevance]['count']['award'];
-						count_declined += row[topicrelevance]['count']['decline'];
-						count_other += row[topicrelevance]['count']['other'];
-						funding_awarded += row[topicrelevance]['funding']['award'];
-						funding_requested += row[topicrelevance]['funding']['request'];
-						//by year
-						_.each(row[topicrelevance].years, function(value,key) {
-							years[key].count.award += value.count.award;
-							years[key].count.decline += value.count.decline;
-							years[key].count.other += value.count.other;
-							years[key].funding.award += value.funding.award;
-							years[key].funding.request += value.funding.request;
-						});
-					}
-				});
-				//save it
-				row.years = years;
-				row.count = {award:count_awarded,decline:count_declined,other:count_other};
-				row.funding = {award:funding_awarded,request:funding_requested};
-				this.loaded_topics[i] = row;
-			}
-//alert(this.loaded_topics.length);
+			//overwrite the collection
+			this.reset(loaded_topics);
 			//trigger load complete event
 			this.trigger('loadcomplete');			
 		}
+	},
+	countbyrelevance: function(required_relevances) {
+		var data = this.toJSON();
+		
+		if (!required_relevances) required_relevances = [1,2,3,4];
+		else required_relevances = required_relevances.split(',');
+		
+		for (var i=0, len=data.length;i<len;i++) {
+			var row = data[i];
+			//initialize
+			//counts across prevalences
+			var count_awarded = 0;
+			var count_declined = 0;
+			var count_other = 0;
+			var funding_awarded = 0;
+			var funding_requested = 0;
+			//counts by year across prevalences
+			var years = {};
+			_.each(required_relevances, function(topicrelevance) {
+				topicrelevance = 't'+topicrelevance.toString();
+				if (row[topicrelevance]) {
+					//store all the counts
+					count_awarded += row[topicrelevance]['count']['award'];
+					count_declined += row[topicrelevance]['count']['decline'];
+					count_other += row[topicrelevance]['count']['other'];
+					funding_awarded += row[topicrelevance]['funding']['award'];
+					funding_requested += row[topicrelevance]['funding']['request'];
+					//by year
+					_.each(row[topicrelevance].years, function(value,key) {
+						if (!_.has(years,key)) years[key] = {count:{award:0,decline:0,other:0}, funding:{award:0,request:0}};
+						years[key].count.award += value.count.award;
+						years[key].count.decline += value.count.decline;
+						years[key].count.other += value.count.other;
+						years[key].funding.award += value.funding.award;
+						years[key].funding.request += value.funding.request;
+					});
+				}
+			});
+			//save it
+			row.years = years;
+			row.count = {award:count_awarded,decline:count_declined,other:count_other};
+			row.funding = {award:funding_awarded,request:funding_requested};
+			data[i] = row;
+		}
+		
+		return data;
+//alert(this.data.length);
 	},
 	formatFunding: function(funding) {
 		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(2)+'M';

@@ -24,7 +24,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 			html += '<label for="inlineCheckboxes" class="control-label"><strong>&nbsp;Status:&nbsp;</strong></label>';
 			html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award"'+($.inArray('award',status)?' checked':'')+'> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+($.inArray('decline',status)?' checked':'')+'> Declined</label><label class="checkbox inline"><input type="checkbox" value="propose" id="filter_status_propose"'+($.inArray('propose',status)?' checked':'')+'> Other</label>';
 		}
-		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><p><small>Click column headers to sort.</small></p><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table><div id="data_footnote"></div'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
+		$(this.el).html('<div class="table-header-controls"><form class="form-inline" id="filters">'+html+'</form></div><div id="loader"></div><table class="table table-striped table-bordered table-condensed" id="proposals_table"></table><div id="data_footnote"></div'); //simple markup for now, faster to do it this way than loading a template, any problems with this approach?
 
 		//set footnote
 		$('div#data_footnote', self.el).hide();		
@@ -48,7 +48,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 		params.push('year='+startyear+'-'+endyear);
 		var status = ['award'];
 		if (proposalaccessallowed) {
-			status = _.map($('input[id^=filter_status[]]:checked', this.el), function(checkbox) {
+			status = _.map($('input[id^=filter_status_]:checked', this.el), function(checkbox) {
 				return $(checkbox).val();
 			});			
 		}
@@ -61,7 +61,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 			alert('Pick an appropriate date range');
 			return false;
 		}
-		if (proposalaccessallowed && $('input[id^=filter_status[]]:checked', this.el).length==0) {
+		if (proposalaccessallowed && $('input[id^=filter_status_]:checked', this.el).length==0) {
 			alert('Please specify at least one status filter');
 			return false;
 		}		
@@ -79,7 +79,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 		params.year = startyear+'-'+endyear;
 		var status = ['award'];
 		if (proposalaccessallowed) {
-			status = _.map($('input[id^=filter_status[]]:checked', this.el), function(checkbox) {
+			status = _.map($('input[id^=filter_status_]:checked', this.el), function(checkbox) {
 				return $(checkbox).val();
 			});			
 		}
@@ -245,9 +245,12 @@ App.Views.topicsProposals = Backbone.View.extend({
 			"bAutoWidth": false,
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'desc']]
+			"aaSorting": [[0, 'desc']],
+			"sDom": '<"H"f<"datatable_help">Tr>t<"F"lip>'
 		},exportfilename);
 
+		$("div.datatable_help").html('<p><small>Click column headers to sort. Scroll down for data definitions. Use the controls on the left to filter the data.</small></p>');
+		
 		$('div#loader', this.el).html('');
 		$('div#data_footnote', this.el).show();		
 

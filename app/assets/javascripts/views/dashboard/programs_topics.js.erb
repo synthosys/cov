@@ -5,9 +5,11 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		"click button#reset": "reset",
 		"change select#filter_year_from": "load",
 		"change select#filter_year_to": "load",
+		"change select#filter_topicrelevance": "render",
 		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions'
 	},
 	initialize: function() {
+		this.model = new Topic();
 		//use the topics collection, it has a special function that will load all topic relevances!
 		this.collection = new App.Collections.Topics;
 		this.collection.on('loadcomplete', this.render, this);
@@ -26,6 +28,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				var year = self.options.params['year']?self.options.params['year'].split('-'):[startYear,endYear];
 				$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 				$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
+				//set topicrelevance selection
+				$("select#filter_topicrelevance", self.el).html(App.renderTopicRelevance());
 				//set footnote
 				$('div#data_footnote', self.el).html(App.renderDataFootNote('topics'));
 				$('div#data_footnote', self.el).hide();		
@@ -76,63 +80,54 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 	render: function(e) {
 		if (e) e.preventDefault();
 
-		var totalawardamount = 0;
+		var self = this;
+		
+		//read the currently specified weights
+		var weights = {};
+		_.each([1,2,3,4], function(topicrelevance) { 
+			weights['t'+topicrelevance.toString()] = $('input#t'+topicrelevance.toString(), self.el).val();
+		});
+
+		var topicrelevance = $("select#filter_topicrelevance", this.el).val();
+		
+		//apply the counts and relevances
+		var loaded_topics = this.collection.countbyrelevance(topicrelevance);
+
+		var totalawardamount = 0;		
 		//before we do anything else, let's count total award amounts, we need this to calculate
 		//percentage of portfolio
-		_.each(this.collection.loaded_topics,function(row) {
+		_.each(loaded_topics,function(row) {
 			totalawardamount += row.funding.award;
 		});
-		
+
+		//make a list of unique years
+		var years = App.getSelectedYears();
+
 		//prepare for datatable data - conv to array
-		var self = this;
-		var years = this.getYears(this.collection.loaded_topics);
-		var data = _.map(this.collection.loaded_topics, function(row) {
+		var data = [];
+		_.each(loaded_topics, function(row) {
 			var topicid = row.t;
-			//the suppres attribute is used to suppress t0 topics for now
-			var suppress = (topicid=='0')?'1':'0';
-			//funding rate
-			var total = row.count.award+row.count.decline;
-			var fundingrate = (total>0)?(row.count.award/total)*100:0;
-			//avg award size
-			var avgawardsize = row.count.award>0?(row.funding.award/row.count.award).toFixed(2):0;
-			//perc of portfolio
-			var percofportfolio = totalawardamount>0?((row.funding.award/totalawardamount)*100).toFixed(2):0;
-			//figure out the weights and relevances here
-			var topic_weightedprevalence = 0;
-			_.each([1,2,3,4], function(topicrelevance) {
-				topicrelevance = 't'+topicrelevance.toString();
-				if (row[topicrelevance]) {
-					var tmp = row[topicrelevance]['count']['award']+row[topicrelevance]['count']['decline']+row[topicrelevance]['count']['other'];
-					//read the topic weight input
-					var el = $('input#'+topicrelevance, self.el);
-					var weight = (el&&el.val())?el.val():'0';
-					topic_weightedprevalence += (tmp*weight);					
-				}
-			});
-			//figure out the growth rate here
-			var growthCount = 0;
-			var growthFunding = 0;
-			for (var j=1;j<years.length;j++) {
-				var denom = row.years[years[j-1]].count.award?row.years[years[j-1]].count.award:1;
-				growthCount += ((row.years[years[j]].count.award-row.years[years[j-1]].count.award)/denom)*100;
-				denom = row.years[years[j-1]].funding.award?row.years[years[j-1]].funding.award/1000000:1;
-				growthFunding += (((row.years[years[j]].funding.award-row.years[years[j-1]].funding.award)/1000000)/denom)*100;
+			//ignoring t0
+			if (topicid!='0') {
+				//funding rate
+				var fundingrate = self.model.calcFundingRate(row);
+				//avg award size
+				var avgawardsize = self.model.calcAvgAwardSize(row);
+				//perc of portfolio
+				var percofportfolio = self.model.calcPercOfPortfolio(row,totalawardamount);
+				//figure out the weights and relevances here
+				var topic_weightedprevalence = self.model.calcWeightedRelevance(row,weights);
+				//figure out the growth rate here
+				var growth = self.model.calcGrowthRate(row,years);
+				//return it
+				data.push({weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},fundingrate:fundingrate,growth:growth,avgawardsize:avgawardsize,percofportfolio:percofportfolio});				
 			}
-			if (years.length>1) {
-				growthCount = (growthCount/(years.length-1)).toFixed(0);
-				growthFunding = (growthFunding/(years.length-1)).toFixed(0);
-			}
-			//return it
-			return {weighted:topic_weightedprevalence, topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},fundingrate:fundingrate,suppress:suppress,growth:{count:growthCount,funding:growthFunding},avgawardsize:avgawardsize,percofportfolio:percofportfolio};
 		});
 
 		//columns
 		var self = this;
+		//columns
 		var columns = [
-			{
-				"bVisible": false,
-				"mDataProp": "suppress"
-			},
 			{
 				"sTitle": "Prevalence (Weighted)",
 				"fnRender": function( oObj ) {
@@ -214,7 +209,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			}
 		});
 		columns.push({
-			"sTitle": "% of Portfolio ($)",
+			"sTitle": "% of Prg. Portfolio ($)",
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": function ( source, type, val ) {
 		        if (type === 'set') {
@@ -284,7 +279,7 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'asc'],[1, 'desc']]
+			"aaSorting": [[0, 'desc']]
 		},exportfilename);
 
 		$('div#loader', this.el).html('');
@@ -292,20 +287,5 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		
 		//backbone convention to allow chaining
 		return this;
-	},
-	getYears: function(data) {
-		//make a list of unique years
-		var years = [];
-		_.each(data, function(row) {
-			if (row.years) {
-				_.each(row.years, function(value,key) {
-					//key is year
-					if ($.inArray(key,years)==-1) years.push(key);
-				});
-			}
-		});
-		years = _.sortBy(years, function(year) { return year; });
-
-		return years;
 	}
 });

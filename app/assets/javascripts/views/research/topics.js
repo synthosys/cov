@@ -1,10 +1,12 @@
 App.Views.researchTopics = Backbone.View.extend({
 	events: {
 		"click a[class=link_to_divisions]": "gotoDivisions",
-		"change select#filter_year_from": "loadList",
-		"change select#filter_year_to": "loadList"
+		"change select#filter_year_from": "load",
+		"change select#filter_year_to": "load",
+		"change select#filter_topicrelevance": "render"
 	},
 	initialize: function() {
+		this.model = new Topic();
 		//use topics collection
 		this.collection = new App.Collections.Topics;
 		this.collection.on('loadcomplete', this.loadNSF, this);
@@ -24,10 +26,12 @@ App.Views.researchTopics = Backbone.View.extend({
 			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
 			$('div#loader', self.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Topics");
+			//set topicrelevance selection
+			$("select#filter_topicrelevance", self.el).html(App.renderTopicRelevance());
 			$('div#data_footnote', self.el).hide();
 			$('div#data_footnote', self.el).html(App.renderDataFootNote('topics'));
 			
-			self.loadList();
+			self.load();
 		})
     },
 	gotoDivisions: function(e) {
@@ -36,7 +40,7 @@ App.Views.researchTopics = Backbone.View.extend({
 		var id = $(e.currentTarget).attr('id');
 		App.app_router.navigate('topics/divisions/'+id+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
 	},
-	loadList: function(e) {
+	load: function(e) {
 		if (e) e.preventDefault();
 		
 		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
@@ -61,48 +65,57 @@ App.Views.researchTopics = Backbone.View.extend({
 		this.collection_nsf.load({year: year},false);
 	},
    	render: function() {
+		var topicrelevance = $("select#filter_topicrelevance", this.el).val();
+
+		//apply the counts and relevances
+		var loaded_topics = this.collection.countbyrelevance(topicrelevance);
+//console.log(loaded_topics);
+
+		//do the same for all of nsf data
+		//apply the counts and relevances
+		var nsf_loaded_topics = this.collection_nsf.countbyrelevance(topicrelevance);
+//console.log(loaded_topics);
+
 		//make an array hash which is much faster than an array for searching
 		var all_of_nsf_hash = {};
-		_.each(this.collection_nsf.loaded_topics, function(row) {
+		_.each(nsf_loaded_topics, function(row) {
 			all_of_nsf_hash[row.t] = row;
 		});
 		
 		var totalawardamount = 0;
 		//before we do anything else, let's count total award amounts, we need this to calculate
 		//percentage of portfolio
-		_.each(this.collection.loaded_topics,function(row) {
+		_.each(loaded_topics,function(row) {
 			totalawardamount += row.funding.award;
 		});
 
 		var self = this;
-		var data = _.map(this.collection.loaded_topics, function(row) {
+		var data = [];
+		_.each(loaded_topics, function(row) {
 			var topicid = row.t;
-			//the suppres attribute is used to suppress t0 topics for now
-			var suppress = (topicid=='0')?'1':'0';
-			//perc of portfolio
-			var percofportfolio = totalawardamount>0?((row.funding.award/totalawardamount)*100).toFixed(2):0;
-			var tmp = {topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},suppress:suppress,count_nsf:{award:0,decline:0,other:0},funding_nsf:{award:0,request:0},awardpercentage:0,percofportfolio:percofportfolio};
-			//figure out the totals against all of nsf
-			var all_of_nsf = all_of_nsf_hash[topicid];
-			if (all_of_nsf) {
-				tmp.count_nsf.award = all_of_nsf.count.award;
-				tmp.count_nsf.decline = all_of_nsf.count.decline;
-				tmp.count_nsf.other = all_of_nsf.count.other;
-				tmp.funding_nsf.award = all_of_nsf.funding.award;
-				tmp.funding_nsf.request = all_of_nsf.funding.request;
-				
-				if (all_of_nsf.count.award>0) tmp.awardpercentage = (tmp.funding.award/all_of_nsf.funding.award)*100;
+			//ignore t0
+			if (topicid!='0') {
+				//perc of portfolio
+				var percofportfolio = self.model.calcPercOfPortfolio(row,totalawardamount);
+				var tmp = {topicid:topicid, label:row["label"], words:row["words"], count:{award:row.count.award,decline:row.count.decline,other:row.count.other},funding:{award:row.funding.award,request:row.funding.request},count_nsf:{award:0,decline:0,other:0},funding_nsf:{award:0,request:0},awardpercentage:0,percofportfolio:percofportfolio};
+				//figure out the totals against all of nsf
+				var all_of_nsf = all_of_nsf_hash[topicid];
+				if (all_of_nsf) {
+					tmp.count_nsf.award = all_of_nsf.count.award;
+					tmp.count_nsf.decline = all_of_nsf.count.decline;
+					tmp.count_nsf.other = all_of_nsf.count.other;
+					tmp.funding_nsf.award = all_of_nsf.funding.award;
+					tmp.funding_nsf.request = all_of_nsf.funding.request;
+
+					if (all_of_nsf.count.award>0) tmp.awardpercentage = (tmp.funding.award/all_of_nsf.funding.award)*100;
+				}
+				//return it
+				data.push(tmp);				
 			}
-			//return it
-			return tmp;
 		});
 
 		//columns
 		var columns = [
-			{
-				"bVisible": false,
-				"mDataProp": "suppress"
-			},
 			{
 				"fnRender": function ( oObj ) {
 					var html = '<strong>t'+oObj.aData.topicid+'</strong>';
@@ -128,7 +141,7 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "funding.award"
 			},
 			{
-				"sTitle": "Awarded (as % of NSF)",
+				"sTitle": "Awards (as $ of NSF)",
 				"fnRender": function(oObj) {
 					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
 				},
@@ -137,7 +150,7 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "awardpercentage"
 			},
 			{
-				"sTitle": "% of Portfolio ($)",
+				"sTitle": "% of Prg. Portfolio ($)",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
@@ -188,9 +201,11 @@ App.Views.researchTopics = Backbone.View.extend({
 		App.renderDataTable($('#topics_table', this.el),{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'asc'],[3, 'desc']]
+			"aaSorting": [[2, 'desc']],
+			"sDom": '<"H"f<"datatable_help">Tr>t<"F"lip>'
 		},'researchtopics');
 		
+		$("div.datatable_help").html('<p><small>Click column headers to sort. Scroll down for data definitions. Use the controls on the left to filter the data.</small></p>');
 
 		$('div#loader', this.el).html('');
 		$('div#data_footnote', self.el).show();	

@@ -1,4 +1,7 @@
 App.Views.topicsGrowth = Backbone.View.extend({
+	initialize: function() {
+		this.model = new Topic();	
+	},
 	//accept table elem, graph elem
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -12,10 +15,6 @@ App.Views.topicsGrowth = Backbone.View.extend({
 
 		//columns
 		var columns = [
-			{
-				"bVisible": false,
-				"mDataProp": "suppress"
-			},
 			{
 				"bVisible": false,
 				"mDataProp": "t"
@@ -32,8 +31,8 @@ App.Views.topicsGrowth = Backbone.View.extend({
 				"mDataProp": "words"
 			}
 		];
-		var sorting = [2, 'asc'];
-		var years = this.getYears(this.options.data);
+		var sorting = [1, 'asc'];
+		var years = this.options.years;		
 		_.each(years,function(year) {
 			columns.push({
 				"sTitle": year.toString()+((datatype=='funding')?' ($)':' (#)'),
@@ -87,7 +86,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		App.renderDataTable(renderTableTo,{
 			"aaData": data,
 			"aoColumns": columns,
-			"aaSorting": [[0, 'asc'],sorting],
+			"aaSorting": [sorting],
 			"sPaginationType": 'two_button',
 			"fnDrawCallback": function() {
 				if (years.length>1) {
@@ -112,7 +111,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 		return this;
 	},
 	renderGraph: function(tabledata) {
-		$('#'+this.options.graphid).html('Loading...');
+		$('#'+this.options.graphid, this.el).html('Loading...');
 		
 		var datatype = this.options.datatype;
 		var title = 'Awarded'+((this.options.datatype=='funding')?' ($)':' (#)');
@@ -157,52 +156,23 @@ App.Views.topicsGrowth = Backbone.View.extend({
 	prepareData: function(data) {
 		var datatype = this.options.datatype?this.options.datatype:'count';
 		//calculate growth rate
-		var years = this.getYears(data);
+		var years = this.options.years;
 
 		var prepared = [];
 		for (var i=0;i<data.length;i++) {
-			//the suppres attribute is used to suppress t0 topics for now
-			var suppress = (data[i].t=='0')?'1':'0';			
-			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, growth:{}, suppress:suppress};
+			if (data[i].t=='0') continue;
+			var tmp = {t:data[i].t, label:data[i].label, words:data[i].words, growth:{}};
 			_.each(years,function(year) {
 				//add the year
-				tmp['year_'+year+'_'+datatype] = data[i].years[year][datatype].award;				
+				tmp['year_'+year+'_'+datatype] = (data[i].years[parseInt(year)] && data[i].years[parseInt(year)][datatype] && data[i].years[parseInt(year)][datatype].award)?data[i].years[parseInt(year)][datatype].award:0;				
 			});
-			var growthCount = 0;
-			var growthFunding = 0;
-			for (var j=1;j<years.length;j++) {
-				var denom = data[i].years[years[j-1]].count.award?data[i].years[years[j-1]].count.award:1;
-				growthCount += ((data[i].years[years[j]].count.award-data[i].years[years[j-1]].count.award)/denom)*100;
-				denom = data[i].years[years[j-1]].funding.award?data[i].years[years[j-1]].funding.award/1000000:1;
-				growthFunding += (((data[i].years[years[j]].funding.award-data[i].years[years[j-1]].funding.award)/1000000)/denom)*100;
-			}
-			if (years.length>1) {
-				growthCount = (growthCount/(years.length-1)).toFixed(2);
-				growthFunding = (growthFunding/(years.length-1)).toFixed(2);
-			}
-			
+			var growth = this.model.calcGrowthRate(data[i],years);
 			//now save it
-			tmp.growth.count = growthCount;
-			tmp.growth.funding = growthFunding;
+			tmp.growth = growth;
 			
 			prepared.push(tmp);
 		}
 //alert(prepared.length);
 		return prepared;
-	},
-	getYears: function(data) {
-		//make a list of unique years
-		var years = [];
-		_.each(data, function(row) {
-			if (row.years) {
-				_.each(row.years, function(value,key) {
-					//key is year
-					if ($.inArray(key,years)==-1) years.push(key);
-				});
-			}
-		});
-		years = _.sortBy(years, function(year) { return year; });
-
-		return years;
 	}
 });

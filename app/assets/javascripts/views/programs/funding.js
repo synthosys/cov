@@ -1,4 +1,7 @@
 App.Views.programsFunding = Backbone.View.extend({
+	initialize: function() {
+		this.model = new Topic();
+	},
 	//accept table elem, graph elem
 	render: function() {
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -133,7 +136,7 @@ App.Views.programsFunding = Backbone.View.extend({
 		return this;
 	},
 	renderGraph: function(pges,dataAttribute,title) {
-		$('#'+this.options.graphid).html('Loading...');
+		$('#'+this.options.graphid, this.el).html('Loading...');
 			
 		var self = this;
 
@@ -153,18 +156,7 @@ App.Views.programsFunding = Backbone.View.extend({
 				if (row) chartData.push([row.pge, row.fundingrate]);
 			});
 		} else {
-			//make a list of unique years
-			var years = [];
-			_.each(pges, function(pge) {
-				row = data_hash[pge];
-				if (row && row.years) {
-					_.each(row.years, function(value,key) {
-						//key is year
-						if ($.inArray(key,years)==-1) years.push(key);
-					});
-				}
-			});
-			years = _.sortBy(years, function(year) { return year; });
+			var years = this.options.years;
 			//assemble a data array that looks like [[pge, year_1_value, year2_value],[pge, year_1_value, year2_value]]
 			_.each(pges, function(pge) {
 				row = data_hash[pge];
@@ -180,7 +172,7 @@ App.Views.programsFunding = Backbone.View.extend({
 						}
 						else {
 							item.push(0);
-							item.push('');
+							if (dataAttribute=='funding.award') item.push('');
 						}
 					});
 					chartData.push(item);
@@ -213,6 +205,8 @@ App.Views.programsFunding = Backbone.View.extend({
 		  legend: { position: 'top' }
 		}
         chart.draw(data,option);		
+
+		$('#'+this.options.graphid, this.el).prepend('<p><strong>Note:</strong> click column headers in the table to the left to change chart variable (and sort the data).</p>');
 	},
 	findAttribute: function(attr,data) {
 		//find nested attributes using a string variable containing nested attributes
@@ -227,8 +221,7 @@ App.Views.programsFunding = Backbone.View.extend({
 	},
 	prepareData: function(data) {
 		for (var i=0, len=data.length;i<len;i++) {
-			var total = data[i].count.award+data[i].count.decline;
-			data[i].fundingrate = (total>0)?(data[i].count.award/total)*100:0;
+			data[i].fundingrate = this.model.calcFundingRate(data[i]);
 		}
 		this.options.data = data; //return data;
 	}

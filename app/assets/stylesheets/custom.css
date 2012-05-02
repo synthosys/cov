@@ -42,6 +42,11 @@ min-height: 500px;
   background-image: url(../img/glyphicons-halflings-gray.png);
 }
 
+/* make this more intelligent */
+.margin-bottom5 {
+margin-bottom: 5px;
+}
+
 .margin-bottom10 {
 margin-bottom: 10px;
 }
@@ -481,6 +486,17 @@ color: #ccc;
 cursor: default;
 }
 
+.datatable_help {
+	float: left;
+	margin-left: 5px;
+}
+
+.datatable_help p {
+ font-weight: normal;
+ line-height: 28px;
+ margin: 0 0 0 0;
+}
+
 .table-header-controls {
 margin-bottom: 20px;
 border: 1px solid #ccc;
@@ -571,4 +587,25 @@ font-weight: bold;
 #topics_divisions_summary .nav-list .nav-header span, #proposal_summary .nav-list .nav-header span {
 font-weight: normal;
 color: #333;
+}
+
+/*
+--------------------------------------------------------------------------------------- division_summary
+*/
+
+#division_summary.alert {
+padding: 8px;
+}
+
+#division_summary.alert h3 {
+line-height: normal;
+}
+
+#division_summary.alert .row {
+margin: 0;
+padding: 0;
+}
+
+#division_summary.alert .row [class^="span"] {
+margin: 0;
 }

@@ -3,6 +3,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		"change select#filter_data": "show",
 		"change select#filter_year_from": "load",
 		"change select#filter_year_to": "load",
+		"change select#filter_topicrelevance": "change",
 		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions',
 		"click a[id^=link_to_programs_proposals_]": 'gotoProgramsProposals',
 		"click button#update": "refresh",
@@ -25,6 +26,10 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			var endYear = getEndYear();
 			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),getStartYear()));
 			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),getEndYear()));
+			//set topicrelevance selection
+			$("label#filter_topicrelevance_label", self.el).hide();
+			$("select#filter_topicrelevance", self.el).hide();
+			$("select#filter_topicrelevance", self.el).html(App.renderTopicRelevance());
 			self.render();
 		})		
 	},
@@ -56,6 +61,12 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		$("input#t4").val('1');
 		
 		this.renderTopics();
+	},
+	change: function(e) {
+		e.preventDefault();
+		
+		//reset the data with the changed relevance
+		this.prepareTopics();
 	},
 	render: function() {
 		//set what type of data we're showing
@@ -119,7 +130,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			//use topics collection, if already loaded, reuse it
 			if (!this.topicsCollection) {
 				this.topicsCollection = new App.Collections.Topics;
-				this.topicsCollection.on('loadcomplete', this.renderTopics, this);	
+				this.topicsCollection.on('loadcomplete', this.prepareTopics, this);	
 			}
 			$('div#loader', this.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading topics");
 			$('div#data_footnote', self.el).html('');		
@@ -127,6 +138,13 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		}	
 	},
 	renderPrograms: function() {
+		//hide topic relevance selection
+		$("label#filter_topicrelevance_label", this.el).hide();
+		$("select#filter_topicrelevance", this.el).hide();
+
+		var years = App.getSelectedYears();
+		var data = this.programsCollection.toJSON();
+		
 		var renderTable_ID = 'division_table';
 		var renderGraph_ID = 'division_graph';
 		//growth or funding? this is in the id of the selected value
@@ -135,19 +153,28 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			if (!this.programsGrowthView) this.programsGrowthView = new App.Views.programsGrowth({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});
 			//set the param we are trying to request
 			this.programsGrowthView.options.datatype = $('select#filter_data', this.el).val().split('_').pop().split('.').pop();
-			this.programsGrowthView.options.data = this.programsCollection.toJSON();
+			this.programsGrowthView.options.years = years;
+			this.programsGrowthView.options.data = data;
 			this.programsGrowthView.render();			
 		} else {
 			//funding default
 			//load the appropriate view, if already loaded, reuse it
 			if (!this.programsFundingView) this.programsFundingView = new App.Views.programsFunding({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});			
-			this.programsFundingView.options.data = this.programsCollection.toJSON();
+			this.programsFundingView.options.years = years;
+			this.programsFundingView.options.data = data;
 			this.programsFundingView.render();			
 		}
 		$('div#data_footnote', this.el).html(App.renderDataFootNote('programs'));
 		$('div#loader', this.el).html('');
 	},
 	renderTopics: function() {
+		//show topic relevance selection
+		$("label#filter_topicrelevance_label", this.el).show();
+		$("select#filter_topicrelevance", this.el).show();
+		
+		var years = App.getSelectedYears();
+		var data = this.topicsCollection.loaded_topics;
+
 		var renderTable_ID = 'division_table';
 		var renderGraph_ID = 'division_graph';
 		//growth or funding? this is in the id of the selected value
@@ -156,16 +183,25 @@ App.Views.dashboardDivision = Backbone.View.extend({
 			if (!this.topicsGrowthView) this.topicsGrowthView = new App.Views.topicsGrowth({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});
 			//set the param we are trying to request
 			this.topicsGrowthView.options.datatype = $('select#filter_data', this.el).val().split('_').pop().split('.').pop();
-			this.topicsGrowthView.options.data = this.topicsCollection.loaded_topics; //toJSON();
+			this.topicsGrowthView.options.years = years;
+			this.topicsGrowthView.options.data = data;
 			this.topicsGrowthView.render();			
 		} else {
 			//funding default
 			//load the appropriate view, if already loaded, reuse it
-			if (!this.topicsFundingView) this.topicsFundingView = new App.Views.topicsFunding({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});			
-			this.topicsFundingView.options.data = this.topicsCollection.loaded_topics; //toJSON();
+			if (!this.topicsFundingView) this.topicsFundingView = new App.Views.topicsFunding({el:this.el,tableid:renderTable_ID,graphid:renderGraph_ID});
+			this.topicsFundingView.options.years = years;
+			this.topicsFundingView.options.data = data;
 			this.topicsFundingView.render();			
 		}
 		$('div#data_footnote', this.el).html(App.renderDataFootNote('topics'));
 		$('div#loader', this.el).html('');
+	},
+	prepareTopics: function() {
+		var topicrelevance = $("select#filter_topicrelevance", this.el).val();
+		var data = this.topicsCollection.countbyrelevance(topicrelevance);
+		this.topicsCollection.loaded_topics = data;
+		
+		this.renderTopics();
 	}
 });
