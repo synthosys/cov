@@ -6,6 +6,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		"change select#filter_year_to": "load"
 	},
 	initialize: function() {
+		this.model = new Topic();
 		//use topics collection
 		this.collection = new App.Collections.Divisions;
 		this.collection.on('reset', this.render, this);
@@ -132,7 +133,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			},
 			{
 				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.award);
+					return self.model.formatFunding(oObj.aData.funding.award);
 				},
 				"bUseRendered": false,
 				"sTitle": "Proposal Awards ($)",
@@ -208,7 +209,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		//all
 		var summary_all_html = '';
 		summary_all_html+='<li><strong>Proposals Awarded: </strong>'+all.count.award+'</li>';
-		summary_all_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(all.funding.award)+'</li>';
+		summary_all_html+='<li><strong>Awards: </strong>'+this.model.formatFunding(all.funding.award)+'</li>';
 		if (proposalaccessallowed) {
 			summary_all_html+='<li><strong>Declines: </strong>'+all.count.decline+'</li>';
 			var total = all.count.award+all.count.decline;
@@ -218,7 +219,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		//current
 		var summary_current_html = '';
 		summary_current_html+='<li><strong>Proposals Awarded: </strong>'+current.count.award+'</li>';
-		summary_current_html+='<li><strong>Awards: </strong>'+this.collection.formatFunding(current.funding.award)+'</li>';
+		summary_current_html+='<li><strong>Awards: </strong>'+this.model.formatFunding(current.funding.award)+'</li>';
 		if (proposalaccessallowed) {
 			summary_current_html+='<li><strong>Declines: </strong>'+current.count.decline+'</li>';
 			var total = all.count.award+current.count.decline;
@@ -232,7 +233,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		var chartData = [];
 		//assemble a data array that looks like [[topicid, value],[topicid, value]]
 		_.each(data, function(row) {
-			chartData.push([row.org, row.count.award]);
+			chartData.push([row.org, row.funding.award, self.model.formatFunding(row.funding.award)]);
 		});
 		//sort
 		chartData = _.sortBy(chartData,function(row) { return -row[1]; });
@@ -243,14 +244,14 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
         var data = new google.visualization.DataTable();
         data.addColumn('string', 'Division');
 		data.addColumn('number', 'Awards');
+		data.addColumn({type:'string',role:'tooltip'})
         data.addRows(chartData);
 
         var chart = new google.visualization.BarChart(document.getElementById('graph_awards'));
 		var option = {
 		  height: chartData.length*30,
-		  //vAxis: {title: 'Topic' },
-		  title: 'Top Divisions (# of Awards)',
-		  legend: { position: 'top' }
+		  title: 'Divisions by Awards',
+		  legend: { position: 'none' }
 		}
         chart.draw(data,option);		
 
@@ -276,9 +277,8 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 	        var chart = new google.visualization.BarChart(document.getElementById('graph_fundingrate'));
 			var option = {
 			  height: chartData.length*30,
-			  //vAxis: {title: 'Topic' },
-			  title: 'Top Divisions (Funding Rate)',
-			  legend: { position: 'top' }
+			  title: 'Divisions by Funding Rate',
+			  legend: { position: 'none' }
 			}
 	        chart.draw(data,option);		
 		}

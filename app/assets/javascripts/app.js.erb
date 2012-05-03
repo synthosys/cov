@@ -381,9 +381,9 @@ var App = {
 	renderDataFootNote: function(forwhat) {
 		var html = '<p><small>';
 		if (forwhat=='proposals') {
-			html += '<strong>"Amount"</strong> in all proposal tables footnote: The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only)".<br />';			
+			html += 'The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only)".<br />';			
 			html += 'The <strong>"Date"</strong> for Awarded Proposals is the Award date. For Declines/Others (internal NSF users only), the date reflects the Requested Start Date.<br />';
-			html += '<strong>"Status"</strong> columns: "Other" proposals (internal NSF users only) include proposals with various statuses such as continuation, move by PI, and others.<br />';
+			html += '"Other" proposals (internal NSF users only) include proposals with various statuses such as continuation, move by PI, and others.<br />';
 		} else if (forwhat=='topics' || forwhat=='programs') {
 			html += 'The <strong>"Average Growth ($)"</strong> reflects the average of the incremental growth/decline of the Awarded Amounts that were expended during the time period shown.<br />';
 			html += 'The <strong>"Average Growth (#)"</strong> reflects the average of the incremental growth/decline of Proposals that were awarded during the time period shown.<br />';

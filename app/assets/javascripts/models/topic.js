@@ -35,8 +35,8 @@ var Topic = Backbone.Model.extend({
 			var denom = count_prevYear?count_prevYear:1;
 			growthCount += ((count_currYear-count_prevYear)/denom)*100;
 			//funding
-			var funding_currYear = row.years[currYear]?parseInt((row.years[currYear].funding.award/1000).toFixed(0)):0;
-			var funding_prevYear = row.years[prevYear]?parseInt((row.years[prevYear].funding.award/1000).toFixed(0)):0;
+			var funding_currYear = row.years[currYear]?parseFloat((row.years[currYear].funding.award/1000000).toFixed(3)):0;
+			var funding_prevYear = row.years[prevYear]?parseFloat((row.years[prevYear].funding.award/1000000).toFixed(3)):0;
 			denom = funding_prevYear?funding_prevYear:1;
 			growthFunding += (((funding_currYear-funding_prevYear))/denom)*100;
 		}
@@ -45,5 +45,9 @@ var Topic = Backbone.Model.extend({
 			growthFunding = (growthFunding/(years.length-1)).toFixed(0);
 		}
 		return {count:growthCount,funding:growthFunding};
+	},
+	formatFunding: function(funding) {
+		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(3)+'M';
+		else return '';
 	}
 });

@@ -125,8 +125,6 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 		});
 
 		//columns
-		var self = this;
-		//columns
 		var columns = [
 			{
 				"sTitle": "Weighted<br />Prevalence",
@@ -157,14 +155,13 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": function ( source, type, val ) {
 		        if (type === 'set') {
-		          source.funding.award = val;
 		          // Store the computed display for speed
-		          source.funding_award_rendered = self.collection.formatFunding(val);
+		          source.funding_award_rendered = self.model.formatFunding(source.funding.award);
 		          return;
 		        }
 		        else if (type === 'display' || type === 'filter') {
 				  if (source.funding_award_rendered) return source.funding_award_rendered;
-		          else return self.collection.formatFunding(source.funding.award); //.amount_rendered;
+		          else return self.model.formatFunding(source.funding.award); //.amount_rendered;
 		        }
 		        // 'sort' and 'type' both just use the raw data
 		        return source.funding.award;
@@ -176,9 +173,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.growth.funding = val;
 			          // Store the computed display for speed
-			          source.growth_funding_rendered = val.toString()+'%';
+			          source.growth_funding_rendered = source.growth.funding.toString()+'%';
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -195,14 +191,13 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": function ( source, type, val ) {
 		        if (type === 'set') {
-		          source.avgawardsize = val;
 		          // Store the computed display for speed
-		          source.avgawardsize_rendered = self.collection.formatFunding(val);
+		          source.avgawardsize_rendered = self.model.formatFunding(source.avgawardsize);
 		          return;
 		        }
 		        else if (type === 'display' || type === 'filter') {
 				  if (source.avgawardsize_rendered) return source.avgawardsize_rendered;
-		          else return self.collection.formatFunding(source.avgawardsize);
+		          else return self.model.formatFunding(source.avgawardsize);
 		        }
 		        // 'sort' and 'type' both just use the raw data
 		        return source.avgawardsize;
@@ -213,9 +208,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 			"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 			"mDataProp": function ( source, type, val ) {
 		        if (type === 'set') {
-		          source.percofportfolio = val;
 		          // Store the computed display for speed
-		          source.percofportfolio_rendered = val.toString()+'%';
+		          source.percofportfolio_rendered = source.percofportfolio.toString()+'%';
 		          return;
 		        }
 		        else if (type === 'display' || type === 'filter') {
@@ -237,14 +231,13 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.funding.request = val;
 			          // Store the computed display for speed
-			          source.funding_request_rendered = self.collection.formatFunding(val);
+			          source.funding_request_rendered = self.model.formatFunding(source.funding.request);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
 					  if (source.funding_request_rendered) return source.funding_request_rendered;
-			          else return self.collection.formatFunding(source.funding.request); //.amount_rendered;
+			          else return self.model.formatFunding(source.funding.request); //.amount_rendered;
 			        }
 			        // 'sort' and 'type' both just use the raw data
 			        return source.funding.request;
@@ -254,9 +247,8 @@ App.Views.dashboardProgramsTopics = Backbone.View.extend({
 				"sTitle": "Funding Rate",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.fundingrate = val;
 			          // Store the computed display for speed
-			          source.fundingrate_rendered = val.toFixed(2).toString()+'%';
+			          source.fundingrate_rendered = source.fundingrate.toFixed(2).toString()+'%';
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {

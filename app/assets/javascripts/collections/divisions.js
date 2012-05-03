@@ -46,9 +46,5 @@ App.Collections.Divisions = Backbone.Collection.extend({
 			collated.push(tmp);				
 		}
 		return collated;
-	},
-	formatFunding: function(funding) {
-		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(2)+'M';
-		else return '';
 	}
 });

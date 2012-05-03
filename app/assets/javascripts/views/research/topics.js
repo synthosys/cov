@@ -133,7 +133,7 @@ App.Views.researchTopics = Backbone.View.extend({
 			},
 			{
 				"fnRender": function ( oObj ) {
-					return self.collection.formatFunding(oObj.aData.funding.award);
+					return self.model.formatFunding(oObj.aData.funding.award);
 				},
 				"bUseRendered": false,
 				"sTitle": getDivision()+" Awards with Topic ($)",
@@ -154,9 +154,8 @@ App.Views.researchTopics = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.percofportfolio = val;
 			          // Store the computed display for speed
-			          source.percofportfolio_rendered = val.toString()+'%';
+			          source.percofportfolio_rendered = source.percofportfolio.toString()+'%';
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -183,7 +182,7 @@ App.Views.researchTopics = Backbone.View.extend({
 		});
 		columns.push({
 			"fnRender": function ( oObj ) {
-				return self.collection.formatFunding(oObj.aData.funding_nsf.award);
+				return self.model.formatFunding(oObj.aData.funding_nsf.award);
 			},
 			"bUseRendered": false,
 			"sTitle": "NSF Awards with Topic ($)",

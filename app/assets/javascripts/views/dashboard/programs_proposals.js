@@ -2,6 +2,7 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	events: {
 		"click button#gobackto": "goBackTo",
 		"click button#view_topics": "gotoTopics",
+		"click button#view_researchers": "gotoResearchers",
 		"click a[id^=link_to_topics_divisions_]": 'gotoTopicsDivisions'
 	},
 	initialize: function() {
@@ -32,8 +33,12 @@ App.Views.dashboardProgramsProposals = Backbone.View.extend({
 	gotoTopics: function(e) {
 		e.preventDefault();
 		
-		var id = $(e.currentTarget).attr('id');
 		App.app_router.navigate('programs/topics/'+this.options.pge+'/?year='+this.options.params['year'], {trigger: true});
+	},
+	gotoResearchers: function(e) {
+		e.preventDefault();
+		
+		App.app_router.navigate('programs/researchers/'+this.options.pge+'/?year='+this.options.params['year'], {trigger: true});
 	},
 	gotoTopicsDivisions: function(e) {
 		e.preventDefault();

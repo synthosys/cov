@@ -149,9 +149,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "Amount ($K)*",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.amount = val;
 			          // Store the computed display for speed
-			          source.amount_rendered = '$'+App.addCommas((val/1000).toFixed(0))+'K';
+			          source.amount_rendered = '$'+App.addCommas((source.amount/1000).toFixed(0))+'K';
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -166,9 +165,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "1st<br />Topic",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.t1 = val;
 			          // Store the computed display for speed
-			          source.t1_rendered = self.renderTopic(val);
+			          source.t1_rendered = self.renderTopic(source.t1);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -183,9 +181,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "2nd<br />Topic",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.t2 = val;
 			          // Store the computed display for speed
-			          source.t2_rendered = self.renderTopic(val);
+			          source.t2_rendered = self.renderTopic(source.t2);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -200,9 +197,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "3rd<br />Topic",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.t3 = val;
 			          // Store the computed display for speed
-			          source.t3_rendered = self.renderTopic(val);
+			          source.t3_rendered = self.renderTopic(source.t3);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -217,9 +213,8 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"sTitle": "4th<br />Topic",
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.t4 = val;
 			          // Store the computed display for speed
-			          source.t4_rendered = self.renderTopic(val);
+			          source.t4_rendered = self.renderTopic(source.t4);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {

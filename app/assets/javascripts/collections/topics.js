@@ -203,9 +203,5 @@ App.Collections.Topics = Backbone.Collection.extend({
 		
 		return data;
 //alert(this.data.length);
-	},
-	formatFunding: function(funding) {
-		if (funding && parseInt(funding)>0) return '$'+(funding/1000000).toFixed(2)+'M';
-		else return '';
 	}
 });

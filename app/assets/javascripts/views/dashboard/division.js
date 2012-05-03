@@ -86,6 +86,9 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		//hide
 		$('#form_topic_weights', this.el).hide();
 		
+		//reset topic relevance
+		$('select#filter_topicrelevance', this.el).val('1');
+
 		//simply switch a view, no need to reload data
 		//based on what type of data we are trying to show
 		if ($('select#filter_data', this.el).val().match(/^programs/)) {
@@ -109,7 +112,7 @@ App.Views.dashboardDivision = Backbone.View.extend({
 		var endYear = $('select#filter_year_to', this.el).val();
 		
 		//reset topic relevance
-		$('select#filter_topicrelevance', self.el).val('1');
+		$('select#filter_topicrelevance', this.el).val('1');
 
 		//clear datatable if exists
 		App.clearDataTable('division_table', $('#division_table', this.el));

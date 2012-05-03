@@ -4,6 +4,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 	},
 	//accept table elem, graph elem
 	render: function() {
+		var self = this;
 		var renderTableTo = $('#'+this.options.tableid, this.el);
 		
 		var datatype = this.options.datatype?this.options.datatype:'count';
@@ -37,7 +38,7 @@ App.Views.topicsGrowth = Backbone.View.extend({
 			columns.push({
 				"sTitle": year.toString()+((datatype=='funding')?' ($)':' (#)'),
 				"fnRender": function (oObj) {
-					return (datatype=='funding')?'$'+App.addCommas((oObj.aData['year_'+year+'_'+datatype]/1000).toFixed(0))+'K':oObj.aData['year_'+year+'_'+datatype];
+					return (datatype=='funding')?self.model.formatFunding(oObj.aData['year_'+year+'_'+datatype]):oObj.aData['year_'+year+'_'+datatype];
 				},
 				"bUseRendered": false,
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
@@ -52,9 +53,8 @@ App.Views.topicsGrowth = Backbone.View.extend({
 				"mDataProp": function ( source, type, val ) {
 					if (datatype=='funding') {
 				        if (type === 'set') {
-				          source.growth.funding = val;
 				          // Store the computed display for speed
-				          source.growth_funding_rendered = val.toString()+'%';
+				          source.growth_funding_rendered = source.growth.funding.toString()+'%';
 				          return;
 				        }
 				        else if (type === 'display' || type === 'filter') {
@@ -65,9 +65,8 @@ App.Views.topicsGrowth = Backbone.View.extend({
 				        return source.growth.funding;						
 					} else {
 				        if (type === 'set') {
-				          source.growth.count = val;
 				          // Store the computed display for speed
-				          source.growth_count_rendered = val.toString()+'%';
+				          source.growth_count_rendered = source.growth.count.toString()+'%';
 				          return;
 				        }
 				        else if (type === 'display' || type === 'filter') {

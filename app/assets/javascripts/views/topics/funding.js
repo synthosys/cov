@@ -7,6 +7,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 	},
 	//accept table elem, graph elem
 	render: function() {
+		var self = this;
 		$('#form_topic_weights', this.el).show();
 		
 		var renderTableTo = $('#'+this.options.tableid, this.el);
@@ -62,14 +63,13 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.funding.award = val;
 			          // Store the computed display for speed
-			          source.funding_award_rendered = '$'+App.addCommas((val/1000).toFixed(0))+'K';
+			          source.funding_award_rendered = self.model.formatFunding(source.funding.award);
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
 					  if (source.funding_award_rendered) return source.funding_award_rendered;
-			          else return '$'+App.addCommas((source.funding.award/1000).toFixed(0))+'K';
+			          else return self.model.formatFunding(source.funding.award);
 			        }
 			        // 'sort' and 'type' both just use the raw data
 			        return source.funding.award;
@@ -88,9 +88,8 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
 			        if (type === 'set') {
-			          source.fundingrate = val;
 			          // Store the computed display for speed
-			          source.fundingrate_rendered = val.toFixed(2).toString()+'%';
+			          source.fundingrate_rendered = source.fundingrate.toFixed(2).toString()+'%';
 			          return;
 			        }
 			        else if (type === 'display' || type === 'filter') {
@@ -184,7 +183,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 							var val = self.findAttribute(dataAttribute,row.years[year]);
 							item.push(val);
 							//if attribute is a dollar amount, add a formatted tooltip
-							if (dataAttribute=='funding.award') item.push('$'+App.addCommas((val/1000).toFixed(0))+'K');
+							if (dataAttribute=='funding.award') item.push(self.model.formatFunding(val));
 						}
 						else {
 							item.push(0);

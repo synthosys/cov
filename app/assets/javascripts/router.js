@@ -7,6 +7,7 @@ var AppRouter = Backbone.Router.extend({
 		'programs/topics/:pge/*params': 'programsTopics',
 		'programs/proposals/:pge/*params': 'programsProposals',
 		'programs/proposal/:nsf_id/*params': 'programsProposal',
+		'programs/researchers/:pge/*params': 'programsResearchers',
 		'division': 'division',
 		'geography/states/*params': 'geography',
 		'geography/institutions/:state/*params': 'geographyInstitutions',
@@ -34,6 +35,9 @@ var AppRouter = Backbone.Router.extend({
 	},
 	programsProposal: function(nsf_id,params) {
 		this.load('dashboardProgramsProposal',{ el:"#tab_programs", nsf_id:nsf_id, params: this.processParams(params) });
+	},
+	programsResearchers: function(pge,params) {
+		this.load('dashboardProgramsResearchers',{ el:"#tab_programs", pge:pge, params: this.processParams(params) });
 	},
 	division: function() {
 		this.load('dashboardDivision',{ el:"#tab_division" });		
