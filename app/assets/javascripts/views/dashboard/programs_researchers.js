@@ -84,7 +84,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		App.app_router.navigate(fragment);
 		//set the param
 		this.options.params['state'] = state;
-		$('#filter_state', this.el).html('For state: '+this.options.params['state']+', <a href="#" id="reset_state_filter">See All</a>');
+		$('#filter_state', this.el).html('Viewing state: '+this.options.params['state']+', <a href="#" id="reset_state_filter">View Researchers for All States</a>');
 		//render
 		this.renderDataTable();
 		this.renderInstitutions();		
@@ -117,7 +117,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		this.load();		
 	},
 	load: function() {		
-		if (this.options.params['state']) $('#filter_state', this.el).html('For state: '+this.options.params['state']+', <a href="#" id="reset_state_filter">See All</a>');
+		if (this.options.params['state']) $('#filter_state', this.el).html('Viewing state: '+this.options.params['state']+', <a href="#" id="reset_state_filter">View Researchers for All States</a>');
 		
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
@@ -225,15 +225,9 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		//now put it together
 		var chartData = [];
 		for (var key in grouped) {
-			var tmp = {};
-			tmp.state = key;
-			tmp.label = '';
-			tmp.count = 0;
-			//get the count
-			var count = grouped[key].length;
-			//add up the totals
-			if (count>0 && App.states[key]) { tmp.label = App.states[key]; tmp.count = count; }
-			chartData.push(tmp);				
+			if (key!='undefined') {
+				chartData.push({state:key, count:grouped[key].length});				
+			}
 		}
 		chartData = _.sortBy(chartData, function(data) { return -data.count; });
 		
@@ -241,7 +235,6 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		data.addRows(chartData.length);
 		data.addColumn('string', 'State');
 		data.addColumn('number', 'Researchers');
-		//data.addRows(chartData);
 		_.each(chartData, function(value,key) {
 			data.setValue(key,0,value.state);
 			data.setValue(key,1,value.count);
@@ -257,12 +250,6 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		  }
 		}
 		geomap.draw(data, option);				
-		//filter list by state when clicked
-		var self = this;
-		google.visualization.events.addListener(
-		    geomap, 'regionClick', function (e) {
-				self.refresh(e['region'].split('-').pop());
-		});
 
 		//render bar graph
         var chart = new google.visualization.BarChart(document.getElementById('graph_researchers'));
@@ -271,6 +258,20 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		  legend: { position: 'top' }
 		}
         chart.draw(data,option);		
+
+		//filter list by state when clicked
+		var self = this;
+		google.visualization.events.addListener(
+		    geomap, 'regionClick', function (e) {
+				self.refresh(e['region'].split('-').pop());
+		});
+		google.visualization.events.addListener(
+		    chart, 'select', function () {
+				var row = chart.getSelection()[0].row;
+				var value = data.getValue(row,0);
+				chart.setSelection();  // nulls out the selection 
+				self.refresh(value);
+		});
 	},
 	renderInstitutions: function() {
 		var self = this;
@@ -299,7 +300,6 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		data.addColumn('string', 'Institution');
 		data.addColumn('number', 'Awards ($)');
 		data.addColumn({type:'string',role:'tooltip'})
-		//data.addRows(chartData);
 		_.each(chartData, function(value,key) {
 			data.setValue(key,0,value.name);
 			data.setValue(key,1,value.funding.award);

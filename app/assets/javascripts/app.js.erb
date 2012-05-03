@@ -381,7 +381,7 @@ var App = {
 	renderDataFootNote: function(forwhat) {
 		var html = '<p><small>';
 		if (forwhat=='proposals') {
-			html += 'The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only)".<br />';			
+			html += 'The <strong>"Amount"</strong> shown reflects the Awarded Amount for Awarded Proposals and the Requested Amount for Declined or Other Proposals (internal NSF users only).<br />';			
 			html += 'The <strong>"Date"</strong> for Awarded Proposals is the Award date. For Declines/Others (internal NSF users only), the date reflects the Requested Start Date.<br />';
 			html += '"Other" proposals (internal NSF users only) include proposals with various statuses such as continuation, move by PI, and others.<br />';
 		} else if (forwhat=='topics' || forwhat=='programs') {
@@ -391,6 +391,8 @@ var App = {
 			if (forwhat=='topics') {
 				html += '<strong>"Weighted Prevalence"</strong>: "See sidebar for more information.';
 			}
+		} else if (forwhat=='researchers') {
+			html += 'The "Proposals" shown reflects the sum of Awarded Proposals and the Declined/Other Proposals (internal NSF users only).';
 		}
 		html += '</small></p>';
 		

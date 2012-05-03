@@ -141,15 +141,6 @@ App.Views.researchTopics = Backbone.View.extend({
 				"mDataProp": "funding.award"
 			},
 			{
-				"sTitle": "Awards (as % of NSF)",
-				"fnRender": function(oObj) {
-					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
-				},
-				"bUseRendered": false,
-				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
-				"mDataProp": "awardpercentage"
-			},
-			{
 				"sTitle": "Awards (as % of "+getDivision()+")",
 				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
 				"mDataProp": function ( source, type, val ) {
@@ -165,6 +156,15 @@ App.Views.researchTopics = Backbone.View.extend({
 			        // 'sort' and 'type' both just use the raw data
 			        return source.percofportfolio;
 				}
+			},
+			{
+				"sTitle": "Awards (as % of NSF)",
+				"fnRender": function(oObj) {
+					return oObj.aData.awardpercentage.toFixed(0).toString()+'%';
+				},
+				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "awardpercentage"
 			}
 		];
 		if (proposalaccessallowed) {

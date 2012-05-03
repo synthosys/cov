@@ -127,7 +127,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 						if (sort_column!=1 && sort_column!=2) { 
 							title = oSettings.aoColumns[sort_column]["sTitle"];
 							if (_.isFunction(sortBy)) {
-								if (title=='Awards ($)') dataAttribute = 'funding.award';
+								if (title=='Awards with Topic ($)') dataAttribute = 'funding.award';
 								else if (title=='Funding Rate') dataAttribute = 'fundingrate';
 								else dataAttribute = 'count.award';
 							} else {

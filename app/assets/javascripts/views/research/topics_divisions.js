@@ -250,7 +250,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
         var chart = new google.visualization.BarChart(document.getElementById('graph_awards'));
 		var option = {
 		  height: chartData.length*30,
-		  title: 'Divisions by Awards',
+		  title: 'Divisions by Awards ($)',
 		  legend: { position: 'none' }
 		}
         chart.draw(data,option);		
