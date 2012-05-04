@@ -7,6 +7,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		"click a[id^=proposal_details_]": "gotoProposalDetails"
 	},
 	initialize: function() {
+		this.model = new Topic();
 		//use the topics collection, it has a special function that will load all topic relevances!
 		this.collection = new App.Collections.Topics;
 		this.collection.on('reset', this.render, this);
@@ -205,6 +206,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		//make export file name
 		var exportfilename = 'researchers';
 		if (this.options.pge) exportfilename += '_p'+this.options.pge;
+		if (this.options.params['state']) exportfilename += '_'+this.options.params['state'];
 		//year
 		var startyear = $('select#filter_year_from', this.el).val();
 		var endyear = $('select#filter_year_to', this.el).val();
@@ -295,7 +297,49 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		chartData = _.sortBy(chartData,function(data) { return -data.funding.award; });
 		chartData = _.first(chartData,10);
 		
-		var data = new google.visualization.DataTable();
+		var self = this;
+		var columns = [
+			{
+				"sTitle": "Institution",
+				"mDataProp": "name"
+			},
+			{
+				"sTitle": "Awards ($)",
+				"fnRender": function ( oObj ) {
+					return self.model.formatFunding(oObj.aData.funding.award);
+				},
+				"bUseRendered": false,
+				"asSorting": [ "desc", "asc" ], //first sort desc, then asc
+				"mDataProp": "funding.award"
+			}
+		];
+		
+		//set title
+		var title = 'Institutions';
+		if (this.options.params['state']) title += ' in '+this.options.params['state'];
+		title += ' by Awards ($)';
+		$('#institutions_title', this.el).html(title);
+		//make export file name
+		var exportfilename = 'institutions';
+		if (this.options.pge) exportfilename += '_p'+this.options.pge;
+		if (this.options.params['state']) exportfilename += '_'+this.options.params['state'];
+		//year
+		var startyear = $('select#filter_year_from', this.el).val();
+		var endyear = $('select#filter_year_to', this.el).val();
+		exportfilename += '_'+startyear+'_'+endyear;
+		App.renderDataTable($("#institutions_table", this.el),{
+			"iDisplayLength": 100,
+			"bInfo": false,
+			"bFilter": false,
+			"bLengthChange": false,
+			"bPaginate": false,
+			"aoColumns": columns,
+			"aaData": chartData,
+			"aaSorting": [[1, 'desc']],
+			"sDom": '<"H"fr>t<"F"lip>'
+		},exportfilename);
+		
+		/* var data = new google.visualization.DataTable();
 		data.addRows(chartData.length);
 		data.addColumn('string', 'Institution');
 		data.addColumn('number', 'Awards ($)');
@@ -313,7 +357,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		  height: chartData.length*30,
 		  legend: { position: 'none' }
 		}
-        chart.draw(data,option);
+        chart.draw(data,option); */
 		
 		$('div#graph_loader', this.el).html('');		
 	}
