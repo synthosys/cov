@@ -295,7 +295,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		});
 		
 		chartData = _.sortBy(chartData,function(data) { return -data.funding.award; });
-		chartData = _.first(chartData,10);
+		chartData = _.first(chartData,30);
 		
 		var self = this;
 		var columns = [
