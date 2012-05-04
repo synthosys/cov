@@ -87,9 +87,6 @@ App.Views.researchTopics = Backbone.View.extend({
 		//percentage of portfolio
 		_.each(loaded_topics,function(row) {
 			if (row['t1']) totalawardamount += row['t1'].funding.award;
-			else if (row['t2']) totalawardamount += row['t2'].funding.award;
-			else if (row['t3']) totalawardamount += row['t3'].funding.award;
-			else if (row['t4']) totalawardamount += row['t4'].funding.award;			
 		});
 
 		var self = this;
