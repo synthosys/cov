@@ -96,6 +96,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 			var tmp = {};
 			tmp.nsf_id = row.proposal.nsf_id;
 			tmp.title = row.proposal.title;
+			tmp.pge = (row.pge && row.pge.code)?'p'+row.pge.code:'';
 			var topicids = row.topic.id;
 			for (var i=0;i<4;i++) {
 				tmp['t'+(i+1).toString()] = topicids[i]?topicids[i]:'';
@@ -128,104 +129,110 @@ App.Views.topicsProposals = Backbone.View.extend({
 				"bUseRendered": false,
 				"mDataProp": "nsf_id"
 			},
-			{
-				"sTitle": "Status",
-				"fnRender": function (oObj) {
-					if (oObj.aData.status=='award') return 'Awarded';
-					else if (oObj.aData.status=='decline') return 'Declined';
-					else return 'Other';
-				},
-				"mDataProp": "status"
-			},
-			{
-				"sTitle": "Title",
-				"mDataProp": "title"
-			},
-			{ 
-				"sTitle": "Date",
-				"mDataProp": "date"
-			},
-			{ 
-				"sTitle": "Amount ($K)*",
-				"mDataProp": function ( source, type, val ) {
-			        if (type === 'set') {
-			          // Store the computed display for speed
-			          source.amount_rendered = '$'+App.addCommas((source.amount/1000).toFixed(0))+'K';
-			          return;
-			        }
-			        else if (type === 'display' || type === 'filter') {
-					  if (source.amount_rendered) return source.amount_rendered;
-			          else return '$'+App.addCommas((source.amount/1000).toFixed(0))+'K'; //.amount_rendered;
-			        }
-			        // 'sort' and 'type' both just use the raw data
-			        return source.amount;
-				}								
-			},
-			{
-				"sTitle": "1st<br />Topic",
-				"mDataProp": function ( source, type, val ) {
-			        if (type === 'set') {
-			          // Store the computed display for speed
-			          source.t1_rendered = self.renderTopic(source.t1);
-			          return;
-			        }
-			        else if (type === 'display' || type === 'filter') {
-					  if (source.t1_rendered) return source.t1_rendered;
-			          else return self.renderTopic(source.t1);
-			        }
-			        // 'sort' and 'type' both just use the raw data
-			        return source.t1;
-				}								
-			},
-			{
-				"sTitle": "2nd<br />Topic",
-				"mDataProp": function ( source, type, val ) {
-			        if (type === 'set') {
-			          // Store the computed display for speed
-			          source.t2_rendered = self.renderTopic(source.t2);
-			          return;
-			        }
-			        else if (type === 'display' || type === 'filter') {
-					  if (source.t2_rendered) return source.t2_rendered;
-			          else return self.renderTopic(source.t2);
-			        }
-			        // 'sort' and 'type' both just use the raw data
-			        return source.t2;
-				}
-			},
-			{
-				"sTitle": "3rd<br />Topic",
-				"mDataProp": function ( source, type, val ) {
-			        if (type === 'set') {
-			          // Store the computed display for speed
-			          source.t3_rendered = self.renderTopic(source.t3);
-			          return;
-			        }
-			        else if (type === 'display' || type === 'filter') {
-					  if (source.t3_rendered) return source.t3_rendered;
-			          else return self.renderTopic(source.t3);
-			        }
-			        // 'sort' and 'type' both just use the raw data
-			        return source.t3;
-				}
-			},
-			{
-				"sTitle": "4th<br />Topic",
-				"mDataProp": function ( source, type, val ) {
-			        if (type === 'set') {
-			          // Store the computed display for speed
-			          source.t4_rendered = self.renderTopic(source.t4);
-			          return;
-			        }
-			        else if (type === 'display' || type === 'filter') {
-					  if (source.t4_rendered) return source.t4_rendered;
-			          else return self.renderTopic(source.t4);
-			        }
-			        // 'sort' and 'type' both just use the raw data
-			        return source.t4;
-				}
-			}
 		];
+		if (!this.options.pge) {
+			columns.push({
+				"sTitle": "PGE",
+				"mDataProp": "pge"
+			});			
+		}
+		columns.push({
+			"sTitle": "Status",
+			"fnRender": function (oObj) {
+				if (oObj.aData.status=='award') return 'Awarded';
+				else if (oObj.aData.status=='decline') return 'Declined';
+				else return 'Other';
+			},
+			"mDataProp": "status"
+		});
+		columns.push({
+			"sTitle": "Title",
+			"mDataProp": "title"
+		});
+		columns.push({ 
+			"sTitle": "Date",
+			"mDataProp": "date"
+		});
+		columns.push({ 
+			"sTitle": "Amount ($K)*",
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          // Store the computed display for speed
+		          source.amount_rendered = '$'+App.addCommas((source.amount/1000).toFixed(0))+'K';
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.amount_rendered) return source.amount_rendered;
+		          else return '$'+App.addCommas((source.amount/1000).toFixed(0))+'K'; //.amount_rendered;
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.amount;
+			}								
+		});
+		columns.push({
+			"sTitle": "1st<br />Topic",
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          // Store the computed display for speed
+		          source.t1_rendered = self.renderTopic(source.t1);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.t1_rendered) return source.t1_rendered;
+		          else return self.renderTopic(source.t1);
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.t1;
+			}								
+		});
+		columns.push({
+			"sTitle": "2nd<br />Topic",
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          // Store the computed display for speed
+		          source.t2_rendered = self.renderTopic(source.t2);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.t2_rendered) return source.t2_rendered;
+		          else return self.renderTopic(source.t2);
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.t2;
+			}
+		});
+		columns.push({
+			"sTitle": "3rd<br />Topic",
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          // Store the computed display for speed
+		          source.t3_rendered = self.renderTopic(source.t3);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.t3_rendered) return source.t3_rendered;
+		          else return self.renderTopic(source.t3);
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.t3;
+			}
+		});
+		columns.push({
+			"sTitle": "4th<br />Topic",
+			"mDataProp": function ( source, type, val ) {
+		        if (type === 'set') {
+		          // Store the computed display for speed
+		          source.t4_rendered = self.renderTopic(source.t4);
+		          return;
+		        }
+		        else if (type === 'display' || type === 'filter') {
+				  if (source.t4_rendered) return source.t4_rendered;
+		          else return self.renderTopic(source.t4);
+		        }
+		        // 'sort' and 'type' both just use the raw data
+		        return source.t4;
+			}
+		});
 		
 		//make export file name
 		var exportfilename = 'props';
