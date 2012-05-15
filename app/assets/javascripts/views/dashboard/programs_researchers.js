@@ -3,6 +3,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		"click button#link_to_programs_proposals": "gotoProgramsProposals",
 		"change select#filter_year_from": "reload",
 		"change select#filter_year_to": "reload",
+		"click input[id^=filter_status]": "reload",
 		"click a[id^=reset_state_filter]": "reset",
 		"click a[id^=proposal_details_]": "gotoProposalDetails"
 	},
@@ -29,6 +30,13 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 				var year = self.options.params['year']?self.options.params['year'].split('-'):[startYear,endYear];
 				$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 				$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
+				//show status filter if private data access is available
+				if (proposalaccessallowed) {
+					var status = self.options.params['status']?self.options.params['status'].split(','):['award'];
+					var html = '<label for="inlineCheckboxes" class="control-label"><strong>&nbsp;Status:&nbsp;</strong></label>';
+					html += '<label class="checkbox inline"><input type="checkbox" value="award" id="filter_status_award"'+($.inArray('award',status)!=-1?' checked':'')+'> Awarded</label><label class="checkbox inline"><input type="checkbox" value="decline" id="filter_status_decline"'+($.inArray('decline',status)!=-1?' checked':'')+'> Declined</label>';
+					$("form#filter_form", self.el).append(html);
+				}				
 				//set footnote
 				$('div#data_footnote', self.el).html(App.renderDataFootNote('researchers'));
 				$('div#data_footnote', self.el).hide();		
@@ -51,10 +59,6 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		var params = [];
 		params.push('org='+getDivision());
 		params.push('pge='+this.options.pge);
-		if (this.options.topicid) params.push('t='+this.options.topicid);
-		var startyear = $('select#filter_year_from', this.el).val();
-		var endyear = $('select#filter_year_to', this.el).val();
-		params.push('year='+startyear+'-'+endyear);
 		if (params.length>0) params = '?'+params.join('&');
 		App.app_router.navigate('programs/proposal/'+id+'/'+params, {trigger: true});
 	},
@@ -65,7 +69,7 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		//if state param is already included, remove it
 		fragment = fragment.search(/[\?&]+state=/i)!=-1?fragment.replace(/([\?&])+state=[^&$]*(.)*/i, "$1$2"):fragment;
 		//strip trailing &
-		fragment = fragment.replace(/[$&]+/,'');
+		fragment = fragment.replace(/&+$/,'');
 		//set the fragment
 		App.app_router.navigate(fragment);
 		//set the param
@@ -90,25 +94,37 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		this.renderDataTable();
 		this.renderInstitutions();		
 	},
-	reload: function(e) {
-		e.preventDefault();
-
+	reload: function() {
 		if ($('select#filter_year_from', this.el).val()>$('select#filter_year_to', this.el).val()) {
 			alert('Pick an appropriate date range');
 			return;
 		}
+		if (proposalaccessallowed && $('input[id^=filter_status_]:checked', this.el).length==0) {
+			alert('Please specify at least one status filter');
+			return false;
+		}		
 		
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
 
+		var status = ['award'];
+		if (proposalaccessallowed) {
+			status = _.map($('input[id^=filter_status_]:checked', this.el), function(checkbox) {
+				return $(checkbox).val();
+			});			
+		}
+		status = status.join(',');
+
 		var fragment = Backbone.history.fragment;
 		//update the years
 		fragment = fragment.search(/[\?&]+year=/i)!=-1?fragment.replace(/([\?&])+year=[^&$]*/i, "$1year="+year):fragment+'&year='+year;
+		//update the status
+		fragment = fragment.search(/[\?&]+status=/i)!=-1?fragment.replace(/([\?&])+status=[^&$]*/i, "$1status="+status):fragment+'&status='+status;
 		//if state param is already included, remove it
 		fragment = fragment.search(/[\?&]+state=/i)!=-1?fragment.replace(/([\?&])+state=[^&$]*(.)*/i, "$1$2"):fragment;
 		//strip trailing &
-		fragment = fragment.replace(/[$&]+/,'');
+		fragment = fragment.replace(/&+$/,'');
 		//set the fragment
 		App.app_router.navigate(fragment);
 		//set the param
@@ -133,6 +149,13 @@ App.Views.dashboardProgramsResearchers = Backbone.View.extend({
 		var params = {};
 		params.org = getDivision()+','+this.options.pge;
 		params.year = year;
+		var status = ['award'];
+		if (proposalaccessallowed) {
+			status = _.map($('input[id^=filter_status_]:checked', this.el), function(checkbox) {
+				return $(checkbox).val();
+			});			
+		}
+		params.status = status.join(',');
 		
 		this.collection.params = params;
 		this.collection.params['page'] = 'pi';

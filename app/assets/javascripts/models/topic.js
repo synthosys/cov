@@ -15,7 +15,7 @@ var Topic = Backbone.Model.extend({
 		_.each([1,2,3,4], function(topicrelevance) {
 			topicrelevance = 't'+topicrelevance.toString();
 			if (row[topicrelevance]) {
-				var tmp = row[topicrelevance]['count']['award']+row[topicrelevance]['count']['decline']+row[topicrelevance]['count']['other'];
+				var tmp = row[topicrelevance]['count']['award'];
 				//read the topic weight input
 				var weight = (weights[topicrelevance])?weights[topicrelevance]:'0';
 				topic_weightedprevalence += (tmp*weight);					

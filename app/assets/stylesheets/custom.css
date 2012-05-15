@@ -224,6 +224,17 @@ line-height: 11px;
     font-size: 14px;
 }
 
+#welcome_link {
+	height: 40px; /* do this because the span inside this a will set a line-height. Normally, this a sets a line-height as well, but if you set the line-height of the span, then that borks this a, so am solving by forcing this a to have a height and letting everything else flow */
+}
+
+#welcome_link > span {
+	display: inline-block;
+	width: 150px;
+	line-height: 40px;
+	overflow: hidden;
+	white-space: nowrap; /* this could also be achieved by setting the height of this element */
+}
 
 .navbar .nav > li.active, .navbar .nav > li.active a, .navbar .nav > li:hover {
 	background: #138652;

@@ -35,7 +35,7 @@ App.Views.topicsFunding = Backbone.View.extend({
 				"mDataProp": "t"
 			},
 			{
-				"sTitle": "Weighted<br />Prevalence",
+				"sTitle": "Weighted<br />Prevalence<br />(Awards)",
 				"fnRender": function( oObj ) {
 					return oObj.aData.weighted.toFixed(0);
 				},
