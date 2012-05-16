@@ -36,7 +36,7 @@ panels = ActiveSupport::JSON.decode(proposal.panels)
 				<td><%= link_to details['nsf_id'], proposal_path(proposal) %>
 				<td><%= details['title'] %></td>
 				<td><%= details['status']['date'] %></td>
-				<td><%= details['status']['name']=="award"?"#{number_to_currency(details['awarded']['dollar']/1000,:precision=>0)}K": "(declined)"; %></td>
+				<td><%= details['status']['name']=="award"?(details['awarded'].has_key? 'dollar')?"#{number_to_currency(details['awarded']['dollar']/1000,:precision=>0)}K":"": "(declined)"; %></td>
 				<td>
 					<% my_a = proposal.associations.select{|a| a.user_id == current_user.id} %>
 					<% if my_a %>
