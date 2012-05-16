@@ -128,7 +128,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 				},
 				"bUseRendered": false,
 				"mDataProp": "nsf_id"
-			},
+			}
 		];
 		if (!this.options.pge) {
 			columns.push({
