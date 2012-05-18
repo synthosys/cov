@@ -155,6 +155,15 @@ App.Views.ShowPanelDetails = Backbone.View.extend({
 				collated.push([key,grouped[key].length]);
 			}
 		}
+		//group by label
+		grouped = _.groupBy(collated,function(row) { return row[0]; });
+		//now find the counts
+		collated = [];
+		for (var key in grouped) {
+			var count = 0;
+			_.each(grouped[key], function(item) { count += item[1]; })
+			collated.push([key,count]);
+		}		
 		collated = _.sortBy(collated,function(row) { return row[1]; }).reverse();
 		var list = [];
 		_.each(collated, function(row) {

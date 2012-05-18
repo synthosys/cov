@@ -1,6 +1,6 @@
 App.Views.researchTopicsProposal = Backbone.View.extend({
 	events: {
-		"click button#view_proposals": "goBackTo"
+		"click button#gobackto": "goBackTo"
 	},
 	initialize: function() {
 		var self = this;
