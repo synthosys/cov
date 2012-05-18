@@ -72,7 +72,7 @@ App.Views.topicsProposals = Backbone.View.extend({
 		var params = {};
 		if (this.options.org) params.org = this.options.org;
 		if (this.options.pge) { if (params.org) params.org += ','; params.org += this.options.pge; }
-		if (this.options.topicid) params.t = this.options.topicid;
+		if (this.options.topicid) params['t'+(this.options.t?this.options.t.split(',').join(''):'')] = this.options.topicid;
 		//year
 		var startyear = $('select#filter_year_from', this.el).val();
 		var endyear = $('select#filter_year_to', this.el).val();

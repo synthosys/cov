@@ -38,7 +38,7 @@ App.Views.researchTopics = Backbone.View.extend({
 		e.preventDefault();
 		
 		var id = $(e.currentTarget).attr('id');
-		App.app_router.navigate('topics/divisions/'+id+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+		App.app_router.navigate('topics/divisions/'+id+'/?year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val()+'&t='+$('select#filter_topicrelevance', this.el).val(), {trigger: true});
 	},
 	load: function(e) {
 		if (e) e.preventDefault();

@@ -3,7 +3,8 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		"click button#gobackto": "goBackTo",
 		"click a[class=link_to_proposals]": "gotoProposals",
 		"change select#filter_year_from": "load",
-		"change select#filter_year_to": "load"
+		"change select#filter_year_to": "load",
+		"change select#filter_topicrelevance": "load"
 	},
 	initialize: function() {
 		this.model = new Topic();
@@ -34,6 +35,9 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 			$("select#filter_year_from", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[0]?year[0]:startYear));
 			$("select#filter_year_to", self.el).html(App.renderYearSelect(getFirstYear(),getCurrentYear(),year[1]?year[1]:endYear));
 			$('div#loader', self.el).html("<img src='" + baseURI + "/assets/ajax-load.gif" + "'/> Loading Topics");
+			//set topicrelevance selection
+			var t = (self.options.params && self.options.params['t'])?self.options.params['t']:'1';
+			$("select#filter_topicrelevance", self.el).html(App.renderTopicRelevance(t));
 			self.load();
 		})
     },
@@ -46,7 +50,7 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		e.preventDefault();
 		
 		var id = $(e.currentTarget).attr('id');
-		App.app_router.navigate('topics/proposals/'+this.options.topicid+'/?org='+id+'&year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val(), {trigger: true});
+		App.app_router.navigate('topics/proposals/'+this.options.topicid+'/?org='+id+'&year='+$('select#filter_year_from', this.el).val()+'-'+$('select#filter_year_to', this.el).val()+'&t='+$('select#filter_topicrelevance', this.el).val(), {trigger: true});
 	},
 	load: function(e) {
 		if (e) e.preventDefault();
@@ -62,7 +66,9 @@ App.Views.researchTopicsDivisions = Backbone.View.extend({
 		var year = $("select#filter_year_from", this.el).val()?$("select#filter_year_from", this.el).val():getStartYear();
 		year += '-';
 		year += $("select#filter_year_to", this.el).val()?$("select#filter_year_to", this.el).val():getEndYear();
-		this.collection.params = {year: year, t:this.options.topicid };
+		var t = $('select#filter_topicrelevance', this.el).val();
+		this.collection.params = {year: year};
+		this.collection.params['t'+t.split(',').join('')] = this.options.topicid;
 		this.collection.fetch();
 	},
    	render: function() {
