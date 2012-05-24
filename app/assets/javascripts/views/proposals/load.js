@@ -122,7 +122,10 @@ App.Views.LoadProposal = Backbone.View.extend({
 					self.processLoadProgress('reviewers', 'ok', {}, 'No reviewers');
 					self.processLoadProgress('reviewerproposals', 'ok', {}, 'No reviewer proposals');
 				} else { 
-					var panels = data["data"];
+					var panels = [];
+					_.each(data["data"],function(panel) {
+						if (panel["nsf_id"]!='C121722') panels.push(panel); //ignore this panel id
+					});
 					//load counts for panel proposals, make a list
 					var panel_propids = [];
 					_.each(panels, function(panel) {
