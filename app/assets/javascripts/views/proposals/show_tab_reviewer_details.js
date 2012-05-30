@@ -89,7 +89,8 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 						//we get a list of all the proposal ids, go through and extract them
 						//we need them to get topics
 						var prop_ids = [];
-						if (data["data"]["nsf"]["propose"] && data["data"]["nsf"]["propose"]["count"]>0) {
+						/* change request - only show awards - commenting out below, in case this changes in the future! */
+						/* if (data["data"]["nsf"]["propose"] && data["data"]["nsf"]["propose"]["count"]>0) {
 							_.each(data["data"]["nsf"]["propose"]["data"],function(prop) {
 								prop_ids.push(prop["nsf_id"]);
 							});
@@ -98,57 +99,61 @@ App.Views.ShowReviewerDetails = Backbone.View.extend({
 							_.each(data["data"]["nsf"]["decline"]["data"],function(prop) {
 								prop_ids.push(prop["nsf_id"]);
 							});
-						}
+						} */
 						if (data["data"]["nsf"]["award"] && data["data"]["nsf"]["award"]["count"]>0) {
 							_.each(data["data"]["nsf"]["award"]["data"],function(prop) {
 								prop_ids.push(prop["nsf_id"]);
 							});
 						}
-						//get the proposals
-						var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
-						$.ajax({
-							url: url,
-							dataType: datatype,
-							success: function(data) {
-								var proposals = data["data"];											
-								//get the topics for each proposal
-								var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
-								$.ajax({
-									url: url,
-									dataType: datatype,
-									success: function(data) {
-										var topics = data["data"];
-										//get the details for each proposal, we need to do this so we can match back to reviewers
-										var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';
-										$.ajax({
-											url: url,
-											dataType: datatype,
-											success: function(data) {
-												var loaded_proposals = _.map(proposals,function(proposal) {
-													var tmp = {};
-													tmp["details"] = proposal;
-													//attach the topics
-													var proposaltopics = _.find(topics,function(item) {
-														return proposal.nsf_id==item.proposal.nsf_id;
-													});
-													tmp["topics"] = (_.isObject(proposaltopics) && proposaltopics["topic"] && proposaltopics["topic"]["id"])?proposaltopics["topic"]["id"]:[];
-													//attach the researchers
-													var researchers = _.filter(data["data"],function(item) {
-														return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
+						if (prop_ids.length>0) {
+							//get the proposals
+							var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
+							$.ajax({
+								url: url,
+								dataType: datatype,
+								success: function(data) {
+									var proposals = data["data"];											
+									//get the topics for each proposal
+									var url = apiurl+'topic?id='+_.uniq(prop_ids).join(',')+'&jsoncallback=?';
+									$.ajax({
+										url: url,
+										dataType: datatype,
+										success: function(data) {
+											var topics = data["data"];
+											//get the details for each proposal, we need to do this so we can match back to reviewers
+											var url = apiurl+'prop?id='+_.uniq(prop_ids).join(',')+'&page=pi'+'&jsoncallback=?';
+											$.ajax({
+												url: url,
+												dataType: datatype,
+												success: function(data) {
+													var loaded_proposals = _.map(proposals,function(proposal) {
+														var tmp = {};
+														tmp["details"] = proposal;
+														//attach the topics
+														var proposaltopics = _.find(topics,function(item) {
+															return proposal.nsf_id==item.proposal.nsf_id;
+														});
+														tmp["topics"] = (_.isObject(proposaltopics) && proposaltopics["topic"] && proposaltopics["topic"]["id"])?proposaltopics["topic"]["id"]:[];
+														//attach the researchers
+														var researchers = _.filter(data["data"],function(item) {
+															return $.inArray(proposal["nsf_id"].toString(),item["prop"])!=-1;
+														});
+
+														tmp["researchers"] = researchers;
+														return tmp;
 													});
 
-													tmp["researchers"] = researchers;
-													return tmp;
-												});
-
-												//now we have all the loaded proposals, render them!
-												self.renderAwards(loaded_proposals,renderto);
-											}
-										});
-									}
-								});
-							}
-						});
+													//now we have all the loaded proposals, render them!
+													self.renderAwards(loaded_proposals,renderto);
+												}
+											});
+										}
+									});
+								}
+							});							
+						} else {
+							renderto.html('<div class="alert">No awarded proposals for this reviewer.</div>');							
+						}
 					} else {
 						renderto.html('<div class="alert">No awarded proposals for this reviewer.</div>');						
 					}
