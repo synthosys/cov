@@ -109,12 +109,12 @@ var AppRouter = Backbone.Router.extend({
 			if (!App.privatedataaccesschecked) {
 			    // Check to see if we have access to nsfstarmetrics server 
 			    $.ajax({
-			      url: "http://128.150.10.70/py/api/access",
+			      url: "http://nsf.api.smetrics.org/v1/access",
 			      dataType: 'JSONP',
 			      timeout: 500,
 				  success: function(data) {
 					proposalaccessallowed = true;
-					apiurl = "http://128.150.10.70/py/api/";
+					apiurl = "http://nsf.api.smetrics.org/v1/";
 					//set the flag that tells us we already did this
 					App.privatedataaccesschecked = true;
 					self.loadView(view,params);						

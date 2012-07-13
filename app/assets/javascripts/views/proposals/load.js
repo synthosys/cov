@@ -47,7 +47,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var loaded_data = {};
 		var component = 'proposals';
 		var self = this;
-		//http://128.150.10.70/py/api/panel?pid=1149460
+		//http://nsf.api.smetrics.org/v1/panel?pid=1149460
 		this.updateLoadStatus('proposals','start',null,'');
 		var url = apiurl+'prop?id='+self.nsf_ids.join(',')+'&jsoncallback=?';
 		var datatype = 'JSONP';			
@@ -107,7 +107,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var loaded_data = {};
 		var component = 'panels';
 		var self = this;
-		//http://128.150.10.70/py/api/panel?pid=1149460
+		//http://nsf.api.smetrics.org/v1/panel?pid=1149460
 		this.updateLoadStatus('panels','start',null,'');
 		var url = apiurl+'panel?pid='+self.nsf_ids.join(',')+'&jsoncallback=?';
 		var datatype = 'JSONP';			
@@ -188,7 +188,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var loaded_data = {};
 		var component = 'researchers';
 		var self = this;
-		//http://128.150.10.70/py/api/panel?pid=1149460
+		//http://nsf.api.smetrics.org/v1/panel?pid=1149460
 		this.updateLoadStatus('researchers','start',null,'');
 		$.ajax({
 			url: apiurl+'prop?id='+self.nsf_ids.join(',')+'&page=pi'+'&jsoncallback=?',
@@ -213,7 +213,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var loaded_data = {};
 		var component = 'topics';
 		var self = this;
-		//http://128.150.10.70/py/api/panel?pid=1149460
+		//http://nsf.api.smetrics.org/v1/panel?pid=1149460
 		this.updateLoadStatus('topics','start',null,'');
 		$.ajax({
 			url: apiurl+'topic?id='+self.nsf_ids.join(',')+'&jsoncallback=?',
@@ -239,7 +239,7 @@ App.Views.LoadProposal = Backbone.View.extend({
 		var loaded_data = {};
 		var component = 'reviewers';
 		var self = this;
-		//http://128.150.10.70/py/api/user?rid=?
+		//http://nsf.api.smetrics.org/v1/user?rid=?
 		this.updateLoadStatus('reviewers','start',null,'');
 		//gather a list of the reviewers we have to get information for
 		var reviewer_ids = [];

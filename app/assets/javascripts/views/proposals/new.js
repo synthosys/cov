@@ -12,12 +12,12 @@ App.Views.NewProposal = Backbone.View.extend({
 		
 	    // Check to see if we have access to nsfstarmetrics server 
 	    $.ajax({
-	      url: "http://128.150.10.70/py/api/access",
+	      url: "http://nsf.api.smetrics.org/v1/access",
 	      dataType: 'JSONP',
 	      timeout: 500,
 	      success: function(data) {
 	        proposalaccessallowed = true;
-	        apiurl = "http://128.150.10.70/py/api/";
+	        apiurl = "http://nsf.api.smetrics.org/v1/";
 			require(['text!templates/proposals/new.html'], function(html) {
 	        	self.render(html);
 			});
